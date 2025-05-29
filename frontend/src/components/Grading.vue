@@ -15,35 +15,20 @@
       @show-current-question="showCurrentQuestion"
     />
     
-    <div class="page-content">
-      <el-card class="paper-content">
-        <template #header>
-          <div class="paper-header">
-            <span>当前试卷：{{ currentPaperInfo.studentName }} - {{ currentPaperInfo.studentId }}</span>
-            <div class="paper-actions">
-              <el-button type="primary" @click="startGrading">
-                <el-icon><VideoPlay /></el-icon>
-                开始评分
-              </el-button>
-              <el-button @click="openSettings">
-                <el-icon><Setting /></el-icon>
-                评分设置
-              </el-button>
-            </div>
-          </div>
-        </template>
-        
-        <div class="paper-preview">
-          <!-- 试卷预览内容将在后续实现 -->
-        </div>
-      </el-card>
-    </div>
+    <grading-page-content
+      :paper-info="currentPaperInfo"
+      :llm-score="currentLLMScore"
+      :max-score="currentMaxScore"
+      @start-grading="startGrading"
+      @open-settings="openSettings"
+      @mark-answer="handleMarkAnswer"
+      @score-change="handleScoreChange"
+    />
 
     <el-dialog
       v-model="referenceAnswerVisible"
       title="参考答案"
       width="50%"
-      :before-close="handleDialogClose"
     >
       <div class="reference-answer-content">
         {{ statistics.referenceAnswer }}
@@ -51,6 +36,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="referenceAnswerVisible = false">关闭</el-button>
+          <el-button type="primary" @click="copyReferenceAnswer">复制内容</el-button>
         </span>
       </template>
     </el-dialog>
@@ -59,7 +45,6 @@
       v-model="currentQuestionVisible"
       title="当前题目"
       width="50%"
-      :before-close="handleDialogClose"
     >
       <div class="current-question-content">
         {{ statistics.currentQuestion }}
@@ -74,11 +59,11 @@
 </template>
 
 <script setup lang="ts">
-import { Setting, VideoPlay } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GradingHeader from './grading/GradingHeader.vue'
+import GradingPageContent from './grading/GradingPageContent.vue'
 
 const router = useRouter()
 const currentPage = ref(1)
@@ -152,6 +137,10 @@ const questions = ref([
 
 const currentQuestion = ref(1)
 
+// 当前LLM评分和满分
+const currentLLMScore = ref(85.5) // 示例LLM评分
+const currentMaxScore = ref(100) // 当前题目满分
+
 // 页码变化处理
 const handlePageChange = (page: number) => {
   currentPage.value = page
@@ -185,9 +174,11 @@ const showCurrentQuestion = () => {
   currentQuestionVisible.value = true
 }
 
-// 关闭对话框前的回调
-const handleDialogClose = (done: () => void) => {
-  done()
+// 处理题目切换
+const handleQuestionChange = (question: { id: number, name: string, score: number }) => {
+  currentQuestion.value = question.id
+  ElMessage.success(`切换到${question.name}，满分${question.score}分`)
+  // TODO: 加载对应题目的内容和统计数据
 }
 
 // 复制参考答案
@@ -201,47 +192,31 @@ const copyReferenceAnswer = () => {
     })
 }
 
-// 处理题目切换
-const handleQuestionChange = (question: { id: number, name: string, score: number }) => {
-  currentQuestion.value = question.id
-  ElMessage.success(`切换到${question.name}，满分${question.score}分`)
-  // TODO: 加载对应题目的内容和统计数据
+// 处理答案标记
+const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }) => {
+  ElMessage.success(`标记文本："${data.text.substring(0, 30)}..." 为 ${data.type}`)
+  // TODO: 这里可以将标记信息保存到数据中
+  console.log('答案标记:', data)
+}
+
+// 处理评分变化
+const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => {
+  ElMessage.info(`教师评分: ${data.teacherScore}分 (LLM评分: ${data.llmScore}分)`)
+  // TODO: 这里可以将评分信息保存到数据中
+  console.log('评分变化:', data)
 }
 
 </script>
 
 <style scoped>
+/* === 主页面容器 === */
 .grading-page {
   min-height: 100%;
 }
 
-.page-content {
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.paper-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.paper-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.paper-preview {
-  min-height: 400px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  padding: 20px;
-  margin-top: 20px;
-}
-
-.current-question-content, .reference-answer-content {
+/* === 对话框内容样式 === */
+.reference-answer-content,
+.current-question-content {
   white-space: pre-line;
   line-height: 1.6;
   font-size: 14px;
@@ -252,6 +227,7 @@ const handleQuestionChange = (question: { id: number, name: string, score: numbe
   overflow-y: auto;
 }
 
+/* === 对话框底部 === */
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
