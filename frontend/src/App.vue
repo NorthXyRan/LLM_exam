@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-// 什么都不需要写，保持简单
 </script>
 
 <style>

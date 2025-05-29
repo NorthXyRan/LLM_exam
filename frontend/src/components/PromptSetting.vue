@@ -2,10 +2,6 @@
   <div class="prompt-setting-page">
     <div class="page-header">
       <h1>Prompt 设置</h1>
-      <el-button @click="goBack" type="primary">
-        <el-icon><ArrowLeft /></el-icon>
-        返回首页
-      </el-button>
     </div>
     
     <div class="page-content">
@@ -152,7 +148,6 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -264,15 +259,10 @@ const loadPresetTemplate = (template: any) => {
 
 <style scoped>
 .prompt-setting-page {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  min-height: 100%;
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
   background: white;
   padding: 20px;

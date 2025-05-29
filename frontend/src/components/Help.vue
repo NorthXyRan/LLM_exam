@@ -2,10 +2,6 @@
   <div class="help-page">
     <div class="page-header">
       <h1>帮助中心</h1>
-      <el-button @click="goBack" type="primary">
-        <el-icon><ArrowLeft /></el-icon>
-        返回首页
-      </el-button>
     </div>
     
     <div class="page-content">
@@ -292,7 +288,6 @@ curl -X POST \
 
 <script setup lang="ts">
 import {
-    ArrowLeft,
     ChatDotRound,
     DataAnalysis,
     Document,
@@ -365,10 +360,6 @@ const apiList = ref([
   { method: 'POST', endpoint: '/settings', description: '更新设置' }
 ])
 
-const goBack = () => {
-  router.push('/')
-}
-
 const handleSectionSelect = (key: string) => {
   activeSection.value = key
 }
@@ -405,15 +396,10 @@ const resetFeedback = () => {
 
 <style scoped>
 .help-page {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  min-height: 100%;
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
   background: white;
   padding: 20px;
