@@ -1,23 +1,45 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Grading from '../components/Grading.vue'
+import Help from '../components/Help.vue'
+import Home from '../components/Home.vue'
+import PromptSetting from '../components/PromptSetting.vue'
+import Result from '../components/Result.vue'
+import Uploading from '../components/Uploading.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'Home',
+      component: Home
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/uploading',
+      name: 'Uploading',
+      component: Uploading
     },
-  ],
+    {
+      path: '/grading',
+      name: 'Grading',
+      component: Grading
+    },
+    {
+      path: '/result',
+      name: 'Result',
+      component: Result
+    },
+    {
+      path: '/prompt-setting',
+      name: 'PromptSetting',
+      component: PromptSetting
+    },
+    {
+      path: '/help',
+      name: 'Help',
+      component: Help
+    }
+  ]
 })
 
 export default router
