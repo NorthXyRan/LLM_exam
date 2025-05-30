@@ -183,16 +183,15 @@ defineExpose({
 </script>
 
 <style scoped>
-/* === 反馈面板主容器 === */
+/* === 反馈面板内部样式 === */
 .feedback-panel {
-  flex: 0 0 30%;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  padding: 20px;    /* 添加内边距  */
-  border: 1px solid #e9ecef;
+  /* 移除固定尺寸和装饰性样式，让父容器控制 */
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 460px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 /* === 头部样式 === */
@@ -215,6 +214,7 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 15px;
+  overflow: hidden;
 }
 
 /* === 选中文本显示区域 === */
@@ -243,6 +243,7 @@ defineExpose({
   color: #909399;
   font-weight: 500;
   min-width: 70px;
+  white-space: nowrap;
 }
 
 .text {
@@ -252,6 +253,7 @@ defineExpose({
   padding: 2px 6px;
   border-radius: 2px;
   flex: 1;
+  word-break: break-word;
 }
 
 /* === AI理由显示区域 === */
@@ -280,6 +282,7 @@ defineExpose({
 .reason-content {
   flex: 1;
   padding: 12px;
+  overflow: hidden;
 }
 
 .reason-textarea {
@@ -300,5 +303,27 @@ defineExpose({
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* === 响应式调整 === */
+@media (max-width: 768px) {
+  .feedback-panel {
+    padding: 15px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+  }
+  
+  .label {
+    min-width: 60px;
+    font-size: 11px;
+  }
 }
 </style> 

@@ -221,7 +221,6 @@ const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => 
   line-height: 1.6;
   font-size: 14px;
   padding: 15px;
-  background-color: #f8f9fa;
   border-radius: 4px;
   max-height: 400px;
   overflow-y: auto;

@@ -1,165 +1,72 @@
 <template>
   <div class="page-content">
-    <el-card class="paper-content">
-      <template #header>
-        <div class="toolbar">
-          <!-- 评分区域 -->
-          <div class="scoring-section">
-            <div class="score-group">
-              <div class="score-item">
-                <span class="score-label">LLM批改分数</span>
-                <div class="score-display">
-                  <span class="score-value">{{ llmScore }}</span>
-                  <span class="score-unit">分</span>
-                </div>
-              </div>
-              
-              <el-divider direction="vertical" />
-              
-              <div class="score-item">
-                <span class="score-label">最终评分</span>
-                <div class="score-input-group">
-                  <el-input
-                    v-model="teacherScore"
-                    type="number"
-                    size="medium"
-                    class="score-input"
-                    @input="handleTeacherScoreInput"
-                  />
-                  <span class="score-unit">分</span>
-                </div>
-              </div>
-              
-              <el-divider direction="vertical" />
-              
-              <div class="score-item">
-                <span class="score-label">操作</span>
-                <div class="score-actions-inline">
-                  <el-button 
-                    type="primary" 
-                    size="medium"
-                    @click="saveScore"
-                    :disabled="!teacherScore"
-                  >
-                    保存并提交
-                  </el-button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 操作区域 -->
-          <div class="action-section">
-            <div class="action-group">
-              <div class="score-item">
-                <span class="score-label">操作模式</span>
-                <div class="action-buttons">
-                  <el-button type="primary" size="medium" @click="handleStartGrading">
-                    <el-icon><VideoPlay /></el-icon>
-                    开始评分
-                  </el-button>
-                  <el-button type="success" size="medium" @click="handleBatchGrading">
-                    <el-icon><Document /></el-icon>
-                    全部评分
-                  </el-button>
-                </div>
-              </div>
-            </div>
+    <div class="paper-content">
+      <div class="content-grid">
+        <!-- 评分区域 -->
+        <div class="scoring-area">
+          <div class="area-card">
+            <scoring-section
+              :llm-score="llmScore"
+              :max-score="maxScore"
+              @score-change="handleScoreChange"
+            />
           </div>
         </div>
-      </template>
-      
-      <div class="content-container">
-        <!-- 左侧区域：高亮工具栏 + 试卷预览 -->
-        <div class="left-section">
-          <!-- 高亮工具栏 -->
-          <div class="highlight-toolbar">
-            <div class="tool-section">
-              <div class="tool-group">
-                <el-button 
-                  :type="highlightMode ? 'primary' : 'default'"
-                  :class="{ 'active': highlightMode }"
-                  @click="toggleHighlightMode"
-                  size="medium"
-                >
-                  <el-icon><Edit /></el-icon>
-                  高亮笔
-                </el-button>
-              </div>
-              
-              <el-divider direction="vertical" />
-              
-              <div class="tool-group">
-                <el-button 
-                  type="success" 
-                  size="medium"
-                  @click="() => handleMarkAnswer({ text: '', type: 'correct' })"
-                  :disabled="!hasSelectedText"
-                >
-                  <el-icon><Check /></el-icon>
-                  正确
-                </el-button>
-                <el-button 
-                  type="danger" 
-                  size="medium"
-                  @click="() => handleMarkAnswer({ text: '', type: 'wrong' })"
-                  :disabled="!hasSelectedText"
-                >
-                  <el-icon><Close /></el-icon>
-                  错误
-                </el-button>
-                <el-button 
-                  type="warning" 
-                  size="medium"
-                  @click="() => handleMarkAnswer({ text: '', type: 'unclear' })"
-                  :disabled="!hasSelectedText"
-                >
-                  <el-icon><QuestionFilled /></el-icon>
-                  模糊
-                </el-button>
-                <el-button 
-                  type="info" 
-                  size="medium"
-                  @click="() => handleMarkAnswer({ text: '', type: 'redundant' })"
-                  :disabled="!hasSelectedText"
-                >
-                  <el-icon><RemoveFilled /></el-icon>
-                  冗余
-                </el-button>
-              </div>
-            </div>
-          </div>
 
-          <!-- 试卷预览 -->
-          <paper-preview
-            :highlight-mode="highlightMode"
-            @text-selected="handleTextSelected"
-            @mark-answer="handleMarkAnswer"
-          >
-            <template #preview>
-              <slot name="preview" />
-            </template>
-          </paper-preview>
+        <!-- 操作区域 -->
+        <div class="action-area">
+          <div class="area-card">
+            <action-section
+              @start-grading="handleStartGrading"
+              @batch-grading="handleBatchGrading"
+            />
+          </div>
         </div>
 
-        <!-- 右侧：反馈理由输入 -->
-        <feedback-panel
-          :selected-highlight="selectedHighlight"
-          @modify-reason="handleModifyReason"
-          @save-reason="handleSaveReason"
-          @submit-reason="handleSubmitReason"
-        />
+        <!-- 预览区域 -->
+        <div class="preview-area">
+          <div class="area-card">
+            <highlight-toolbar
+              :has-selected-text="hasSelectedText"
+              @highlight-mode-change="handleHighlightModeChange"
+              @mark-answer="handleMarkAnswer"
+            />
+            <paper-preview
+              :highlight-mode="highlightMode"
+              @text-selected="handleTextSelected"
+              @mark-answer="handleMarkAnswer"
+            >
+              <template #preview>
+                <slot name="preview" />
+              </template>
+            </paper-preview>
+          </div>
+        </div>
+
+        <!-- 反馈区域 -->
+        <div class="feedback-area">
+          <div class="area-card">
+            <feedback-panel
+              :selected-highlight="selectedHighlight"
+              @modify-reason="handleModifyReason"
+              @save-reason="handleSaveReason"
+              @submit-reason="handleSubmitReason"
+            />
+          </div>
+        </div>
       </div>
-    </el-card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Check, Close, Document, Edit, QuestionFilled, RemoveFilled, VideoPlay } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
+import ActionSection from './ActionSection.vue'
 import FeedbackPanel from './FeedbackPanel.vue'
+import HighlightToolbar from './HighlightToolbar.vue'
 import PaperPreview from './PaperPreview.vue'
+import ScoringSection from './ScoringSection.vue'
 
 interface Props {
   paperInfo: {
@@ -193,17 +100,9 @@ const selectedHighlight = ref<{
   aiReason?: string
 } | null>(null)
 
-// 评分相关数据
-const teacherScore = ref<number | string>()
-
-// 切换高亮模式
-const toggleHighlightMode = () => {
-  highlightMode.value = !highlightMode.value
-  if (highlightMode.value) {
-    ElMessage.info('高亮模式已开启，选中文本进行标记')
-  } else {
-    ElMessage.info('高亮模式已关闭')
-  }
+// 处理高亮模式变化
+const handleHighlightModeChange = (mode: boolean) => {
+  highlightMode.value = mode
 }
 
 // 处理文本选择
@@ -212,7 +111,18 @@ const handleTextSelected = (data: { text: string, hasSelection: boolean }) => {
 }
 
 // 标记答案
-const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }) => {
+const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' } | string) => {
+  let markData: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }
+  
+  if (typeof data === 'string') {
+    // 来自工具栏的标记，需要获取当前选中的文本
+    const selection = window.getSelection()
+    const selectedText = selection?.toString().trim() || ''
+    markData = { text: selectedText, type: data as 'correct' | 'wrong' | 'unclear' | 'redundant' }
+  } else {
+    markData = data
+  }
+
   // 模拟 AI 给分理由
   const aiReasons = {
     correct: '该答案准确回答了问题的核心要点，逻辑清晰，表达规范。体现了学生对知识点的准确理解。',
@@ -222,44 +132,27 @@ const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unc
   }
 
   selectedHighlight.value = {
-    text: data.text,
-    type: data.type,
-    aiReason: aiReasons[data.type]
+    text: markData.text,
+    type: markData.type,
+    aiReason: aiReasons[markData.type]
   }
 
   // 向父组件传递事件
-  emits('markAnswer', data)
+  emits('markAnswer', markData)
 }
 
 const handleStartGrading = () => {
   emits('startGrading')
 }
 
-// 处理教师评分变化
-const handleTeacherScoreInput = (value: string) => {
-  const numericValue = parseFloat(value)
-  if (!isNaN(numericValue)) {
-    teacherScore.value = numericValue
-    emits('scoreChange', {
-      teacherScore: numericValue,
-      llmScore: props.llmScore || 0
-    })
-  } else {
-    teacherScore.value = value
-  }
+const handleBatchGrading = () => {
+  ElMessage.success('开始批量评分')
+  // TODO: 实现批量评分逻辑
 }
 
-// 保存评分
-const saveScore = () => {
-  const score = typeof teacherScore.value === 'string' ? parseFloat(teacherScore.value) : teacherScore.value
-  if (score !== undefined && !isNaN(score)) {
-    ElMessage.success(`评分已保存并提交: ${score}分`)
-    // TODO: 这里可以调用API保存评分并提交
-    emits('scoreChange', {
-      teacherScore: score,
-      llmScore: props.llmScore || 0
-    })
-  }
+// 处理评分变化
+const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => {
+  emits('scoreChange', data)
 }
 
 // 处理 AI 理由相关操作
@@ -279,174 +172,152 @@ const handleSubmitReason = (data: any) => {
   ElMessage.success('理由已提交到服务器')
   // TODO: 实现提交理由到服务器的逻辑
 }
-
-const handleBatchGrading = () => {
-  // Implementation for batch grading
-  console.log('Batch grading')
-}
-
 </script>
 
 <style scoped>
-/* === 通用样式变量和基础类 === */
 .page-content {
-  background: white;
-  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow: hidden; /* 确保内容不会溢出边框 */
 }
 
-/* === 布局容器 === */
-.toolbar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 20px;
-  overflow-x: auto;
+.paper-content {
+  background: rgb(255, 255, 255); 
+  box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0; /* 移除内部圆角 */
 }
 
-.content-container {
-  display: flex;
-  gap: 20px;
-  margin-top: 0;
-  overflow-x: auto;
+.paper-content :deep(.el-card__body) {
+  padding: 0;
 }
 
-.left-section {
-  flex: 0 0 70%;
+/* === 简单的网格布局 === */
+.content-grid {
+  display: grid;
+  grid-template-columns: 7fr 3fr; /* 使用fr单位代替百分比，确保总宽度计算正确 */
+  grid-template-rows: auto 1fr;
+  gap: 12px; 
+  height: 70vh;
+  box-sizing: border-box;
+  padding: 12px; /* 添加内边距来创建红色边框效果 */
+}
+
+/* === 网格区域命名 === */
+.scoring-area {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.action-area {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.preview-area {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.feedback-area {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+/* === 统一的卡片样式 === */
+.area-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 12px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+/* === 预览区域特殊布局 === */
+.preview-area .area-card {
+  padding: 0;
   gap: 0;
 }
 
-/* === 评分区域样式 === */
-.scoring-section {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 10px 15px;
-  flex: 0 0 70%;
-}
-
-.score-group {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-bottom: 0;
-}
-
-.score-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+/* === 子组件样式重置 === */
+.scoring-area :deep(.scoring-section),
+.action-area :deep(.action-section),
+.feedback-area :deep(.feedback-panel) {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   flex: 1;
 }
 
-.score-label {
-  font-size: 11px;
-  color: #666;
-  font-weight: 500;
-}
-
-.score-display {
-  display: flex;
-  align-items: baseline;
-  gap: 3px;
-}
-
-.score-value {
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-}
-
-.score-unit {
-  font-size: 12px;
-  color: #999;
-}
-
-.score-input-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.score-input {
-  width: 100px;
-}
-
-.score-input :deep(.el-input__inner) {
-  text-align: center;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.score-actions-inline {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-}
-
-/* === 操作区域样式 === */
-.action-section {
-  display: flex;
-  flex: 0 0 30%;
-  justify-content: flex-start;
-}
-
-.action-group {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  padding: 10px 15px;
-  width: 100%;
-  margin-right: 0;
-}
-
-.action-buttons {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-}
-
-/* === 高亮工具栏样式 === */
-.highlight-toolbar {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
+.preview-area :deep(.highlight-toolbar) {
+  background: #f8f9fa;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
   border-radius: 6px 6px 0 0;
+  margin: 0;
   padding: 10px 15px;
-  border-bottom: none;
 }
 
-.highlight-toolbar .tool-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-start;
+.preview-area :deep(.paper-preview) {
+  background: #f8f9fa;
+  border: none;
+  border-radius: 0 0 6px 6px;
+  margin: 0;
+  flex: 1;
+  padding: 20px;
 }
 
-.tool-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* === 响应式：像 Header 一样简单 === */
+@media (max-width: 1080px) {
+  .content-grid {
+    grid-template-columns: 1fr; /* 变成单列 */
+    grid-template-rows: auto auto auto auto; /* 四行 */
+    height: auto; /* 高度自适应 */
+  }
+  
+  .scoring-area { grid-column: 1; grid-row: 1; }
+  .action-area { grid-column: 1; grid-row: 2; }
+  .preview-area { grid-column: 1; grid-row: 3; }
+  .feedback-area { grid-column: 1; grid-row: 4; }
+  
+  .preview-area,
+  .feedback-area {
+    min-height: 300px;
+  }
 }
 
-.tool-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* === 按钮状态样式 === */
-.active {
-  background-color: #409eff !important;
-  color: white !important;
-}
-
-.el-button:disabled {
-  opacity: 0.5;
-}
-</style> 
+@media (max-width: 480px) {
+  .page-content {
+    padding: 8px;
+    margin-top: 8px;
+  }
+  
+  .content-grid {
+    gap: 8px;
+  }
+  
+  .area-card {
+    padding: 8px;
+  }
+  
+  .preview-area .area-card {
+    padding: 0;
+  }
+  
+  .preview-area :deep(.highlight-toolbar) {
+    padding: 8px 12px;
+  }
+  
+  .preview-area :deep(.paper-preview) {
+    padding: 15px;
+  }
+}</style>

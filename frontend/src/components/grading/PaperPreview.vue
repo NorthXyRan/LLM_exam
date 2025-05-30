@@ -98,16 +98,15 @@ defineExpose({
 </script>
 
 <style scoped>
-/* === 试卷预览主容器 === */
+/* === 试卷预览内部样式 === */
 .paper-preview {
+  /* 移除装饰性样式，让父容器控制外观 */
   flex: 1;
-  min-height: 400px;
-  background-color: #f8f9fa;
-  border-radius: 0 0 4px 4px;
   padding: 20px;
   user-select: text;
-  border: 1px solid #e9ecef;
-  border-top: none;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 /* === 内容样式 === */
@@ -143,5 +142,24 @@ defineExpose({
 ::-moz-selection {
   background-color: #409eff;
   color: white;
+}
+
+/* === 滚动条样式 === */
+.paper-preview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.paper-preview::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.paper-preview::-webkit-scrollbar-thumb {
+  background: rgba(64, 158, 255, 0.6);
+  border-radius: 3px;
+}
+
+.paper-preview::-webkit-scrollbar-thumb:hover {
+  background: rgba(64, 158, 255, 0.8);
 }
 </style> 
