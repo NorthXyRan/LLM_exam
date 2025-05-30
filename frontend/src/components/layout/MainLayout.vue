@@ -33,6 +33,12 @@
             @close="handleClose"
             @select="handleSelect"
           >
+            <!-- 主界面 -->
+            <el-menu-item index="0">
+              <el-icon><House /></el-icon>
+              <template #title>主界面</template>
+            </el-menu-item>
+            
             <!-- 文件上传 -->
             <el-menu-item index="1">
               <el-icon><Upload /></el-icon>
@@ -81,13 +87,14 @@
 
 <script setup lang="ts">
 import {
-    DataAnalysis,
-    Document,
-    Expand,
-    Fold,
-    QuestionFilled,
-    Setting,
-    Upload,
+  DataAnalysis,
+  Document,
+  Expand,
+  Fold,
+  House,
+  QuestionFilled,
+  Setting,
+  Upload,
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
@@ -101,6 +108,8 @@ const isCollapse = ref(false)
 const activeMenu = computed(() => {
   const path = route.path
   switch (path) {
+    case '/':
+      return '0'
     case '/uploading':
       return '1'
     case '/grading':
@@ -112,7 +121,7 @@ const activeMenu = computed(() => {
     case '/help':
       return '5'
     default:
-      return '1'
+      return '0'
   }
 })
 
@@ -133,6 +142,10 @@ const handleSelect = (index: string) => {
   
   // 根据选择的菜单项跳转到对应页面
   switch(index) {
+    case '0':
+      ElMessage.info('跳转到主界面')
+      router.push('/')
+      break
     case '1':
       ElMessage.info('跳转到文件上传页面')
       router.push('/uploading')
