@@ -225,7 +225,7 @@ const handleStudentPapersUpload = (file, fileList) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 24px 20px;
+  padding: 16px 24px 16px;
   background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
   margin: -20px -20px 0;
   color: white;
@@ -276,7 +276,7 @@ const handleStudentPapersUpload = (file, fileList) => {
 }
 
 .student-content {
-  padding: 24px 20px 20px;
+  padding: 4px 20px 4px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -328,8 +328,8 @@ const handleStudentPapersUpload = (file, fileList) => {
   border-radius: 8px;
   background: #faf5ff;
   transition: all 0.3s ease;
-  padding: 16px;
-  min-height: 80px;
+  padding: 4px;
+  min-height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -343,12 +343,12 @@ const handleStudentPapersUpload = (file, fileList) => {
 .upload-content {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 
 .upload-icon {
-  font-size: 32px;
+  font-size: 28px;
   color: #7c3aed;
   opacity: 0.8;
   flex-shrink: 0;

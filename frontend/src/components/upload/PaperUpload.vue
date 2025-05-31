@@ -30,61 +30,32 @@
     </template>
     
     <div class="paper-content">
-      <div class="upload-options">
-        <!-- 选择已有试卷 -->
-        <div class="option-item">
-          <div class="option-header">
-            <el-icon class="option-icon"><folder /></el-icon>
-            <h4>选择已有试卷</h4>
-          </div>
-          <el-select 
-            v-model="selectedExistingPaper" 
-            placeholder="从试卷库中选择..."
-            size="large"
-            class="paper-select"
-            @change="handleExistingPaperChange"
-          >
-            <el-option
-              v-for="paper in existingPapers"
-              :key="paper.id"
-              :label="paper.name"
-              :value="paper.id"
-            >
-              <div class="option-content">
-                <span class="option-name">{{ paper.name }}</span>
-                <span class="option-meta">{{ paper.questionCount }}道题目</span>
-              </div>
-            </el-option>
-          </el-select>
+      <!-- 上传新试卷 -->
+      <div class="upload-section">
+        <div class="section-header">
+          <el-icon class="section-icon"><upload /></el-icon>
+          <h4>上传试卷文件</h4>
         </div>
-        
-        <!-- 上传新试卷 -->
-        <div class="option-item">
-          <div class="option-header">
-            <el-icon class="option-icon"><upload /></el-icon>
-            <h4>上传新试卷</h4>
-          </div>
-          <el-upload
-            v-model:file-list="paperFileList"
-            class="paper-upload"
-            :auto-upload="false"
-            :on-change="handlePaperUpload"
-            :on-remove="handlePaperRemove"
-            :before-remove="beforePaperRemove"
-            accept=".txt,.doc,.docx,.pdf"
-            :limit="1"
-            :on-exceed="handlePaperExceed"
-            drag
-          >
-            <div class="upload-content">
-              <el-icon class="upload-icon"><upload-filled /></el-icon>
-              <div class="upload-text">
-                <p class="upload-main">点击或拖拽文件到此处</p>
-                <p class="upload-hint">支持 TXT、DOC、DOCX、PDF 格式</p>
-              </div>
+        <el-upload
+          v-model:file-list="paperFileList"
+          class="paper-upload"
+          :auto-upload="false"
+          :on-change="handlePaperUpload"
+          :on-remove="handlePaperRemove"
+          :before-remove="beforePaperRemove"
+          accept=".txt,.doc,.docx,.pdf"
+          :limit="1"
+          :on-exceed="handlePaperExceed"
+          drag
+        >
+          <div class="upload-content">
+            <el-icon class="upload-icon"><upload-filled /></el-icon>
+            <div class="upload-text">
+              <p class="upload-main">点击或拖拽文件到此处</p>
+              <p class="upload-hint">支持 TXT、DOC、DOCX、PDF 格式</p>
             </div>
-          </el-upload>
-        </div>
+          </div>
+        </el-upload>
       </div>
       
       <!-- 当前试卷状态 -->
@@ -128,7 +99,6 @@ import {
   CircleCheckFilled,
   Clock,
   Document,
-  Folder,
   Refresh,
   Upload,
   UploadFilled
@@ -141,16 +111,11 @@ const props = defineProps({
   examPaper: {
     type: Object,
     required: true
-  },
-  existingPapers: {
-    type: Array,
-    required: true
   }
 })
 
 // Emits
 const emit = defineEmits([
-  'paper-selected',
   'paper-uploaded', 
   'paper-removed',
   'preview-paper',
@@ -158,21 +123,11 @@ const emit = defineEmits([
 ])
 
 // Local state
-const selectedExistingPaper = ref('')
 const paperFileList = ref([])
 
 // Methods
-const handleExistingPaperChange = (paperId) => {
-  const paper = props.existingPapers.find(p => p.id === paperId)
-  if (paper) {
-    emit('paper-selected', paper)
-    paperFileList.value = []
-  }
-}
-
 const handlePaperUpload = (file, fileList) => {
   emit('paper-uploaded', file)
-  selectedExistingPaper.value = ''
 }
 
 const handlePaperRemove = () => {
@@ -215,7 +170,7 @@ const handlePaperExceed = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 24px 20px;
+  padding: 16px 24px 16px;  /* 试卷上传卡片头部的间距 */
   background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
   margin: -20px -20px 0;
   color: white;
@@ -251,7 +206,7 @@ const handlePaperExceed = () => {
 }
 
 .status-tag {
-  padding: 8px 16px;  /* 已就绪 */
+  padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
   display: flex;
@@ -266,110 +221,58 @@ const handlePaperExceed = () => {
 }
 
 .paper-content {
-  padding: 6px 6px 10px;
+  padding: 4px 20px 4px;
   display: flex;
   flex-direction: column;
-  gap: 12px;  /* 文字框和两个按钮之间的间距 */
 }
 
-.upload-options {
-  display: flex;
-  align-items: stretch;
-  gap: 24px;  /* 上传选项之间的间距 */
-}
-
-.option-item {
-  flex: 1;
+.upload-section {
   background: white;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   border: 1px solid #f0f4f8;
   transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
 }
 
-.option-item:hover {
+.upload-section:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
-.option-header {
+.section-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.option-icon {
+.section-icon {
   color: #4f46e5;
   font-size: 18px;
 }
 
-.option-item h4 {
+.section-header h4 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #2c3e50;
 }
 
-.paper-select {
-  width: 100%;
-  flex: 1;
-}
-
-.paper-select :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  border: 2px solid #e0e7ff;
-  transition: all 0.3s ease;
-  min-height: 40px;
-}
-
-.paper-select :deep(.el-input__wrapper:hover) {
-  border-color: #4f46e5;
-}
-
-.paper-select :deep(.el-input__wrapper.is-focus) {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-.option-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.option-name {
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.option-meta {
-  font-size: 12px;
-  color: #8590a6;
-  background: #f8fafc;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
 .paper-upload {
   width: 100%;
-  flex: 1;
 }
 
 .paper-upload :deep(.el-upload-dragger) {
   border: 2px dashed #c7d2fe;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #f8fafc;
   transition: all 0.3s ease;
-  padding: 12px 16px;
-  height: 40px;
+  min-height: 100px;
+  padding: 4px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  box-sizing: border-box;
+  justify-content: center;
 }
 
 .paper-upload :deep(.el-upload-dragger:hover) {
@@ -379,35 +282,33 @@ const handlePaperExceed = () => {
 
 .upload-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
   width: 100%;
 }
 
 .upload-icon {
-  font-size: 20px;
+  font-size: 36px;
   color: #4f46e5;
   opacity: 0.8;
-  flex-shrink: 0;
 }
 
 .upload-text {
-  text-align: left;
-  flex: 1;
+  text-align: center;
 }
 
 .upload-main {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: #2c3e50;
-  margin: 0 0 1px 0;
+  margin: 0 0 4px 0;
 }
 
 .upload-hint {
-  font-size: 11px;
+  font-size: 14px;
   color: #8590a6;
   margin: 0;
-  line-height: 1.2;
 }
 
 .current-status {
@@ -473,11 +374,6 @@ const handlePaperExceed = () => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .upload-options {
-    flex-direction: column;
-    gap: 24px;
-  }
-  
   .status-content {
     flex-direction: column;
     align-items: flex-start;

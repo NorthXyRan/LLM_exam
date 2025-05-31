@@ -3,8 +3,6 @@
     <!-- Paper Upload Component -->
     <PaperUpload 
       :exam-paper="examPaper"
-      :existing-papers="existingPapers"
-      @paper-selected="handlePaperSelected"
       @paper-uploaded="handlePaperUploaded"
       @paper-removed="handlePaperRemoved"
       @preview-paper="handlePreviewPaper"
@@ -14,10 +12,8 @@
     <!-- Answer Upload Component -->
     <AnswerUpload 
       :reference-answer="referenceAnswer"
-      :existing-answers="existingAnswers"
       :exam-paper="examPaper"
       :disabled="!examPaper.name"
-      @answer-selected="handleAnswerSelected"
       @answer-uploaded="handleAnswerUploaded"
       @answer-removed="handleAnswerRemoved"
       @preview-answer="handlePreviewAnswer"
@@ -63,12 +59,6 @@ const examPaper = ref({
   questionCount: 0
 })
 
-const existingPapers = ref([
-  { id: 1, name: '语文期末考试', questionCount: 5 },
-  { id: 2, name: '数学月考', questionCount: 8 },
-  { id: 3, name: '历史测验', questionCount: 3 }
-])
-
 // 参考答案相关数据
 const referenceAnswer = ref({
   name: '',
@@ -76,12 +66,6 @@ const referenceAnswer = ref({
   matched: false,
   answerCount: 0
 })
-
-const existingAnswers = ref([
-  { id: 1, name: '语文期末考试答案', paperId: 1 },
-  { id: 2, name: '数学月考答案', paperId: 2 },
-  { id: 3, name: '历史测验答案', paperId: 3 }
-])
 
 // 学生答卷相关数据
 const studentPapers = ref([])
@@ -101,16 +85,6 @@ const allReady = computed(() => {
 })
 
 // Paper 相关事件处理
-const handlePaperSelected = (paper) => {
-  examPaper.value = {
-    name: paper.name,
-    status: 'ready',
-    questionCount: paper.questionCount
-  }
-  resetAnswerState()
-  ElMessage.success(`已选择试卷：${paper.name}`)
-}
-
 const handlePaperUploaded = (file) => {
   ElMessage.info('开始解析试卷...')
   setTimeout(() => {
@@ -143,17 +117,6 @@ const handleReparsePaper = () => {
 }
 
 // Answer 相关事件处理
-const handleAnswerSelected = (answer) => {
-  referenceAnswer.value = {
-    name: answer.name,
-    status: 'ready',
-    matched: true,
-    answerCount: examPaper.value.questionCount
-  }
-  resetStudentPapers()
-  ElMessage.success(`已选择答案：${answer.name}`)
-}
-
 const handleAnswerUploaded = (file) => {
   ElMessage.info('开始解析参考答案...')
   setTimeout(() => {

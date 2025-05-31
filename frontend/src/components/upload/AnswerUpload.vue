@@ -49,61 +49,32 @@
       />
       
       <template v-else>
-        <div class="upload-options">
-          <!-- 选择已有答案 -->
-          <div class="option-item">
-            <div class="option-header">
-              <el-icon class="option-icon"><folder /></el-icon>
-              <h4>选择已有答案</h4>
-            </div>
-            <el-select 
-              v-model="selectedExistingAnswer" 
-              placeholder="从答案库中选择..."
-              size="large"
-              class="answer-select"
-              @change="handleExistingAnswerChange"
-            >
-              <el-option
-                v-for="answer in availableAnswers"
-                :key="answer.id"
-                :label="answer.name"
-                :value="answer.id"
-              >
-                <div class="option-content">
-                  <span class="option-name">{{ answer.name }}</span>
-                  <span class="option-meta">{{ answer.answerCount }}道答案</span>
-                </div>
-              </el-option>
-            </el-select>
+        <!-- 上传新答案 -->
+        <div class="upload-section">
+          <div class="section-header">
+            <el-icon class="section-icon"><upload /></el-icon>
+            <h4>上传答案文件</h4>
           </div>
-          
-          <!-- 上传新答案 -->
-          <div class="option-item">
-            <div class="option-header">
-              <el-icon class="option-icon"><upload /></el-icon>
-              <h4>上传新答案</h4>
-            </div>
-            <el-upload
-              v-model:file-list="answerFileList"
-              class="answer-upload"
-              :auto-upload="false"
-              :on-change="handleAnswerUpload"
-              :on-remove="handleAnswerRemove"
-              :before-remove="beforeAnswerRemove"
-              accept=".txt,.doc,.docx"
-              :limit="1"
-              :on-exceed="handleAnswerExceed"
-              drag
-            >
-              <div class="upload-content">
-                <el-icon class="upload-icon"><upload-filled /></el-icon>
-                <div class="upload-text">
-                  <p class="upload-main">点击或拖拽文件到此处</p>
-                  <p class="upload-hint">支持 TXT、DOC、DOCX 格式</p>
-                </div>
+          <el-upload
+            v-model:file-list="answerFileList"
+            class="answer-upload"
+            :auto-upload="false"
+            :on-change="handleAnswerUpload"
+            :on-remove="handleAnswerRemove"
+            :before-remove="beforeAnswerRemove"
+            accept=".txt,.doc,.docx"
+            :limit="1"
+            :on-exceed="handleAnswerExceed"
+            drag
+          >
+            <div class="upload-content">
+              <el-icon class="upload-icon"><upload-filled /></el-icon>
+              <div class="upload-text">
+                <p class="upload-main">点击或拖拽文件到此处</p>
+                <p class="upload-hint">支持 TXT、DOC、DOCX 格式</p>
               </div>
-            </el-upload>
-          </div>
+            </div>
+          </el-upload>
         </div>
         
         <!-- 当前答案状态 -->
@@ -157,21 +128,16 @@ import {
   Clock,
   DocumentChecked,
   Edit,
-  Folder,
   Upload,
   UploadFilled
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 // Props
 const props = defineProps({
   referenceAnswer: {
     type: Object,
-    required: true
-  },
-  existingAnswers: {
-    type: Array,
     required: true
   },
   examPaper: {
@@ -186,7 +152,6 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits([
-  'answer-selected',
   'answer-uploaded',
   'answer-removed',
   'preview-answer',
@@ -194,29 +159,11 @@ const emit = defineEmits([
 ])
 
 // Local state
-const selectedExistingAnswer = ref('')
 const answerFileList = ref([])
 
-// Computed
-const availableAnswers = computed(() => {
-  // 这里可以根据当前试卷过滤相关答案
-  return props.existingAnswers
-})
-
 // Methods
-const handleExistingAnswerChange = (answerId) => {
-  const answer = props.existingAnswers.find(a => a.id === answerId)
-  if (answer) {
-    emit('answer-selected', answer)
-    // 清空文件列表
-    answerFileList.value = []
-  }
-}
-
 const handleAnswerUpload = (file, fileList) => {
   emit('answer-uploaded', file)
-  // 清空选择的已有答案
-  selectedExistingAnswer.value = ''
 }
 
 const handleAnswerRemove = (file, fileList) => {
@@ -261,7 +208,7 @@ const handleAnswerExceed = (files, fileList) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 24px 20px;
+  padding: 16px 24px 16px;
   background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
   margin: -20px -20px 0;
   color: white;
@@ -312,7 +259,7 @@ const handleAnswerExceed = (files, fileList) => {
 }
 
 .answer-content {
-  padding: 24px 20px 20px;
+  padding: 4px 20px 4px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -322,104 +269,53 @@ const handleAnswerExceed = (files, fileList) => {
   border-radius: 12px;
 }
 
-.upload-options {
-  display: flex;
-  align-items: stretch;
-  gap: 24px;
-}
-
-.option-item {
-  flex: 1;
+.upload-section {
   background: white;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   border: 1px solid #f0f4f8;
   transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
 }
 
-.option-item:hover {
+.upload-section:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
-.option-header {
+.section-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.option-icon {
+.section-icon {
   color: #0891b2;
   font-size: 18px;
 }
 
-.option-item h4 {
+.section-header h4 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #2c3e50;
 }
 
-.answer-select {
-  width: 100%;
-  flex: 1;
-}
-
-.answer-select :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  border: 2px solid #cffafe;
-  transition: all 0.3s ease;
-  min-height: 40px;
-}
-
-.answer-select :deep(.el-input__wrapper:hover) {
-  border-color: #0891b2;
-}
-
-.answer-select :deep(.el-input__wrapper.is-focus) {
-  border-color: #0891b2;
-  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
-}
-
-.option-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.option-name {
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.option-meta {
-  font-size: 12px;
-  color: #8590a6;
-  background: #f8fafc;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
 .answer-upload {
   width: 100%;
-  flex: 1;
 }
 
 .answer-upload :deep(.el-upload-dragger) {
   border: 2px dashed #a5f3fc;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #f0fdfa;
   transition: all 0.3s ease;
-  padding: 16px;
-  min-height: 40px;
+  padding: 4px;
+  min-height: 100px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  box-sizing: border-box;
+  justify-content: center;
 }
 
 .answer-upload :deep(.el-upload-dragger:hover) {
@@ -429,35 +325,33 @@ const handleAnswerExceed = (files, fileList) => {
 
 .upload-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
   width: 100%;
 }
 
 .upload-icon {
-  font-size: 24px;
+  font-size: 36px;
   color: #0891b2;
   opacity: 0.8;
-  flex-shrink: 0;
 }
 
 .upload-text {
-  text-align: left;
-  flex: 1;
+  text-align: center;
 }
 
 .upload-main {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: #2c3e50;
-  margin: 0 0 1px 0;
+  margin: 0 0 4px 0;
 }
 
 .upload-hint {
-  font-size: 11px;
+  font-size: 14px;
   color: #8590a6;
   margin: 0;
-  line-height: 1.2;
 }
 
 .current-status {
@@ -537,11 +431,6 @@ const handleAnswerExceed = (files, fileList) => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .upload-options {
-    flex-direction: column;
-    gap: 24px;
-  }
-  
   .status-content {
     flex-direction: column;
     align-items: flex-start;
