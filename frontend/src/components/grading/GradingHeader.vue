@@ -149,7 +149,6 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
 
 <style scoped>
 .page-header {
-  margin-bottom: 12px;
   background: white;
   padding: 10px 12px;
   border-radius: 24px;

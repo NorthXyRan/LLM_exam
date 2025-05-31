@@ -212,6 +212,25 @@ const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => 
 /* === 主页面容器 === */
 .grading-page {
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 6px;
+}
+
+/* === 响应式设计 === */
+@media (max-width: 768px) {
+  .grading-page {
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grading-page {
+    gap: 8px;
+    padding: 8px;
+  }
 }
 
 /* === 对话框内容样式 === */

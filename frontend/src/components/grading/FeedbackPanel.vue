@@ -1,6 +1,6 @@
 <template>
   <div class="feedback-panel">
-    <!-- 标题区域 -->
+    <!-- 标题区域 - 只在无选中文本时显示 -->
     <div class="feedback-header" v-if="!selectedHighlight">
       <h3>给分理由</h3>
     </div>
@@ -9,10 +9,6 @@
     <div class="feedback-content">
       <!-- 选中文本显示 -->
       <div class="selected-text-display" v-if="selectedHighlight">
-        <div class="text-preview">
-          <span class="label">选中文本：</span>
-          <span class="text">{{ selectedHighlight.text }}</span>
-        </div>
         <div class="highlight-type">
           <span class="label">标记类型：</span>
           <el-tag :type="getTagType(selectedHighlight.type)" size="small">
@@ -21,24 +17,30 @@
         </div>
       </div>
       
-      <!-- 给分理由输入框 -->
-      <div class="reason-input-area">
+      <!-- 给分理由区域 -->
+      <div class="reason-area">
+        <!-- 输入框模式 -->
         <el-input
+          v-if="isEditing"
           v-model="editableReason"
           type="textarea"
-          placeholder="选择左侧文本查看 AI 给分理由，或手动输入理由..."
+          placeholder="请输入给分理由..."
           resize="none"
           class="reason-textarea"
         />
+        
+        <!-- 显示模式 -->
+        <div v-else class="reason-display">
+          <div class="reason-content-text">
+            {{ displayReason }}
+          </div>
+        </div>
       </div>
     </div>
     
     <!-- 操作按钮 -->
     <div class="action-buttons">
-      <el-button
-        @click="modifyReason"
-        :disabled="!selectedHighlight"
-      >
+      <el-button @click="modifyReason">
         修改
       </el-button>
       <el-button
@@ -61,7 +63,7 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 interface HighlightData {
   text: string
@@ -86,44 +88,48 @@ const emits = defineEmits<{
 
 // 可编辑的理由文本
 const editableReason = ref('')
+// 是否处于编辑模式
+const isEditing = ref(false)
+
+// 显示的理由内容
+const displayReason = computed(() => {
+  if (props.selectedHighlight && editableReason.value) {
+    return editableReason.value
+  }
+  return '选择左侧文本查看 AI 给分理由，或点击修改按钮手动输入...'
+})
 
 // 监听选中的高亮变化
 watch(() => props.selectedHighlight, (newHighlight) => {
-  if (newHighlight?.aiReason) {
-    editableReason.value = newHighlight.aiReason
-  } else {
-    editableReason.value = ''
-  }
+  editableReason.value = newHighlight?.aiReason || ''
+  isEditing.value = false
 }, { immediate: true })
+
+// 类型映射
+const TYPE_CONFIG = {
+  correct: { tag: 'success', label: '正确' },
+  wrong: { tag: 'danger', label: '错误' },
+  unclear: { tag: 'warning', label: '模糊' },
+  redundant: { tag: 'info', label: '冗余' }
+} as const
 
 // 获取标签类型
 const getTagType = (type: string) => {
-  const typeMap = {
-    correct: 'success',
-    wrong: 'danger',
-    unclear: 'warning',
-    redundant: 'info'
-  }
-  return typeMap[type as keyof typeof typeMap] || 'default'
+  return TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.tag || 'default'
 }
 
 // 获取类型标签
 const getTypeLabel = (type: string) => {
-  const labelMap = {
-    correct: '正确',
-    wrong: '错误',
-    unclear: '模糊',
-    redundant: '冗余'
-  }
-  return labelMap[type as keyof typeof labelMap] || type
+  return TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.label || type
 }
 
 // 修改理由
 const modifyReason = () => {
+  isEditing.value = true
   if (props.selectedHighlight) {
     emits('modifyReason', props.selectedHighlight)
-    ElMessage.info('可以在文本框中修改理由')
   }
+  ElMessage.info('现在可以编辑理由内容')
 }
 
 // 保存理由
@@ -132,13 +138,16 @@ const saveReason = () => {
     ElMessage.warning('请输入理由内容')
     return
   }
+  
+  isEditing.value = false
+  
   if (props.selectedHighlight) {
     emits('saveReason', {
       highlight: props.selectedHighlight,
       reason: editableReason.value.trim()
     })
-    ElMessage.success('理由已保存')
   }
+  ElMessage.success('理由已保存')
 }
 
 // 提交理由
@@ -195,8 +204,7 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 15px;
-  overflow: hidden;
-  padding: 20px;
+  padding: 10px;
 }
 
 /* 当有选中文本时（header消失），减少上边距 */
@@ -206,50 +214,49 @@ defineExpose({
 
 /* === 选中文本显示区域 === */
 .selected-text-display {
-  background: transparent;
-  border: 1px solid #e4e7ed;
-  border-radius: 24px;
-  padding: 12px;
+  padding: 6px 0 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.text-preview,
 .highlight-type {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
-}
-
-.text-preview:last-child,
-.highlight-type:last-child {
-  margin-bottom: 0;
 }
 
 .label {
-  font-size: 12px;
+  font-size: 14px;
   color: #909399;
   font-weight: 500;
   min-width: 70px;
   white-space: nowrap;
 }
 
-.text {
-  font-size: 13px;
-  color: #333;
-  background: #f5f7fa;
-  padding: 2px 6px;
-  border-radius: 12px;
-  flex: 1;
-  word-break: break-word;
-}
-
-/* === 给分理由输入区域 === */
-.reason-input-area {
+/* === 给分理由区域 === */
+.reason-area {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
+/* 理由显示模式 */
+.reason-display {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.reason-content-text {
+  flex: 1;
+  padding: 16px 0;
+  line-height: 1.6;
+  color: #333;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 输入框模式 */
 .reason-textarea {
   flex: 1;
   display: flex;
@@ -275,7 +282,7 @@ defineExpose({
   display: flex;
   justify-content: center;
   gap: 16px;
-  padding: 20px;
+  padding: 16px;
   background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
   margin: 0 -20px -20px;
   border-radius: 0 0 24px 24px;
@@ -327,15 +334,11 @@ defineExpose({
 @media (max-width: 768px) {
   .feedback-header {
     padding: 16px 20px 12px;
+    margin: -15px -15px 0;
   }
   
   .feedback-header h3 {
     font-size: 18px;
-  }
-  
-  .feedback-header {
-    padding: 16px 20px 12px;
-    margin: -15px -15px 0;
   }
   
   .feedback-content {

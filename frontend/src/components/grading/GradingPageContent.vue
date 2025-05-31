@@ -124,12 +124,23 @@ const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unc
   }
 
   // 模拟 AI 给分理由
-  const aiReasons = {
-    correct: '该答案准确回答了问题的核心要点，逻辑清晰，表达规范。体现了学生对知识点的准确理解。',
-    wrong: '该答案存在明显的概念错误或逻辑漏洞，与标准答案不符。需要进一步学习相关知识点。',
-    unclear: '该答案的表述不够清晰明确，可能存在歧义或不完整的地方。建议进一步阐述或补充说明。',
-    redundant: '该部分内容与题目要求不符或存在不必要的重复，应当删除或精简以提高答案质量。'
-  }
+const aiReasons = {
+  correct: `该答案准确回答了问题的核心要点，
+逻辑清晰，
+表达规范。
+体
+现
+了
+学
+生
+对
+知
+识点
+的准确理解。`,
+  wrong: '该答案存在明显的概念错误或逻辑漏洞，与标准答案不符。需要进一步学习相关知识点。',
+  unclear: '该答案的表述不够清晰明确，可能存在歧义或不完整的地方。建议进一步阐述或补充说明。',
+  redundant: '该部分内容与题目要求不符或存在不必要的重复，应当删除或精简以提高答案质量。'
+}
 
   selectedHighlight.value = {
     text: markData.text,
@@ -194,9 +205,9 @@ const handleSubmitReason = (data: any) => {
 .content-grid {
   display: grid;
   grid-template-columns: 7fr 3fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 80px auto;  /* 评分区域和操作区域固定高度设置为80px，下面自动 */
   gap: 12px;
-  height: 70vh;
+  min-height: 50vh;
   padding: 12px;
 }
 
@@ -224,6 +235,7 @@ const handleSubmitReason = (data: any) => {
 .preview-area .area-card {
   padding: 0;
 }
+
 
 /* === 统一按钮圆角 === */
 .page-content :deep(.el-button) {
@@ -264,7 +276,6 @@ const handleSubmitReason = (data: any) => {
   .content-grid {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, auto);
-    height: auto;
   }
   
   .scoring-area { grid-area: 1; }

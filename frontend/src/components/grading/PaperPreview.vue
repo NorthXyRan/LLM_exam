@@ -5,10 +5,6 @@
         <div class="preview-placeholder">
           <p>试卷预览内容将在这里显示</p>
           <p>选中文本后可以使用上方的标记工具进行评价</p>
-          <div class="sample-text">
-            <h4>示例学生答案：</h4>
-            <p>这是一个示例的学生答案文本，你可以选中任意部分进行标记。比如这句话可能是正确的，而这句话可能存在错误。还有一些内容可能比较模糊，需要进一步澄清。</p>
-          </div>
         </div>
       </slot>
     </div>
@@ -45,7 +41,6 @@ const handleTextSelection = () => {
       text: selectedText.value,
       hasSelection: true
     })
-    
     // 高亮模式下自动标记为正确（示例）
     if (props.highlightMode) {
       setTimeout(() => {
@@ -68,21 +63,21 @@ const markAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
     ElMessage.warning('请先选中要标记的文本')
     return
   }
-  
+
   const markLabels = {
     correct: '正确',
     wrong: '错误',
     unclear: '模糊',
     redundant: '冗余'
   }
-  
+
   emits('markAnswer', {
     text: selectedText.value,
     type
   })
-  
+
   ElMessage.success(`已标记为"${markLabels[type]}"：${selectedText.value.substring(0, 20)}...`)
-  
+
   // 清除选择
   window.getSelection()?.removeAllRanges()
   hasSelectedText.value = false
@@ -119,28 +114,15 @@ defineExpose({
   min-height: 0;
 }
 
-/* === 内容样式 === */
+/* === 占位内容样式 === */
 .preview-placeholder {
   color: #666;
   line-height: 1.6;
 }
 
-.sample-text {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: white;
-  border-radius: 4px;
-  border-left: 4px solid #409eff;
-}
-
-.sample-text h4 {
-  margin: 0 0 10px 0;
-  color: #333;
-}
-
-.sample-text p {
+.preview-placeholder p {
   margin: 8px 0;
-  line-height: 1.6;
+  font-size: 14px;
 }
 
 /* === 文本选择样式 === */
@@ -177,11 +159,6 @@ defineExpose({
 @media (max-width: 768px) {
   .preview-content {
     padding: 15px;
-  }
-  
-  .sample-text {
-    padding: 12px;
-    margin-top: 15px;
   }
 }
 </style>
