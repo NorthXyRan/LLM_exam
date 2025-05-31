@@ -2,14 +2,12 @@
 
 ## 上传组件
 
-```
 upload/
 ├── UploadingPage.vue          # 主上传页面（父组件）
 ├── upload/
-│   ├── PaperUpload.vue       # 试卷上传组件
-│   ├── AnswerUpload.vue      # 参考答案上传组件
-│   └── StudentUpload.vue     # 学生答卷上传组件
-```
+    ├── PaperUpload.vue       # 试卷上传组件
+    ├── AnswerUpload.vue      # 参考答案上传组件
+    └── StudentUpload.vue     # 学生答卷上传组件
 
 ### 主要功能
 
@@ -33,7 +31,6 @@ upload/
 
 ## 评分组件
 
-```
 GradingPage (主组件)
 ├── GradingHeader (试卷/题目选择导航)
 └── GradingPageContent (具体评分界面)
@@ -42,8 +39,6 @@ GradingPage (主组件)
     ├── HighlightToolbar (标记工具)
     ├── PaperPreview (当前题目内容显示)
     └── FeedbackPanel (理由查看/编辑)
-
-```
 
 ## 结果组件
 
