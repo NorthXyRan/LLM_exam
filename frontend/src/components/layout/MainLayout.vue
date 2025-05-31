@@ -113,8 +113,10 @@ const activeMenu = computed(() => {
       return '1'
     case '/grading':
       return '2'
-    case '/result':
+      case '/result/report':
       return '3-1'
+    case '/result/analysis':
+      return '3-2'
     case '/prompt-setting':
       return '4'
     case '/help':
@@ -155,15 +157,11 @@ const handleSelect = (index: string) => {
       break
     case '3-1':
       ElMessage.info('查看评分报告')
-      router.push('/result')
+      router.push('/result/report')
       break
     case '3-2':
       ElMessage.info('查看详细分析')
-      router.push('/result')
-      break
-    case '3-3':
-      ElMessage.info('查看历史记录')
-      router.push('/result')
+      router.push('/result/analysis')
       break
     case '4':
       ElMessage.info('跳转到Prompt设置页面')
