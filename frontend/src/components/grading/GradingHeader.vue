@@ -226,7 +226,7 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
 }
 
 .select-item.circle {
-  min-width: 32px;
+  width: 32px;
   height: 32px;
   border-radius: 50%;
   display: flex;

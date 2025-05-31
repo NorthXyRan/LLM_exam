@@ -2,7 +2,6 @@
   <div class="action-section">
     <div class="action-group">
       <div class="score-item">
-        <span class="score-label">操作模式</span>
         <div class="action-buttons">
           <el-button type="primary" size="medium" @click="handleStartGrading">
             <el-icon><VideoPlay /></el-icon>
