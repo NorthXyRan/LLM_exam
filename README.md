@@ -12,12 +12,16 @@ npm run dev
 
 ## 上传组件
 
+```
 upload/
-├── UploadingPage.vue          # 主上传页面（父组件）
+├── UploadingPage.vue         # 主上传页面（父组件）
 ├── upload/
     ├── PaperUpload.vue       # 试卷上传组件
     ├── AnswerUpload.vue      # 参考答案上传组件
     └── StudentUpload.vue     # 学生答卷上传组件
+```
+
+
 
 ### 主要功能
 
@@ -41,6 +45,7 @@ upload/
 
 ## 评分组件
 
+```
 GradingPage (主组件)
 ├── GradingHeader (试卷/题目选择导航)
 └── GradingPageContent (具体评分界面)
@@ -49,13 +54,20 @@ GradingPage (主组件)
     ├── HighlightToolbar (标记工具)
     ├── PaperPreview (当前题目内容显示)
     └── FeedbackPanel (理由查看/编辑)
+```
+
+
 
 ## 结果组件
 
+```
 Result.vue (父组件，当前为空：后续路由设置？)
 ├── ReportPage.vue - 评分报告页面
 ├── AnalysisPage.vue - 详细分析页面
 └── PaperViewer.vue - 试卷查看器（弹窗）
+```
+
+
 
 ## prompt 组件
 
