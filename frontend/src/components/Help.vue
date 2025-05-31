@@ -237,8 +237,8 @@ curl -X POST \
                 <el-col :span="12">
                   <el-card class="contact-card">
                     <h3>邮件支持</h3>
-                    <p>support@example.com</p>
-                    <p>我们会在 24 小时内回复您的邮件</p>
+                    <p>2405358569@qq.com</p>
+                    <p>我会在 24 小时内回复您的邮件</p>
                     <el-button @click="sendEmail">
                       <el-icon><Message /></el-icon>
                       发送邮件
@@ -247,37 +247,6 @@ curl -X POST \
                 </el-col>
               </el-row>
               
-              <el-card style="margin-top: 20px;">
-                <h3>提交反馈</h3>
-                <el-form :model="feedbackForm" label-width="100px">
-                  <el-form-item label="反馈类型">
-                    <el-select v-model="feedbackForm.type" placeholder="请选择反馈类型">
-                      <el-option label="功能建议" value="feature" />
-                      <el-option label="问题反馈" value="bug" />
-                      <el-option label="使用咨询" value="question" />
-                      <el-option label="其他" value="other" />
-                    </el-select>
-                  </el-form-item>
-                  
-                  <el-form-item label="联系邮箱">
-                    <el-input v-model="feedbackForm.email" placeholder="请输入您的邮箱" />
-                  </el-form-item>
-                  
-                  <el-form-item label="反馈内容">
-                    <el-input
-                      v-model="feedbackForm.content"
-                      type="textarea"
-                      :rows="4"
-                      placeholder="请详细描述您的问题或建议..."
-                    />
-                  </el-form-item>
-                  
-                  <el-form-item>
-                    <el-button type="primary" @click="submitFeedback">提交反馈</el-button>
-                    <el-button @click="resetFeedback">重置</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-card>
             </div>
           </el-card>
         </el-col>
