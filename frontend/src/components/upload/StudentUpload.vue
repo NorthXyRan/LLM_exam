@@ -280,7 +280,7 @@ const handleStudentPapersUpload = (file, fileList) => {
 }
 
 .student-content {
-  padding: 4px 20px 4px;
+  /* 移除外部padding，由父组件统一管理 */
   display: flex;
   flex-direction: column;
   gap: 24px;

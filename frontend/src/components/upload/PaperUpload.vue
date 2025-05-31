@@ -225,7 +225,7 @@ const handlePaperExceed = () => {
 }
 
 .paper-content {
-  padding: 4px 20px 4px;
+  /* 移除外部padding，由父组件统一管理 */
   display: flex;
   flex-direction: column;
 }
@@ -316,7 +316,7 @@ const handlePaperExceed = () => {
 }
 
 .current-status {
-  margin-top: 4px;
+  margin-top: 20px;
 }
 
 .status-card {

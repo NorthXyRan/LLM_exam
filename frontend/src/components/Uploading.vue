@@ -30,17 +30,9 @@
       @reparse-paper="handleReParseStudentPaper"
     />
 
-    <!-- Bottom Actions -->
-    <div class="bottom-actions">
-      <el-button 
-        v-if="allReady" 
-        type="primary" 
-        size="large"
-        @click="startGrading"
-      >
-        开始批改 ({{ validStudentPapers }}份答卷)
-      </el-button>
-      <el-button @click="resetAll">重置全部</el-button>
+    <!-- 独立的重置按钮 -->
+    <div class="reset-button-container">
+      <el-button type="danger" @click="resetAll">重置全部</el-button>
     </div>
   </div>
 </template>
@@ -76,14 +68,6 @@ const canUploadStudentPapers = computed(() => {
   return examPaper.value.status === 'ready' && referenceAnswer.value.status === 'ready'
 })
 
-const validStudentPapers = computed(() => {
-  return studentPapers.value.filter(paper => paper.valid).length
-})
-
-const allReady = computed(() => {
-  return canUploadStudentPapers.value && validStudentPapers.value > 0
-})
-
 // Paper 相关事件处理
 const handlePaperUploaded = (file) => {
   ElMessage.info('开始解析试卷...')
@@ -93,7 +77,7 @@ const handlePaperUploaded = (file) => {
       status: 'ready',
       questionCount: 5
     }
-    resetAnswerState()
+    resetAnswerAndStudents()
     ElMessage.success('试卷解析完成！')
   }, 2000)
 }
@@ -104,7 +88,7 @@ const handlePaperRemoved = () => {
     status: '',
     questionCount: 0
   }
-  resetAnswerState()
+  resetAnswerAndStudents()
   ElMessage.info('已移除试卷文件')
 }
 
@@ -127,7 +111,7 @@ const handleAnswerUploaded = (file) => {
       matched: matched,
       answerCount: matched ? examPaper.value.questionCount : examPaper.value.questionCount - 1
     }
-    resetStudentPapers()
+    studentPapers.value = []
     if (matched) {
       ElMessage.success('参考答案解析完成，与试卷匹配！')
     } else {
@@ -143,7 +127,7 @@ const handleAnswerRemoved = () => {
     matched: false,
     answerCount: 0
   }
-  resetStudentPapers()
+  studentPapers.value = []
   ElMessage.info('已移除答案文件')
 }
 
@@ -181,20 +165,18 @@ const handleReParseStudentPaper = (paper) => {
   ElMessage.info(`重新解析 ${paper.filename}`)
 }
 
-// 重置方法
-const resetAnswerState = () => {
+// 合并重置方法
+const resetAnswerAndStudents = () => {
   referenceAnswer.value = {
     name: '',
     status: '',
     matched: false,
     answerCount: 0
   }
-}
-
-const resetStudentPapers = () => {
   studentPapers.value = []
 }
 
+// 全部重置
 const resetAll = () => {
   ElMessageBox.confirm('确定要重置所有设置吗？', '确认重置', {
     confirmButtonText: '确定',
@@ -202,17 +184,9 @@ const resetAll = () => {
     type: 'warning'
   }).then(() => {
     examPaper.value = { name: '', status: '', questionCount: 0 }
-    resetAnswerState()
-    resetStudentPapers()
+    resetAnswerAndStudents()
     ElMessage.success('已重置所有设置')
   })
-}
-
-// 开始批改
-const startGrading = () => {
-  ElMessage.success(`准备批改 ${validStudentPapers.value} 份答卷`)
-  // 这里可以触发路由跳转到批改界面
-  // $router.push('/grading')
 }
 </script>
 
@@ -223,48 +197,35 @@ const startGrading = () => {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;  /* 上传组件之间的间距 */
+  gap: 24px;
 }
 
-.bottom-actions {
+/* 重置按钮容器 */
+.reset-button-container {
   display: flex;
   justify-content: center;
-  gap: 20px;
   margin-top: 30px;
-  padding: 20px;
-  border-top: 1px solid #ebeef5;
+}
+
+/* 自定义重置按钮样式 */
+.reset-button-container :deep(.el-button--danger) {
+  background-color: #f97069;
   border-radius: 12px;
-  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
-}
-
-.bottom-actions .el-button {
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 16px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  min-height: 48px;
+  transition: all 0.2s ease;
 }
 
-.bottom-actions .el-button--primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  border: none;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.bottom-actions .el-button--primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.bottom-actions .el-button--default {
-  background: white;
-  border: 2px solid #e5e7eb;
-  color: #6b7280;
-}
-
-.bottom-actions .el-button--default:hover {
-  border-color: #d1d5db;
+.reset-button-container :deep(.el-button--danger:hover) {
+  background-color: #ff2d20;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+}
+
+.reset-button-container :deep(.el-button--danger:active) {
+  transform: translateY(0);
 }
 
 /* 响应式设计 */
@@ -275,13 +236,8 @@ const startGrading = () => {
     gap: 20px;
   }
   
-  .bottom-actions {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .bottom-actions .el-button {
-    width: 100%;
+  .reset-button-container {
+    margin-top: 24px;
   }
 }
 
@@ -289,6 +245,10 @@ const startGrading = () => {
   .uploading-container {
     padding: 12px;
     gap: 16px;
+  }
+  
+  .reset-button-container {
+    margin-top: 20px;
   }
 }
 </style>

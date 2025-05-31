@@ -263,7 +263,7 @@ const handleAnswerExceed = (files, fileList) => {
 }
 
 .answer-content {
-  padding: 4px 20px 4px;
+  /* 移除外部padding，由父组件统一管理 */
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -356,10 +356,6 @@ const handleAnswerExceed = (files, fileList) => {
   font-size: 14px;
   color: #8590a6;
   margin: 0;
-}
-
-.current-status {
-  margin-top: 4px;
 }
 
 .status-card {
