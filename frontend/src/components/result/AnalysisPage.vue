@@ -46,17 +46,15 @@
         </div>
   
         <!-- 分布图表 -->
-        <div class="distribution-chart">
-          <div class="chart-container">
-            <div 
-              v-for="(range, index) in currentQuestion.scoreDistribution" 
-              :key="index"
-              class="chart-bar"
-              :style="{ height: `${(range.count / maxDistributionCount) * 200}px` }"
-            >
-              <div class="bar-count">{{ range.count }}</div>
-              <div class="bar-range">{{ range.range }}</div>
-            </div>
+        <div class="chart-container">
+          <div 
+            v-for="(range, index) in currentQuestion.scoreDistribution" 
+            :key="index"
+            class="chart-bar"
+            :style="{ height: `${(range.count / maxDistributionCount) * 200}px` }"
+          >
+            <div class="bar-count">{{ range.count }}</div>
+            <div class="bar-range">{{ range.range }}</div>
           </div>
         </div>
       </div>
@@ -83,19 +81,19 @@
     </div>
   </template>
   
-  <script setup lang="ts">
-  import { computed, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
   
-  // 题目列表
-  const questionList = ref([
+// 题目列表
+const questionList = ref([
     { id: 1, name: '第一题' },
     { id: 2, name: '第二题' },
     { id: 3, name: '第三题' },
     { id: 4, name: '第四题' }
-  ])
+])
   
-  // 当前题目数据
-  const currentQuestion = ref({
+// 当前题目数据
+const currentQuestion = ref({
     id: 1,
     name: '第一题',
     content: '请分析人工智能在教育领域的应用前景，并结合具体案例说明其优势和挑战。',
@@ -111,10 +109,10 @@
       { range: '10-14', count: 8 },
       { range: '0-9', count: 3 }
     ]
-  })
+})
   
-  // 学生答案数据
-  const studentAnswers = ref([
+// 学生答案数据
+const studentAnswers = ref([
     {
       studentId: '2024001',
       anonymousId: 'A001',
@@ -139,79 +137,79 @@
       score: 8,
       content: '人工智能就是机器人，可以帮助学习。'
     }
-  ])
+])
   
-  // 选择题目
-  const selectQuestion = (questionId: number) => {
+// 选择题目
+const selectQuestion = (questionId: number) => {
     console.log('选择题目:', questionId)
     // 这里可以添加切换题目的逻辑
-  }
+}
   
   // 计算属性
-  const maxDistributionCount = computed(() => 
+const maxDistributionCount = computed(() => 
     Math.max(...currentQuestion.value.scoreDistribution.map(r => r.count))
-  )
-  </script>
+)
+</script>
   
-  <style scoped>
-  .analysis-page {
+<style scoped>
+.analysis-page {
     padding: 20px;
     background: #f5f5f5;
     min-height: 100vh;
-  }
+}
   
-  /* 题目信息 */
-  .question-info {
+/* 题目信息 */
+.question-info {
     background: white;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+}
   
-  .question-info h2 {
+.question-info h2 {
     font-size: 20px;
     font-weight: 600;
     color: rgba(0, 0, 0, 0.87);
     margin: 0 0 12px 0;
-  }
+}
   
-  .question-info p {
+.question-info p {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.6);
     line-height: 1.6;
     margin: 0;
-  }
+}
   
-  /* 分数分析区域 */
-  .score-analysis,
-  .answers-section {
+/* 分数分析区域 */
+.score-analysis,
+.answers-section {
     background: white;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+}
   
-  .score-analysis h2,
-  .answers-section h2 {
+.score-analysis h2,
+.answers-section h2 {
     font-size: 20px;
     font-weight: 600;
     color: rgba(0, 0, 0, 0.87);
     margin-bottom: 20px;
     border-left: 4px solid #007AFF;
     padding-left: 12px;
-  }
+}
   
-  /* 统计卡片 */
-  .stats-cards {
+/* 统计卡片 */
+.stats-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     margin-bottom: 24px;
-  }
+}
   
-  .stat-card {
+.stat-card {
     background: white;
     border-radius: 12px;
     padding: 20px;
@@ -219,37 +217,37 @@
     border: 1px solid #e4e7ed;
     cursor: pointer;
     transition: all 0.3s ease;
-  }
+}
   
-  .stat-card:hover {
+.stat-card:hover {
     border-color: #007AFF;
     transform: translateY(-2px);
-  }
+}
   
-  .stat-value {
+.stat-value {
     font-size: 28px;
     font-weight: 600;
     color: #333;
     margin-bottom: 4px;
-  }
+}
   
-  .stat-label {
+.stat-label {
     font-size: 14px;
     color: #666;
-  }
+}
   
-  /* 分布图表 */
-  .chart-container {
+/* 分布图表 */
+.chart-container {
     display: flex;
     align-items: end;
     justify-content: space-around;
     height: 250px;
     padding: 20px 0;
     background: #fafafa;
-    border-radius: 8px;
-  }
+    border-radius: 12px;
+}
   
-  .chart-bar {
+.chart-bar {
     background: linear-gradient(to top, #409eff, #67c23a);
     border-radius: 4px 4px 0 0;
     width: 60px;
@@ -259,71 +257,73 @@
     justify-content: end;
     align-items: center;
     transition: all 0.3s ease;
-  }
+}
   
-  .chart-bar:hover {
+.chart-bar:hover {
     transform: scale(1.05);
-  }
+}
   
-  .bar-count {
+.bar-count {
     color: white;
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 14px;
-  }
+}
   
-  .bar-range {
+.bar-range {
     position: absolute;
     bottom: -25px;
     font-size: 12px;
     color: rgba(0, 0, 0, 0.6);
     white-space: nowrap;
-  }
+}
   
-  /* 答案列表 */
-  .answers-list {
+/* 答案列表 */
+.answers-list {
     display: grid;
     gap: 16px;
-  }
+}
   
-  .answer-item {
+.answer-item {
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 20px;
     border: 1px solid #e4e7ed;
-  }
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
   
-  .answer-item:hover {
+.answer-item:hover {
     border-color: #007AFF;
     transform: translateY(-2px);
-  }
+}
   
-  .answer-header {
+.answer-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-  }
+}
   
-  .student-id {
+.student-id {
     font-weight: 600;
     color: rgba(0, 0, 0, 0.87);
-  }
+}
   
-  .score {
+.score {
     font-size: 18px;
     font-weight: 600;
     color: #409eff;
-  }
+}
   
-  .answer-preview {
+.answer-preview {
     color: rgba(0, 0, 0, 0.7);
     line-height: 1.6;
     font-size: 14px;
-  }
+}
   
   /* 响应式设计 */
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
     .analysis-page {
       padding: 12px;
     }
@@ -339,5 +339,5 @@
     .chart-bar {
       width: 40px;
     }
-  }
-  </style>
+}
+</style>
