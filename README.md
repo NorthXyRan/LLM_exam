@@ -1,6 +1,14 @@
 # LLM_exam
 
+## How to start ？？？
+
+```
+npm install
+```
+
+```
 npm run dev
+```
 
 ## 上传组件
 
@@ -29,7 +37,7 @@ upload/
 
 1. **文件依赖** : 参考答案上传需要先上传试卷
 2. **学生答卷上传** : 需要试卷和参考答案都上传完成
-3. **文件格式** 
+3. **文件格式**
 
 ## 评分组件
 
@@ -44,7 +52,7 @@ GradingPage (主组件)
 
 ## 结果组件
 
-Result.vue (父组件)
+Result.vue (父组件，当前为空：后续路由设置？)
 ├── ReportPage.vue - 评分报告页面
 ├── AnalysisPage.vue - 详细分析页面
 └── PaperViewer.vue - 试卷查看器（弹窗）
@@ -52,5 +60,3 @@ Result.vue (父组件)
 ## prompt 组件
 
 prompt输入框
-
-## Help组件

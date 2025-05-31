@@ -49,11 +49,6 @@ const router = createRouter({
           name: 'PromptSetting',
           component: PromptSetting
         },
-        {
-          path: 'help',
-          name: 'Help',
-          component: Help
-        }
       ]
     }
   ]

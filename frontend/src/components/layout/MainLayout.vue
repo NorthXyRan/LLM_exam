@@ -67,11 +67,6 @@
               <template #title>prompt设置</template>
             </el-menu-item>
             
-            <!-- 帮助中心 -->
-            <el-menu-item index="5">
-              <el-icon><QuestionFilled /></el-icon>
-              <template #title>帮助中心</template>
-            </el-menu-item>
           </el-menu>
         </el-aside>
         
@@ -119,8 +114,6 @@ const activeMenu = computed(() => {
       return '3-2'
     case '/prompt-setting':
       return '4'
-    case '/help':
-      return '5'
     default:
       return '0'
   }
@@ -166,10 +159,6 @@ const handleSelect = (index: string) => {
     case '4':
       ElMessage.info('跳转到Prompt设置页面')
       router.push('/prompt-setting')
-      break
-    case '5':
-      ElMessage.info('跳转到帮助中心')
-      router.push('/help')
       break
   }
 }
