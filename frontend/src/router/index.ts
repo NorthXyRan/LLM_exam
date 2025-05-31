@@ -1,7 +1,6 @@
 import AnalysisPage from '../components/result/AnalysisPage.vue'
 import ReportPage from '../components/result/ReportPage.vue'
 import Grading from '../components/Grading.vue'
-import Help from '../components/Help.vue'
 import Home from '../components/Home.vue'
 import MainLayout from '../components/layout/MainLayout.vue'
 import PromptSetting from '../components/PromptSetting.vue'
