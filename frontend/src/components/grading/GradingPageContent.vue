@@ -208,7 +208,9 @@ const handleSubmitReason = (data: any) => {
 
 /* === 统一卡片样式 === */
 .area-card {
-  background: #f8f9fa;
+
+  background: rgba(255, 255, 255, 0.7);
+
   border: 1px solid #e9ecef;
   border-radius: 24px;
   padding: 12px;
@@ -241,7 +243,6 @@ const handleSubmitReason = (data: any) => {
 
 /* === 预览区域组件样式 === */
 .preview-area :deep(.highlight-toolbar) {
-  background: #f8f9fa;
   border: none;
   border-bottom: 1px solid #e9ecef;
   border-radius: 24px 24px 0 0;
