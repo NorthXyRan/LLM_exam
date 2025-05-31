@@ -15,7 +15,7 @@ npm run dev
 ```
 upload/
 ├── UploadingPage.vue         # 主上传页面（父组件）
-├── upload/
+└── upload/
     ├── PaperUpload.vue       # 试卷上传组件
     ├── AnswerUpload.vue      # 参考答案上传组件
     └── StudentUpload.vue     # 学生答卷上传组件
