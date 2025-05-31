@@ -59,7 +59,6 @@
               </template>
               <el-menu-item index="3-1">评分报告</el-menu-item>
               <el-menu-item index="3-2">详细分析</el-menu-item>
-              <el-menu-item index="3-3">历史记录</el-menu-item>
             </el-sub-menu>
             
             <!-- 系统设置 -->
