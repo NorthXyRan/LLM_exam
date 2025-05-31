@@ -1,15 +1,17 @@
 <template>
   <div class="paper-preview" @mouseup="handleTextSelection">
-    <slot name="preview">
-      <div class="preview-placeholder">
-        <p>试卷预览内容将在这里显示</p>
-        <p>选中文本后可以使用上方的标记工具进行评价</p>
-        <div class="sample-text">
-          <h4>示例学生答案：</h4>
-          <p>这是一个示例的学生答案文本，你可以选中任意部分进行标记。比如这句话可能是正确的，而这句话可能存在错误。还有一些内容可能比较模糊，需要进一步澄清。</p>
+    <div class="preview-content">
+      <slot name="preview">
+        <div class="preview-placeholder">
+          <p>试卷预览内容将在这里显示</p>
+          <p>选中文本后可以使用上方的标记工具进行评价</p>
+          <div class="sample-text">
+            <h4>示例学生答案：</h4>
+            <p>这是一个示例的学生答案文本，你可以选中任意部分进行标记。比如这句话可能是正确的，而这句话可能存在错误。还有一些内容可能比较模糊，需要进一步澄清。</p>
+          </div>
         </div>
-      </div>
-    </slot>
+      </slot>
+    </div>
   </div>
 </template>
 
@@ -69,7 +71,7 @@ const markAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
   
   const markLabels = {
     correct: '正确',
-    wrong: '错误', 
+    wrong: '错误',
     unclear: '模糊',
     redundant: '冗余'
   }
@@ -100,13 +102,21 @@ defineExpose({
 <style scoped>
 /* === 试卷预览内部样式 === */
 .paper-preview {
-  /* 移除装饰性样式，让父容器控制外观 */
   flex: 1;
-  padding: 20px;
+  padding: 0;
   user-select: text;
   width: 100%;
   box-sizing: border-box;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 内容容器，提供实际的内边距 */
+.preview-content {
+  padding: 20px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* === 内容样式 === */
@@ -162,4 +172,16 @@ defineExpose({
 .paper-preview::-webkit-scrollbar-thumb:hover {
   background: rgba(64, 158, 255, 0.8);
 }
-</style> 
+
+/* === 响应式调整 === */
+@media (max-width: 768px) {
+  .preview-content {
+    padding: 15px;
+  }
+  
+  .sample-text {
+    padding: 12px;
+    margin-top: 15px;
+  }
+}
+</style>
