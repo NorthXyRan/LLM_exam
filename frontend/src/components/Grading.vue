@@ -211,11 +211,12 @@ const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => 
 <style scoped>
 /* === 主页面容器 === */
 .grading-page {
-  min-height: 100%;
+  min-height: 100vh;
+  background: #F5F5F5;
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  padding: 6px;
+  gap: 16px;
+  padding: 16px;
 }
 
 /* === 响应式设计 === */
@@ -239,8 +240,10 @@ const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => 
   white-space: pre-line;
   line-height: 1.6;
   font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
   padding: 15px;
-  border-radius: 4px;
+  border-radius: 8px;
+  background: #FFFFFF;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -251,5 +254,46 @@ const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => 
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+}
+
+/* === 对话框样式重写 === */
+.grading-page :deep(.el-dialog) {
+  border-radius: 12px;
+  background: #FFFFFF;
+}
+
+.grading-page :deep(.el-dialog__header) {
+  background: #F5F5F5;
+  border-bottom: 1px solid #E5E5E5;
+  padding: 16px 20px;
+}
+
+.grading-page :deep(.el-dialog__title) {
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 600;
+}
+
+.grading-page :deep(.el-button--primary) {
+  background: #007AFF;
+  border-color: #007AFF;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.grading-page :deep(.el-button--primary:hover) {
+  background: #0056B3;
+  border-color: #0056B3;
+}
+
+.grading-page :deep(.el-button--default) {
+  background: #E5E5E5;
+  border-color: #E5E5E5;
+  color: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+}
+
+.grading-page :deep(.el-button--default:hover) {
+  background: #D1D1D1;
+  border-color: #D1D1D1;
 }
 </style>

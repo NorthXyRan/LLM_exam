@@ -99,10 +99,12 @@ const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') =
 <style scoped>
 /* === 高亮工具栏内部样式 === */
 .highlight-toolbar {
-  /* 移除装饰性样式，让父容器控制外观 */
-  padding: 10px 15px;
+  padding: 0;
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
 }
 
 .tool-section {
@@ -116,17 +118,102 @@ const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') =
 .tool-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+/* === 按钮样式重写 === */
+.highlight-toolbar :deep(.el-button) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 6px 12px;
+}
+
+.highlight-toolbar :deep(.el-button--primary) {
+  background: #007AFF;
+  border-color: #007AFF;
+}
+
+.highlight-toolbar :deep(.el-button--primary:hover) {
+  background: #0056B3;
+  border-color: #0056B3;
+  transform: translateY(-1px);
+}
+
+.highlight-toolbar :deep(.el-button--success) {
+  background: #4CD964;
+  border-color: #4CD964;
+}
+
+.highlight-toolbar :deep(.el-button--success:hover) {
+  background: #3AC85A;
+  border-color: #3AC85A;
+  transform: translateY(-1px);
+}
+
+.highlight-toolbar :deep(.el-button--danger) {
+  background: #FF3B30;
+  border-color: #FF3B30;
+}
+
+.highlight-toolbar :deep(.el-button--danger:hover) {
+  background: #E6342A;
+  border-color: #E6342A;
+  transform: translateY(-1px);
+}
+
+.highlight-toolbar :deep(.el-button--warning) {
+  background: #FF9500;
+  border-color: #FF9500;
+}
+
+.highlight-toolbar :deep(.el-button--warning:hover) {
+  background: #E6850E;
+  border-color: #E6850E;
+  transform: translateY(-1px);
+}
+
+.highlight-toolbar :deep(.el-button--info) {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.highlight-toolbar :deep(.el-button--info:hover) {
+  background: rgba(0, 0, 0, 0.15);
+  border-color: rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.highlight-toolbar :deep(.el-button--default) {
+  background: #E5E5E5;
+  border-color: #E5E5E5;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.highlight-toolbar :deep(.el-button--default:hover) {
+  background: #D1D1D1;
+  border-color: #D1D1D1;
+  transform: translateY(-1px);
+}
+
+/* === 分割线样式 === */
+.highlight-toolbar :deep(.el-divider--vertical) {
+  border-color: #E5E5E5;
+  height: 24px;
+  margin: 0 8px;
 }
 
 /* === 按钮状态样式 === */
 .active {
-  background-color: #409eff !important;
+  background-color: #007AFF !important;
+  border-color: #007AFF !important;
   color: white !important;
 }
 
-.el-button:disabled {
-  opacity: 0.5;
+.highlight-toolbar :deep(.el-button:disabled) {
+  opacity: 0.4;
+  transform: none !important;
 }
 
 /* === 响应式调整 === */
@@ -137,7 +224,17 @@ const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') =
   }
   
   .tool-group {
-    gap: 4px;
+    gap: 6px;
+  }
+  
+  .highlight-toolbar :deep(.el-button) {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .highlight-toolbar :deep(.el-divider--vertical) {
+    height: 20px;
+    margin: 0 6px;
   }
 }
 </style> 

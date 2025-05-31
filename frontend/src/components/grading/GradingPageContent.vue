@@ -187,13 +187,15 @@ const handleSubmitReason = (data: any) => {
 
 <style scoped>
 .page-content {
-  border-radius: 24px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E5E5E5;
   overflow: hidden;
+  background: #FFFFFF;
 }
 
 .paper-content {
-  background: #ffffff;
+  background: #FFFFFF;
   width: 100%;
 }
 
@@ -205,10 +207,11 @@ const handleSubmitReason = (data: any) => {
 .content-grid {
   display: grid;
   grid-template-columns: 7fr 3fr;
-  grid-template-rows: 80px auto;  /* 评分区域和操作区域固定高度设置为80px，下面自动 */
-  gap: 12px;
-  min-height: 50vh;
-  padding: 12px;
+  grid-template-rows: 80px auto;
+  gap: 16px;
+  min-height: 60vh;
+  padding: 16px;
+  background: #FFFFFF;
 }
 
 /* === 网格区域 === */
@@ -219,27 +222,83 @@ const handleSubmitReason = (data: any) => {
 
 /* === 统一卡片样式 === */
 .area-card {
-
-  background: rgba(255, 255, 255, 0.7);
-
-  border: 1px solid #e9ecef;
-  border-radius: 24px;
-  padding: 12px;
+  background: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  border-radius: 12px;
+  padding: px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
+  transition: all 0.2s ease;
+}
+
+.area-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* === 预览区域特殊样式 === */
 .preview-area .area-card {
   padding: 0;
+  background: #FFFFFF;
 }
-
 
 /* === 统一按钮圆角 === */
 .page-content :deep(.el-button) {
-  border-radius: 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.page-content :deep(.el-button--primary) {
+  background: #007AFF;
+  border-color: #007AFF;
+}
+
+.page-content :deep(.el-button--primary:hover) {
+  background: #0056B3;
+  border-color: #0056B3;
+}
+
+.page-content :deep(.el-button--success) {
+  background: #4CD964;
+  border-color: #4CD964;
+}
+
+.page-content :deep(.el-button--success:hover) {
+  background: #3AC85A;
+  border-color: #3AC85A;
+}
+
+.page-content :deep(.el-button--warning) {
+  background: #FF9500;
+  border-color: #FF9500;
+}
+
+.page-content :deep(.el-button--warning:hover) {
+  background: #E6850E;
+  border-color: #E6850E;
+}
+
+.page-content :deep(.el-button--danger) {
+  background: #FF3B30;
+  border-color: #FF3B30;
+}
+
+.page-content :deep(.el-button--danger:hover) {
+  background: #E6342A;
+  border-color: #E6342A;
+}
+
+.page-content :deep(.el-button--default) {
+  background: #E5E5E5;
+  border-color: #E5E5E5;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.page-content :deep(.el-button--default:hover) {
+  background: #D1D1D1;
+  border-color: #D1D1D1;
 }
 
 /* === 子组件样式重置 === */
@@ -256,19 +315,44 @@ const handleSubmitReason = (data: any) => {
 /* === 预览区域组件样式 === */
 .preview-area :deep(.highlight-toolbar) {
   border: none;
-  border-bottom: 1px solid #e9ecef;
-  border-radius: 24px 24px 0 0;
+  border-bottom: 1px solid #E5E5E5;
+  border-radius: 12px 12px 0 0;
   margin: 0;
-  padding: 10px 15px;
+  padding: 16px 20px;
+  background: #F5F5F5;
+  height: 56px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
 }
 
 .preview-area :deep(.paper-preview) {
-  background: #f8f9fa;
+  background: #ffffff;
   border: none;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 12px 12px;
   margin: 0;
   flex: 1;
   padding: 20px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/* === 文本颜色统一 === */
+.page-content :deep(h1),
+.page-content :deep(h2),
+.page-content :deep(h3),
+.page-content :deep(h4) {
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 600;
+}
+
+.page-content :deep(p),
+.page-content :deep(span),
+.page-content :deep(.el-text) {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.page-content :deep(.secondary-text) {
+  color: rgba(0, 0, 0, 0.3);
 }
 
 /* === 响应式设计 === */
@@ -276,6 +360,7 @@ const handleSubmitReason = (data: any) => {
   .content-grid {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, auto);
+    gap: 12px;
   }
   
   .scoring-area { grid-area: 1; }
@@ -289,13 +374,36 @@ const handleSubmitReason = (data: any) => {
   }
 }
 
+@media (max-width: 768px) {
+  .content-grid {
+    padding: 12px;
+    gap: 8px;
+  }
+  
+  .area-card {
+    padding: 12px;
+  }
+  
+  .preview-area .area-card {
+    padding: 0;
+  }
+  
+  .preview-area :deep(.highlight-toolbar) {
+    padding: 8px 12px;
+  }
+  
+  .preview-area :deep(.paper-preview) {
+    padding: 16px;
+  }
+}
+
 @media (max-width: 480px) {
   .page-content {
-    padding: 8px;
     margin-top: 8px;
   }
   
   .content-grid {
+    padding: 8px;
     gap: 8px;
   }
   
@@ -312,7 +420,7 @@ const handleSubmitReason = (data: any) => {
   }
   
   .preview-area :deep(.paper-preview) {
-    padding: 15px;
+    padding: 12px;
   }
 }
 </style>

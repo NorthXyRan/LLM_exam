@@ -95,7 +95,6 @@ const saveScore = () => {
 <style scoped>
 /* === 评分区域内部布局样式 === */
 .scoring-section {
-  /* 移除所有装饰性样式，只保留布局 */
   width: 100%;
   height: 100%;
   display: flex;
@@ -115,13 +114,13 @@ const saveScore = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
 }
 
 .score-label {
-  font-size: 11px;
-  color: #666;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -129,40 +128,92 @@ const saveScore = () => {
 .score-display {
   display: flex;
   align-items: baseline;
-  gap: 3px;
+  gap: 4px;
 }
 
 .score-value {
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  color: #007AFF;
 }
 
 .score-unit {
-  font-size: 12px;
-  color: #999;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: 500;
 }
 
 .score-input-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .score-input {
   width: 100px;
 }
 
+.score-input :deep(.el-input__wrapper) {
+  border-radius: 8px;
+  border-color: #E5E5E5;
+  background: #FFFFFF;
+}
+
+.score-input :deep(.el-input__wrapper:hover) {
+  border-color: #007AFF;
+}
+
+.score-input :deep(.el-input__wrapper.is-focus) {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
 .score-input :deep(.el-input__inner) {
   text-align: center;
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .score-actions-inline {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
+}
+
+/* === 分割线样式 === */
+.scoring-section :deep(.el-divider--vertical) {
+  border-color: #E5E5E5;
+  height: 40px;
+  margin: 0 16px;
+}
+
+/* === 响应式设计 === */
+@media (max-width: 768px) {
+  .score-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .scoring-section :deep(.el-divider--vertical) {
+    display: none;
+  }
+  
+  .score-item {
+    width: 100%;
+    padding: 8px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E5E5;
+  }
+  
+  .score-value {
+    font-size: 20px;
+  }
+  
+  .score-input {
+    width: 120px;
+  }
 }
 </style> 

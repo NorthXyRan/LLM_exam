@@ -149,40 +149,42 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
 
 <style scoped>
 .page-header {
-  background: white;
-  padding: 10px 12px;
-  border-radius: 24px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background: #FFFFFF;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E5E5E5;
 }
 
 .header-content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .select-section {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 }
 
 .select-section h1 {
   margin: 0;
-  color: #409eff;
+  color: rgba(0, 0, 0, 0.87);
   font-size: 16px;
+  font-weight: 600;
   white-space: nowrap;
-  min-width: 100px;
+  min-width: 120px;
 }
 
 .select-list {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   padding: 4px;
   overflow-x: auto;
   flex: 1;
   scrollbar-width: thin;
-  scrollbar-color: #409eff #f0f2f5;
+  scrollbar-color: #007AFF #F5F5F5;
 }
 
 .select-list::-webkit-scrollbar {
@@ -190,88 +192,131 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
 }
 
 .select-list::-webkit-scrollbar-track {
-  background: #f0f2f5;
-  border-radius: 3px;
+  background: #F5F5F5;
+  border-radius: 2px;
 }
 
 .select-list::-webkit-scrollbar-thumb {
-  background-color: #409eff;
-  border-radius: 3px;
+  background-color: #007AFF;
+  border-radius: 2px;
 }
 
 .select-item {
-  padding: 4px 10px;
-  background-color: #f0f2f5;
-  border-radius: 4px;
+  padding: 8px 12px;
+  background-color: #F5F5F5;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 13px;
-  color: #606266;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
   flex-shrink: 0;
-  position: relative;
+  border: 1px solid transparent;
 }
 
 .select-item:hover {
-  background-color: #e6f1fc;
-  transform: translateY(-2px);
+  background-color: #E5E5E5;
+  transform: translateY(-1px);
 }
 
 .select-item.active {
-  background-color: #409eff;
-  color: white;
+  background-color: #007AFF;
+  color: #FFFFFF;
+  border-color: #007AFF;
 }
 
 .select-item.circle {
-  min-width: 28px;
-  height: 28px;
+  min-width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .select-item.graded {
-  background-color: #67c23a;
-  color: white;
+  background-color: #4CD964;
+  color: #FFFFFF;
+  border-color: #4CD964;
+}
+
+.select-item.graded:hover {
+  background-color: #3AC85A;
 }
 
 .statistics-overview {
-  padding-top: 8px;
-  margin-top: 8px;
-  border-top: 1px solid #eee;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid #E5E5E5;
 }
 
 .stat-item {
   text-align: center;
-  padding: 6px;
-  background-color: #f8f9fa;
-  border-radius: 32px;
+  padding: 12px 8px;
+  background-color: #F5F5F5;
+  border-radius: 12px;
   height: 100%;
-  position: relative;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .stat-item.clickable {
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .stat-item.clickable:hover {
-  background-color: #e6f1fc;
-  transform: translateY(-2px);
+  background-color: #E5E5E5;
+  transform: translateY(-1px);
+  border-color: #007AFF;
 }
 
 .stat-item .label {
   display: block;
-  color: #666;
+  color: rgba(0, 0, 0, 0.6);
   font-size: 11px;
-  margin-bottom: 2px;
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .stat-item .value {
   display: block;
-  color: #409eff;
-  font-size: 14px;
-  font-weight: bold;
+  color: #007AFF;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* === 响应式设计 === */
+@media (max-width: 768px) {
+  .page-header {
+    padding: 12px 16px;
+  }
+  
+  .header-content {
+    gap: 12px;
+  }
+  
+  .select-section {
+    gap: 12px;
+  }
+  
+  .select-section h1 {
+    min-width: 80px;
+    font-size: 14px;
+  }
+  
+  .statistics-overview {
+    padding-top: 8px;
+    margin-top: 8px;
+  }
+  
+  .stat-item {
+    padding: 8px 4px;
+  }
+  
+  .stat-item .value {
+    font-size: 14px;
+  }
 }
 </style> 

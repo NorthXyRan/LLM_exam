@@ -46,7 +46,6 @@ const handleBatchGrading = () => {
 }
 
 .action-group {
-  /* 移除所有装饰性样式，只保留布局 */
   width: 100%;
   display: flex;
   align-items: center;
@@ -57,13 +56,13 @@ const handleBatchGrading = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   flex: 1;
 }
 
 .score-label {
-  font-size: 11px;
-  color: #666;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -71,9 +70,53 @@ const handleBatchGrading = () => {
 .action-buttons {
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+/* === 按钮样式重写 === */
+.action-section :deep(.el-button) {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.action-section :deep(.el-button--primary) {
+  background: #007AFF;
+  border-color: #007AFF;
+}
+
+.action-section :deep(.el-button--primary:hover) {
+  background: #0056B3;
+  border-color: #0056B3;
+  transform: translateY(-1px);
+}
+
+.action-section :deep(.el-button--success) {
+  background: #4CD964;
+  border-color: #4CD964;
+}
+
+.action-section :deep(.el-button--success:hover) {
+  background: #3AC85A;
+  border-color: #3AC85A;
+  transform: translateY(-1px);
+}
+
+/* === 响应式设计 === */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .action-section :deep(.el-button) {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style> 
