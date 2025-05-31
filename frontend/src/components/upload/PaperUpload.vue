@@ -166,6 +166,10 @@ const handlePaperExceed = () => {
   transform: translateY(-2px);
 }
 
+.paper-upload-card :deep(.el-card__header) {
+  border-bottom: none;  /* 去掉卡片头部下划线 */
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
