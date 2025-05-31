@@ -152,7 +152,7 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
   margin-bottom: 12px;
   background: white;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 24px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -247,7 +247,7 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
   text-align: center;
   padding: 6px;
   background-color: #f8f9fa;
-  border-radius: 4px;
+  border-radius: 32px;
   height: 100%;
   position: relative;
 }

@@ -176,61 +176,41 @@ const handleSubmitReason = (data: any) => {
 
 <style scoped>
 .page-content {
-  border-radius: 8px;
+  border-radius: 24px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  overflow: hidden; /* 确保内容不会溢出边框 */
+  overflow: hidden;
 }
 
 .paper-content {
-  background: rgb(255, 255, 255); 
-  box-shadow: none;
+  background: #ffffff;
   width: 100%;
-  box-sizing: border-box;
-  border-radius: 0; /* 移除内部圆角 */
 }
 
 .paper-content :deep(.el-card__body) {
   padding: 0;
 }
 
-/* === 简单的网格布局 === */
+/* === 网格布局 === */
 .content-grid {
   display: grid;
-  grid-template-columns: 7fr 3fr; /* 使用fr单位代替百分比，确保总宽度计算正确 */
+  grid-template-columns: 7fr 3fr;
   grid-template-rows: auto 1fr;
-  gap: 12px; 
+  gap: 12px;
   height: 70vh;
-  box-sizing: border-box;
-  padding: 12px; /* 添加内边距来创建红色边框效果 */
+  padding: 12px;
 }
 
-/* === 网格区域命名 === */
-.scoring-area {
-  grid-column: 1;
-  grid-row: 1;
-}
+/* === 网格区域 === */
+.scoring-area { grid-area: 1 / 1; }
+.action-area { grid-area: 1 / 2; }
+.preview-area { grid-area: 2 / 1; }
+.feedback-area { grid-area: 2 / 2; }
 
-.action-area {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.preview-area {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.feedback-area {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-/* === 统一的卡片样式 === */
+/* === 统一卡片样式 === */
 .area-card {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
-  border-radius: 6px;
+  border-radius: 24px;
   padding: 12px;
   overflow: hidden;
   display: flex;
@@ -238,31 +218,33 @@ const handleSubmitReason = (data: any) => {
   height: 100%;
 }
 
-/* === 预览区域特殊布局 === */
+/* === 预览区域特殊样式 === */
 .preview-area .area-card {
   padding: 0;
-  gap: 0;
+}
+
+/* === 统一按钮圆角 === */
+.page-content :deep(.el-button) {
+  border-radius: 24px;
 }
 
 /* === 子组件样式重置 === */
 .scoring-area :deep(.scoring-section),
 .action-area :deep(.action-section),
 .feedback-area :deep(.feedback-panel) {
-  background: none;
+  background: transparent;
   border: none;
   padding: 0;
   margin: 0;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
   flex: 1;
 }
 
+/* === 预览区域组件样式 === */
 .preview-area :deep(.highlight-toolbar) {
   background: #f8f9fa;
   border: none;
   border-bottom: 1px solid #e9ecef;
-  border-radius: 6px 6px 0 0;
+  border-radius: 24px 24px 0 0;
   margin: 0;
   padding: 10px 15px;
 }
@@ -270,24 +252,24 @@ const handleSubmitReason = (data: any) => {
 .preview-area :deep(.paper-preview) {
   background: #f8f9fa;
   border: none;
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 24px 24px;
   margin: 0;
   flex: 1;
   padding: 20px;
 }
 
-/* === 响应式：像 Header 一样简单 === */
+/* === 响应式设计 === */
 @media (max-width: 1080px) {
   .content-grid {
-    grid-template-columns: 1fr; /* 变成单列 */
-    grid-template-rows: auto auto auto auto; /* 四行 */
-    height: auto; /* 高度自适应 */
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+    height: auto;
   }
   
-  .scoring-area { grid-column: 1; grid-row: 1; }
-  .action-area { grid-column: 1; grid-row: 2; }
-  .preview-area { grid-column: 1; grid-row: 3; }
-  .feedback-area { grid-column: 1; grid-row: 4; }
+  .scoring-area { grid-area: 1; }
+  .action-area { grid-area: 2; }
+  .preview-area { grid-area: 3; }
+  .feedback-area { grid-area: 4; }
   
   .preview-area,
   .feedback-area {
@@ -320,4 +302,5 @@ const handleSubmitReason = (data: any) => {
   .preview-area :deep(.paper-preview) {
     padding: 15px;
   }
-}</style>
+}
+</style>
