@@ -20,29 +20,6 @@
       </div>
     </div>
 
-    <!-- 高亮图例 -->
-    <div class="highlight-legend">
-      <h4>高亮说明</h4>
-      <div class="legend-items">
-        <div class="legend-item">
-          <span class="legend-color correct"></span>
-          <span>正确要点</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color excellent"></span>
-          <span>优秀表述</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color unclear"></span>
-          <span>表述不清</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color wrong"></span>
-          <span>错误内容</span>
-        </div>
-      </div>
-    </div>
-
     <!-- 试卷内容 -->
     <div class="paper-content">
       <div
@@ -67,10 +44,7 @@
         <!-- 学生答案 -->
         <div class="answer-section">
           <h4>学生答案</h4>
-          <div
-            class="answer-content"
-            v-html="highlightAnswer(question.answer, question.highlights)"
-          ></div>
+          <div class="answer-content">{{ question.answer }}</div>
         </div>
       </div>
     </div>
@@ -79,13 +53,6 @@
 
 <script setup lang="ts">
 // 类型定义
-interface Highlight {
-  start: number
-  end: number
-  type: 'correct' | 'wrong' | 'unclear' | 'excellent'
-  reason: string
-}
-
 interface Question {
   id?: string | number
   title?: string
@@ -93,7 +60,6 @@ interface Question {
   answer: string
   score: number
   maxScore: number
-  highlights?: Highlight[]
 }
 
 interface PaperData {
@@ -111,30 +77,6 @@ interface Props {
 }
 
 defineProps<Props>()
-
-// 方法
-const highlightAnswer = (content: string, highlights?: Highlight[]): string => {
-  if (!highlights || highlights.length === 0) return content
-  
-  let result = content
-  const typeColors = {
-    correct: '#52c41a',
-    wrong: '#ff4d4f',
-    unclear: '#faad14',
-    excellent: '#1890ff'
-  }
-
-  // 按位置倒序排列，避免位置偏移
-  const sortedHighlights = [...highlights].sort((a, b) => b.start - a.start)
-  
-  sortedHighlights.forEach(highlight => {
-    const color = typeColors[highlight.type] || '#d9d9d9'
-    const highlightedText = `<span style="background-color: ${color}20; border-left: 3px solid ${color}; padding: 2px 4px; margin: 0 2px;" title="${highlight.reason}">${content.substring(highlight.start, highlight.end)}</span>`
-    result = result.substring(0, highlight.start) + highlightedText + result.substring(highlight.end)
-  })
-  
-  return result
-}
 </script>
 
 <style scoped>
@@ -207,61 +149,6 @@ const highlightAnswer = (content: string, highlights?: Highlight[]): string => {
   color: rgba(0, 0, 0, 0.6);
 }
 
-/* 高亮图例 */
-.highlight-legend {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-
-.highlight-legend h4 {
-  color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 12px;
-  font-size: 16px;
-}
-
-.legend-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.7);
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
-  border-left: 3px solid;
-}
-
-.legend-color.correct {
-  background-color: #52c41a20;
-  border-color: #52c41a;
-}
-
-.legend-color.excellent {
-  background-color: #1890ff20;
-  border-color: #1890ff;
-}
-
-.legend-color.unclear {
-  background-color: #faad1420;
-  border-color: #faad14;
-}
-
-.legend-color.wrong {
-  background-color: #ff4d4f20;
-  border-color: #ff4d4f;
-}
-
 /* 试卷内容 */
 .paper-content {
   display: flex;
@@ -330,11 +217,6 @@ const highlightAnswer = (content: string, highlights?: Highlight[]): string => {
   
   .score-summary {
     text-align: left;
-  }
-  
-  .legend-items {
-    flex-direction: column;
-    gap: 8px;
   }
 }
 </style>

@@ -167,6 +167,12 @@ const maxCount = computed(() => {
   border: 1px solid #e4e7ed;
 }
 
+.stat-card:hover {
+    border-color: #007AFF;
+    transform: translateY(-2px);
+}
+  
+
 .stat-value {
   font-size: 28px;
   font-weight: 600;
@@ -250,6 +256,11 @@ const maxCount = computed(() => {
   border-radius: 8px;
   padding: 20px;
   border: 1px solid #e4e7ed;
+}
+
+.question-card:hover {
+  border-color: #007AFF;
+  transform: translateY(-2px);
 }
 
 .question-header {

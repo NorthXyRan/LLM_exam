@@ -293,6 +293,11 @@
     border: 1px solid #e4e7ed;
   }
   
+  .answer-item:hover {
+    border-color: #007AFF;
+    transform: translateY(-2px);
+  }
+  
   .answer-header {
     display: flex;
     justify-content: space-between;
