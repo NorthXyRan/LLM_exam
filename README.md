@@ -1,5 +1,7 @@
 # LLM_exam
 
+npm run dev
+
 ## 上传组件
 
 upload/
