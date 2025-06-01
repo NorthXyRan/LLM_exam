@@ -7,7 +7,7 @@ npm install
 ```
 
 ```
-npm run dev
+cd frontend && npm run dev
 ```
 
 ## 上传组件
@@ -20,8 +20,6 @@ upload/
     ├── AnswerUpload.vue      # 参考答案上传组件
     └── StudentUpload.vue     # 学生答卷上传组件
 ```
-
-
 
 ### 主要功能
 
@@ -56,8 +54,6 @@ GradingPage (主组件)
     └── FeedbackPanel (理由查看/编辑)
 ```
 
-
-
 ## 结果组件
 
 ```
@@ -66,8 +62,6 @@ Result.vue (父组件，当前为空：后续路由设置？)
 ├── AnalysisPage.vue - 详细分析页面
 └── PaperViewer.vue - 试卷查看器（弹窗）
 ```
-
-
 
 ## prompt 组件
 
