@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, ref } from 'vue'
 import AnswerUpload from './upload/AnswerUpload.vue'
@@ -60,7 +60,15 @@ const referenceAnswer = ref({
 })
 
 // 学生答卷相关数据
-const studentPapers = ref([])
+interface StudentPaper {
+  id: number
+  filename: string
+  valid: boolean
+  questionCount: number
+  error: string
+}
+
+const studentPapers = ref<StudentPaper[]>([])
 const parsing = ref(false)
 
 // 计算属性
@@ -69,7 +77,7 @@ const canUploadStudentPapers = computed(() => {
 })
 
 // Paper 相关事件处理
-const handlePaperUploaded = (file) => {
+const handlePaperUploaded = (file: File) => {
   ElMessage.info('开始解析试卷...')
   setTimeout(() => {
     examPaper.value = {
@@ -101,7 +109,7 @@ const handleReparsePaper = () => {
 }
 
 // Answer 相关事件处理
-const handleAnswerUploaded = (file) => {
+const handleAnswerUploaded = (file: File) => {
   ElMessage.info('开始解析参考答案...')
   setTimeout(() => {
     const matched = Math.random() > 0.3
@@ -140,12 +148,12 @@ const handleEditAnswer = () => {
 }
 
 // Student 相关事件处理
-const handleStudentPapersUploaded = (fileList) => {
+const handleStudentPapersUploaded = (fileList: File[]) => {
   parsing.value = true
   ElMessage.info('开始解析学生答卷...')
   
   setTimeout(() => {
-    const newPapers = fileList.map((f, index) => ({
+    const newPapers = fileList.map((f: File, index: number) => ({
       id: Date.now() + index,
       filename: f.name,
       valid: Math.random() > 0.2,
@@ -156,12 +164,12 @@ const handleStudentPapersUploaded = (fileList) => {
     studentPapers.value = newPapers
     parsing.value = false
     
-    const validCount = newPapers.filter(p => p.valid).length
+    const validCount = newPapers.filter((p: any) => p.valid).length
     ElMessage.success(`学生答卷解析完成！成功解析 ${validCount}/${newPapers.length} 份`)
   }, 3000)
 }
 
-const handleReParseStudentPaper = (paper) => {
+const handleReParseStudentPaper = (paper: any) => {
   ElMessage.info(`重新解析 ${paper.filename}`)
 }
 

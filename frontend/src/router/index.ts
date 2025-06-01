@@ -6,7 +6,7 @@ import MainLayout from '../components/layout/MainLayout.vue'
 import PromptSetting from '../components/PromptSetting.vue'
 import Uploading from '../components/Uploading.vue'
 
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory} from 'vue-router'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
