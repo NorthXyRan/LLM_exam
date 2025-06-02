@@ -1,0 +1,9 @@
+{
+  "papers": [
+    {
+      "directory": "example1",
+      "name": "示例试卷",
+      "description": "包含插值逼近和数值积分等题目"
+    }
+  ]
+} 

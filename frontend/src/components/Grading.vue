@@ -20,7 +20,6 @@
       :llm-score="currentLLMScore"
       :max-score="currentMaxScore"
       @start-grading="startGrading"
-      @open-settings="openSettings"
       @mark-answer="handleMarkAnswer"
       @score-change="handleScoreChange"
     />
@@ -31,12 +30,11 @@
       width="50%"
     >
       <div class="reference-answer-content">
-        {{ statistics.referenceAnswer }}
+        {{ currentReferenceAnswer }}
       </div>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="referenceAnswerVisible = false">关闭</el-button>
-          <el-button type="primary" @click="copyReferenceAnswer">复制内容</el-button>
         </span>
       </template>
     </el-dialog>
@@ -47,7 +45,7 @@
       width="50%"
     >
       <div class="current-question-content">
-        {{ statistics.currentQuestion }}
+        {{ currentQuestionText }}
       </div>
       <template #footer>
         <span class="dialog-footer">
@@ -60,10 +58,20 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GradingHeader from './grading/GradingHeader.vue'
 import GradingPageContent from './grading/GradingPageContent.vue'
+
+// 定义题目接口
+interface Question {
+  id: number
+  name: string
+  score: number
+  question_id: string
+  question: string
+  referenceAnswer?: string
+}
 
 const router = useRouter()
 const currentPage = ref(1)
@@ -90,23 +98,6 @@ const statistics = ref({
     id: '2024031',
     paperIndex: 31
   },
-  referenceAnswer: `这是一个示例参考答案：
-
-1. 关键点一：......
-2. 关键点二：......
-3. 关键点三：......
-
-评分要点：
-- 内容完整性（30分）
-- 逻辑性（25分）
-- 创新性（25分）
-- 表达准确性（20分）
-
-注意事项：
-1. 答案要点完整
-2. 逻辑结构清晰
-3. 表述准确规范`,
-  currentQuestion: `这是一个示例当前题目：`,
   distribution: {
     '90-100': 10,
     '80-89': 15,
@@ -128,18 +119,164 @@ const referenceAnswerVisible = ref(false)
 const currentQuestionVisible = ref(false)
 
 // 试卷题目列表
-const questions = ref([
-  { id: 1, name: '第一题', score: 30 },
-  { id: 2, name: '第二题', score: 25 },
-  { id: 3, name: '第三题', score: 25 },
-  { id: 4, name: '第四题', score: 20 }
-])
-
-const currentQuestion = ref(1)
+const questions = ref<Question[]>([])
+const currentQuestion = ref<number>(1)
 
 // 当前LLM评分和满分
 const currentLLMScore = ref(85.5) // 示例LLM评分
 const currentMaxScore = ref(100) // 当前题目满分
+
+// 计算当前题目的参考答案
+const currentReferenceAnswer = computed(() => {
+  const current = questions.value.find(q => q.id === currentQuestion.value)
+  return current?.referenceAnswer || '暂无参考答案'
+})
+
+// 计算当前题目文本
+const currentQuestionText = computed(() => {
+  const current = questions.value.find(q => q.id === currentQuestion.value)
+  return current?.question || '暂无题目内容'
+})
+
+// 加载所有可用的试卷题目
+const loadQuestions = async () => {
+  try {
+    // 动态获取所有试卷目录
+    const paperDirectories = await discoverPaperDirectories()
+    const loadedQuestions: Question[] = []
+    
+    // 尝试获取配置信息以获得更友好的名称
+    let paperConfigs: any[] = []
+    try {
+      const configResponse = await fetch('/paper/config.json')
+      if (configResponse.ok) {
+        const config = await configResponse.json()
+        paperConfigs = config.papers || []
+      }
+    } catch (error) {
+      console.warn('无法加载配置文件:', error)
+    }
+    
+    let questionIdCounter = 1
+    
+    for (const dir of paperDirectories) {
+      try {
+        // 加载试卷信息
+        const paperRes = await fetch(`/paper/${dir}/paper.json`)
+        const paperData = await paperRes.json()
+        
+        // 加载参考答案
+        let answerData: any = []
+        try {
+          const answerRes = await fetch(`/paper/${dir}/answer.json`)
+          answerData = await answerRes.json()
+        } catch (error) {
+          console.warn(`无法加载 ${dir} 的参考答案:`, error)
+        }
+        
+        // 从配置中获取试卷信息
+        const paperConfig = paperConfigs.find(config => config.directory === dir)
+        
+        // 处理题目数据（支持单个题目对象或题目数组）
+        const questions = Array.isArray(paperData) ? paperData : [paperData]
+        
+        for (const questionData of questions) {
+          // 查找对应的参考答案
+          const correspondingAnswer = Array.isArray(answerData) 
+            ? answerData.find((ans: any) => ans.question_id === questionData.question_id)
+            : (answerData?.question_id === questionData.question_id ? answerData : null)
+          
+          // 创建题目对象
+          const question: Question = {
+            id: questionIdCounter++,
+            name: `第${questionIdCounter - 1}题`,
+            score: questionData.score || 0,
+            question_id: questionData.question_id,
+            question: questionData.question,
+            referenceAnswer: correspondingAnswer?.answer || ''
+          }
+          
+          loadedQuestions.push(question)
+        }
+      } catch (error) {
+        console.error(`加载试卷 ${dir} 失败:`, error)
+      }
+    }
+    
+    questions.value = loadedQuestions
+    
+    // 设置默认当前题目
+    if (loadedQuestions.length > 0) {
+      currentQuestion.value = loadedQuestions[0].id
+      // 更新当前题目的满分
+      currentMaxScore.value = loadedQuestions[0].score
+    }
+    
+    console.log('加载的题目:', loadedQuestions)
+  } catch (error) {
+    console.error('加载题目失败:', error)
+    ElMessage.error('加载题目失败')
+  }
+}
+
+// 动态发现试卷目录
+const discoverPaperDirectories = async (): Promise<string[]> => {
+  try {
+    // 首先尝试从配置文件获取试卷目录列表
+    try {
+      const configResponse = await fetch('/paper/config.json')
+      if (configResponse.ok) {
+        const config = await configResponse.json()
+        const directories = config.papers?.map((paper: any) => paper.directory) || []
+        
+        // 验证每个目录是否包含有效的paper.json文件
+        const validDirectories: string[] = []
+        for (const dir of directories) {
+          try {
+            const response = await fetch(`/paper/${dir}/paper.json`)
+            if (response.ok) {
+              validDirectories.push(dir)
+            }
+          } catch (error) {
+            console.warn(`目录 ${dir} 不包含有效的paper.json文件`)
+          }
+        }
+        
+        if (validDirectories.length > 0) {
+          return validDirectories
+        }
+      }
+    } catch (error) {
+      console.warn('无法加载配置文件，使用默认配置:', error)
+    }
+    
+    // 如果配置文件不存在或无效，回退到默认目录
+    const knownDirectories = ['example1']
+    
+    // 验证目录是否存在有效的paper.json文件
+    const validDirectories: string[] = []
+    for (const dir of knownDirectories) {
+      try {
+        const response = await fetch(`/paper/${dir}/paper.json`)
+        if (response.ok) {
+          validDirectories.push(dir)
+        }
+      } catch (error) {
+        console.warn(`目录 ${dir} 不包含有效的paper.json文件`)
+      }
+    }
+    
+    return validDirectories.length > 0 ? validDirectories : ['example1']
+  } catch (error) {
+    console.error('发现试卷目录失败:', error)
+    return ['example1'] // 回退到默认目录
+  }
+}
+
+// 从paper中读取数据
+onMounted(async () => {
+  await loadQuestions()
+})
 
 // 页码变化处理
 const handlePageChange = (page: number) => {
@@ -149,19 +286,14 @@ const handlePageChange = (page: number) => {
 }
 
 // 跳转到指定学生的试卷
-const handleJumpToStudent = (student: { name?: string, id?: string, paperIndex?: number }) => {
+const handleJumpToStudent = (student: {id?: string, paperIndex?: number }) => {
   handlePageChange(student.paperIndex!)
-  ElMessage.success(`跳转到 ${student.name} 的试卷`)
+  ElMessage.success(`跳转到 ${student.id} 的试卷`)
 }
 
 // 开始评分
 const startGrading = () => {
   ElMessage.success('开始评分当前试卷')
-}
-
-// 打开设置
-const openSettings = () => {
-  router.push('/prompt-setting')
 }
 
 // 显示参考答案
@@ -177,19 +309,13 @@ const showCurrentQuestion = () => {
 // 处理题目切换
 const handleQuestionChange = (question: { id: number, name: string, score: number }) => {
   currentQuestion.value = question.id
+  // 更新当前题目的满分
+  const selectedQuestion = questions.value.find(q => q.id === question.id)
+  if (selectedQuestion) {
+    currentMaxScore.value = selectedQuestion.score
+  }
   ElMessage.success(`切换到${question.name}，满分${question.score}分`)
   // TODO: 加载对应题目的内容和统计数据
-}
-
-// 复制参考答案
-const copyReferenceAnswer = () => {
-  navigator.clipboard.writeText(statistics.value.referenceAnswer)
-    .then(() => {
-      ElMessage.success('参考答案已复制到剪贴板')
-    })
-    .catch(() => {
-      ElMessage.error('复制失败，请手动复制')
-    })
 }
 
 // 处理答案标记
