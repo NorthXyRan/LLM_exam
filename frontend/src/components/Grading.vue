@@ -79,7 +79,7 @@ import GradingPageContent from './grading/GradingPageContent.vue'
 
 // 题目接口 - 从paper.json和answer.json合并而来
 interface Question {
-  question_id: string      // 题目ID，对应JSON中的question_id字段
+  question_id: number      // 题目ID，对应JSON中的question_id字段
   question: string         // 题目内容
   score: number           // 题目分值
   referenceAnswer: string // 参考答案（从answer.json获取）
@@ -118,10 +118,9 @@ const router = useRouter()
  * 管理当前选中的学生和题目
  */
 
-// 当前选中的学生ID（数字类型，如：1, 2, 3）
-const currentStudentId = ref<number>(1)
-// 当前选中的题目序号（数字类型，如：1, 2, 3）
-const currentQuestionId = ref<number>(1)
+
+const currentStudentId = ref<number>(1)        // 当前选中的学生ID（数字类型，如：1, 2, 3）
+const currentQuestionId = ref<number>(1)       // 当前选中的题目序号（数字类型，如：1, 2, 3）
 
 /**
  * ===== 批改进度数据 =====
@@ -168,11 +167,9 @@ const statistics = ref({
  * ===== 弹窗状态控制 =====
  */
 
-// 参考答案弹窗显示状态
-const referenceAnswerVisible = ref(false)
 
-// 当前题目弹窗显示状态
-const currentQuestionVisible = ref(false)
+const referenceAnswerVisible = ref(false)       // 参考答案弹窗显示状态
+const currentQuestionVisible = ref(false)      // 当前题目弹窗显示状态
 
 /**
  * ===== 评分相关数据 =====
@@ -196,19 +193,19 @@ const currentPaperInfo = computed(() => {
 
 // 当前题目的满分
 const currentMaxScore = computed(() => {
-  const current = questions.value.find(q => q.question_id === currentQuestionId.value?.toString())
+  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
   return current?.score || 0
 })
 
 // 当前题目的参考答案
 const currentReferenceAnswer = computed(() => {
-  const current = questions.value.find(q => q.question_id === currentQuestionId.value?.toString())
+  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
   return current?.referenceAnswer || '暂无参考答案'
 })
 
 // 当前题目的内容
 const currentQuestionText = computed(() => {
-  const current = questions.value.find(q => q.question_id === currentQuestionId.value?.toString())
+  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
   return current?.question || '暂无题目内容'
 })
 
