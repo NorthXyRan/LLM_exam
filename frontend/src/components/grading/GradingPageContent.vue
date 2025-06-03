@@ -30,6 +30,8 @@
               :has-selected-text="hasSelectedText"
               @highlight-mode-change="handleHighlightModeChange"
               @mark-answer="handleMarkAnswer"
+              @erase-marks="handleEraseMarks"
+              @clear-all="handleClearAll"
             />
             <paper-preview
               :highlight-mode="highlightMode"
@@ -90,6 +92,8 @@ const emits = defineEmits<{
   (e: 'markAnswer', data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }): void
   (e: 'scoreChange', data: { teacherScore: number, llmScore: number }): void
   (e: 'saveFeedback', feedback: string): void
+  (e: 'eraseMarks'): void
+  (e: 'clearAll'): void
 }>()
 
 // 高亮模式状态
@@ -184,6 +188,18 @@ const handleSubmitReason = (data: any) => {
   console.log('提交理由:', data)
   ElMessage.success('理由已提交到服务器')
   // TODO: 实现提交理由到服务器的逻辑
+}
+
+const handleEraseMarks = () => {
+  // 清除选中文本的标记
+  emits('eraseMarks')
+  ElMessage.info('已清除选中文本的标记')
+}
+
+const handleClearAll = () => {
+  // 清除所有标记
+  emits('clearAll')
+  ElMessage.warning('已清除所有标记')
 }
 </script>
 

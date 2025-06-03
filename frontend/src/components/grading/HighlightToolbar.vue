@@ -53,12 +53,37 @@
           冗余
         </el-button>
       </div>
+      
+      <el-divider direction="vertical" />
+      
+      <div class="tool-group">
+        <el-button 
+          type="default" 
+          
+          size="medium"
+          @click="handleEraseMarks"
+          :disabled="!hasSelectedText"
+          class="eraser-btn"
+        >
+          <el-icon><Delete /></el-icon>
+          橡皮
+        </el-button>
+        <el-button 
+          type="default" 
+          size="medium"
+          @click="handleClearAll"
+          class="clear-btn"
+        >
+          <el-icon><Refresh /></el-icon>
+          清屏
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Check, Close, Edit, QuestionFilled, RemoveFilled } from '@element-plus/icons-vue';
+import { Check, Close, Delete, Edit, QuestionFilled, Refresh, RemoveFilled } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 
@@ -73,6 +98,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emits = defineEmits<{
   (e: 'highlightModeChange', mode: boolean): void
   (e: 'markAnswer', type: 'correct' | 'wrong' | 'unclear' | 'redundant'): void
+  (e: 'eraseMarks'): void
+  (e: 'clearAll'): void
 }>()
 
 // 高亮模式状态
@@ -93,6 +120,18 @@ const toggleHighlightMode = () => {
 // 标记答案
 const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
   emits('markAnswer', type)
+}
+
+// 橡皮功能 - 清除选中文本的标记
+const handleEraseMarks = () => {
+  emits('eraseMarks')
+  ElMessage.info('已清除选中文本的标记')
+}
+
+// 清屏功能 - 一键清除所有标记
+const handleClearAll = () => {
+  emits('clearAll')
+  ElMessage.warning('已清除所有标记')
 }
 </script>
 
@@ -126,7 +165,7 @@ const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') =
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s ease;
-  padding: 6px 12px;
+  padding: 8px;
 }
 
 .highlight-toolbar :deep(.el-button--primary) {
@@ -209,6 +248,31 @@ const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') =
   background-color: #007AFF !important;
   border-color: #007AFF !important;
   color: white !important;
+}
+
+/* === 橡皮和清屏按钮样式 === */
+.eraser-btn {
+  background: #F0F0F0 !important;
+  border-color: #D0D0D0 !important;
+  color: #666 !important;
+}
+
+.eraser-btn:hover {
+  background: #E0E0E0 !important;
+  border-color: #C0C0C0 !important;
+  color: #333 !important;
+}
+
+.clear-btn {
+  background: #FFF3E0 !important;
+  border-color: #FFB74D !important;
+  color: #F57C00 !important;
+}
+
+.clear-btn:hover {
+  background: #FFE0B2 !important;
+  border-color: #FFA726 !important;
+  color: #E65100 !important;
 }
 
 .highlight-toolbar :deep(.el-button:disabled) {
