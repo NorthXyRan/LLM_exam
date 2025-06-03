@@ -2,10 +2,7 @@
   <div class="paper-preview" @mouseup="handleTextSelection">
     <div class="preview-content">
       <slot name="preview">
-        <div class="preview-placeholder">
-          <p>试卷预览内容将在这里显示</p>
-          <p>选中文本后可以使用上方的标记工具进行评价</p>
-        </div>
+          {{ studentAnswer }}
       </slot>
     </div>
   </div>
@@ -17,10 +14,12 @@ import { ref } from 'vue';
 
 interface Props {
   highlightMode?: boolean
+  studentAnswer?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  highlightMode: false
+  highlightMode: false,
+  studentAnswer: ''
 })
 
 const emits = defineEmits<{
@@ -114,16 +113,19 @@ defineExpose({
   min-height: 0;
 }
 
-/* === 占位内容样式 === */
-.preview-placeholder {
-  color: #666;
+/* === 答案内容样式 === */
+.student-answer {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
   line-height: 1.6;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  white-space: pre-wrap;
+  min-height: 100px;
 }
 
-.preview-placeholder p {
-  margin: 8px 0;
-  font-size: 14px;
-}
 
 /* === 文本选择样式 === */
 ::selection {

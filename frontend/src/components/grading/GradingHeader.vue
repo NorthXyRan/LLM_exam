@@ -3,40 +3,41 @@
     <div class="header-content">
       <!-- 试卷题目选择 -->
       <div class="select-section">
-          <h1>选择试卷题目</h1>
-          <div class="select-list">
-            <div 
-              v-for="question in questions" 
-              :key="question.id"
-              :class="[
-                'select-item',
-                { 'active': currentQuestion === question.id }
-              ]"
-              @click="handleQuestionChange(question)"
-            >
-              {{ question.name }}
-            </div>
+        <h1>选择试卷题目</h1>
+        <div class="select-list">
+          <div 
+            v-for="(question, index) in questions" 
+            :key="question.question_id"
+            :class="[
+              'select-item',
+              { 'active': currentQuestion === (index + 1) }
+            ]"
+            @click="handleQuestionChange(index + 1, question)"
+          >
+            第{{ index + 1 }}题
+          </div>
         </div>
       </div>
 
       <!-- 学生试卷选择 -->
       <div class="select-section">
-          <h1>选择学生试卷</h1>
-          <div class="select-list">
-            <div 
-              v-for="page in totalPapers" 
-              :key="page"
-              :class="[
-                'select-item circle',
-                { 
-                  'active': currentPage === page,
-                  'graded': gradedPapers.includes(page)
-                }
-              ]"
-              @click="handlePageChange(page)"
-            >
-              {{ page }}
-            </div>
+        <h1>选择学生试卷</h1>
+        <div class="select-list">
+          <div 
+            v-if="studentList && studentList.length > 0"
+            v-for="student in studentList" 
+            :key="student.id"
+            :class="[
+              'select-item circle',
+              { 
+                'active': currentStudentId === student.id,
+                'graded': gradedPapers.includes(student.id)
+              }
+            ]"
+            @click="handleStudentChange(student.id)"
+          >
+            {{ student.id }}
+          </div>
         </div>
       </div>
       
@@ -46,7 +47,7 @@
           <el-col :span="4">
             <div class="stat-item">
               <span class="label">已批改/总份数</span>
-              <span class="value">{{ gradedCount }}/{{ totalPapers }}</span>
+              <span class="value">{{ gradedCount }}/{{ totalStudents }}</span>
             </div>
           </el-col>
           <el-col :span="4">
@@ -89,61 +90,69 @@
 import { Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
-// Props: 传递所有必要的数据（currentQuestion, questions, statistics 等）
+// Props接口
 interface Props {
-  currentQuestion: number
+  currentQuestion: number           // 当前题目序号（1, 2, 3...）
+  currentStudentId: number          // 当前学生ID（新增）
   questions: Array<{
-    id: number
-    name: string
-    score: number
+    question_id: string            // 题目ID，如 "q1", "q2"
+    question: string               // 题目内容
+    score: number                  // 题目分值
   }>
-  currentPage: number
-  totalPapers: number
-  gradedCount: number
-  gradedPapers: number[]
+  totalStudents: number            // 总学生数
+  gradedCount: number             // 已批改学生数
+  gradedPapers: number[]          // 已批改学生ID列表
+  studentList?: Array<{
+    id: number
+  }>
   statistics: {
     highest: number
     lowest: number
     average: number
     highestStudent?: {
-      name?: string
-      id?: string
-      paperIndex?: number
+      id?: number
     }
     lowestStudent?: {
-      name?: string
-      id?: string
-      paperIndex?: number
+      id?: number
     }
   }
 }
 
 const props = defineProps<Props>()
+
+// 定义 emits 接口
 const emits = defineEmits<{
   (e: 'questionChange', question: { id: number; name: string; score: number }): void
-  (e: 'pageChange', page: number): void
-  (e: 'jumpToStudent', student: { name?: string; id?: string; paperIndex?: number }): void
+  (e: 'studentChange', studentId: number): void
   (e: 'showReferenceAnswer'): void
   (e: 'showCurrentQuestion'): void
 }>()
 
-// 页码变化处理
-const handlePageChange = (page: number) => {
-  emits('pageChange', page)
-}
-
-// 跳转到指定学生的试卷
-const jumpToStudent = (student: { name?: string; id?: string; paperIndex?: number } | undefined) => {
-  if (!student?.paperIndex) {
+// 学生切换处理（统一处理直接切换和跳转）
+const handleStudentChange = (studentId: number) => {
+  if (!studentId) {
     ElMessage.warning('未找到学生信息')
-    return
+    return  
   }
-  emits('jumpToStudent', student)
+  emits('studentChange', studentId)
 }
 
 // 处理题目切换
-const handleQuestionChange = (question: { id: number; name: string; score: number }) => {
-  emits('questionChange', question)
+const handleQuestionChange = (questionIndex: number, question: any) => {
+  emits('questionChange', {
+    id: questionIndex,        // 题目序号
+    name: `第${questionIndex}题`,
+    score: question.score
+  })
+}
+
+// 跳转到指定学生（复用 handleStudentChange）
+const jumpToStudent = (student: { id?: number } | undefined) => {
+  if (!student?.id) {
+    ElMessage.warning('未找到学生信息')
+    return
+  }
+  handleStudentChange(student.id)
 }
 </script>
 
@@ -292,31 +301,31 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
   .page-header {
     padding: 12px 16px;
   }
-  
+
   .header-content {
     gap: 12px;
   }
-  
+
   .select-section {
     gap: 12px;
   }
-  
+
   .select-section h1 {
     min-width: 80px;
     font-size: 14px;
   }
-  
+
   .statistics-overview {
     padding-top: 8px;
     margin-top: 8px;
   }
-  
+
   .stat-item {
     padding: 8px 4px;
   }
-  
+
   .stat-item .value {
     font-size: 14px;
   }
 }
-</style> 
+</style>

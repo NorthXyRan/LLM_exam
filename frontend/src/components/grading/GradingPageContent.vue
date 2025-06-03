@@ -33,6 +33,7 @@
             />
             <paper-preview
               :highlight-mode="highlightMode"
+              :student-answer="props.studentAnswer"
               @text-selected="handleTextSelected"
               @mark-answer="handleMarkAnswer"
             >
@@ -70,16 +71,17 @@ import ScoringSection from './ScoringSection.vue'
 
 interface Props {
   paperInfo: {
-    studentName: string
-    studentId: string
+    studentId?: number
   }
   llmScore?: number
   maxScore?: number
+  studentAnswer?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   llmScore: 0,
-  maxScore: 100
+  maxScore: 100,
+  studentAnswer: ''
 })
 
 const emits = defineEmits<{

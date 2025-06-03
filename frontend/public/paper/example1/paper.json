@@ -1,11 +1,11 @@
 [
     {
-        "question_id": "q1",
+        "question_id": 1,
         "question": "What's the differences between interpolation and approximation? （ Problem Distinction ， Methodological Differences ， Advantages Comparison ， Disadvantages Comparison）",
         "score": 8
     },
     {
-        "question_id": "q2", 
+        "question_id": 2, 
         "question": "请解释数值积分中的梯形公式和辛普森公式的原理，并比较它们的精度。（原理说明、精度分析、适用场景）",
         "score": 6
     }

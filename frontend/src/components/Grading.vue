@@ -1,16 +1,16 @@
 <template>
   <div class="grading-page">
     <grading-header
-      :current-question="currentQuestion"
+      :current-question="currentQuestionId"
+      :current-student-id="currentStudentId"
       :questions="questions"
-      :current-page="currentPage"
-      :total-papers="totalPapers"
+      :total-students="studentList.length"
       :graded-count="gradedCount"
       :graded-papers="gradedPapers"
       :statistics="statistics"
+      :student-list="studentList"
       @question-change="handleQuestionChange"
-      @page-change="handlePageChange"
-      @jump-to-student="handleJumpToStudent"
+      @student-change="handleStudentChange"
       @show-reference-answer="showReferenceAnswer"
       @show-current-question="showCurrentQuestion"
     />
@@ -19,6 +19,7 @@
       :paper-info="currentPaperInfo"
       :llm-score="currentLLMScore"
       :max-score="currentMaxScore"
+      :student-answer="currentStudentAnswer"
       @start-grading="startGrading"
       @mark-answer="handleMarkAnswer"
       @score-change="handleScoreChange"
@@ -65,52 +66,69 @@ import GradingPageContent from './grading/GradingPageContent.vue'
 
 // 定义题目接口
 interface Question {
-  id: number
-  name: string
-  score: number
-  question_id: string
-  question: string
-  referenceAnswer?: string
+  question_id: string  // 题目ID，如 "q1", "q2"
+  question: string     // 题目内容
+  score: number        // 题目分值
+  referenceAnswer: string // 参考答案
 }
 
+// 定义学生答案接口
+interface StudentAnswer {
+  student_id: number   // 学生ID
+  question_id: number  // 题目ID的数字部分，如 1, 2, 3
+  answer: string       // 学生答案
+}
+
+// 定义学生得分接口
+interface StudentScore {
+  student_id: number   // 学生ID
+  question_id: number  // 题目ID
+  llm_score?: number   // AI评分
+  teacher_score?: number // 教师评分
+  final_score: number  // 最终得分
+  is_graded: boolean   // 是否已批改
+}
+
+// 定义学生信息接口
+interface StudentInfo {
+  id: number          // 学生ID
+  total_score?: number // 总分（所有题目final_score之和）
+}
+
+
+
 const router = useRouter()
-const currentPage = ref(1)
-const totalPapers = ref(50) // 示例数据
+
+const currentStudentId = ref()    // 当前选中的学生ID
+const currentQuestionId = ref()   // 当前选中的题目ID（题目序号）
+
 const gradedCount = ref(20) // 示例数据
-// 已批改的试卷列表
-const gradedPapers = ref([1, 2, 3, 5, 8, 13, 21]) // 示例数据，斐波那契数列just for fun
+// 已批改的学生ID列表（统一为学生ID）
+const gradedPapers = ref([1, 2, 3, 5, 8, 13, 21]) // 示例数据
+
+// 学生数据
+const studentAnswers = ref<StudentAnswer[]>([])
+const studentList = ref<StudentInfo[]>([])
 
 // 统计数据
 const statistics = ref({
-  highest: 98,
-  lowest: 45,
-  average: 75.5,
-  failed: 5,
-  excellent: 10,
-  passing: 42,
+  highest: 8,
+  lowest: 0,
+  average: 4,
   highestStudent: {
-    name: '李四',
-    id: '2024015',
-    paperIndex: 15
+    id: 2
   },
   lowestStudent: {
-    name: '王五',
-    id: '2024031',
-    paperIndex: 31
-  },
-  distribution: {
-    '90-100': 10,
-    '80-89': 15,
-    '70-79': 12,
-    '60-69': 8,
-    '0-59': 5
+    id: 16
   }
 })
 
-// 当前试卷信息
-const currentPaperInfo = ref({
-  studentName: '张三',
-  studentId: '2024001'
+// 当前试卷信息，从studentList中获取student_id
+const currentPaperInfo = computed(() => {
+  const currentStudent = studentList.value.find(s => s.id === currentStudentId.value)
+  return {
+    studentId: currentStudent?.id || undefined
+  }
 })
 
 // 参考答案对话框显示状态
@@ -120,175 +138,101 @@ const currentQuestionVisible = ref(false)
 
 // 试卷题目列表
 const questions = ref<Question[]>([])
-const currentQuestion = ref<number>(1)
 
 // 当前LLM评分和满分
-const currentLLMScore = ref(85.5) // 示例LLM评分
-const currentMaxScore = ref(100) // 当前题目满分
+const currentLLMScore = ref(8) // 示例LLM评分
+
+const currentMaxScore = computed(() => {
+  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
+  return current?.score || 0
+})
 
 // 计算当前题目的参考答案
 const currentReferenceAnswer = computed(() => {
-  const current = questions.value.find(q => q.id === currentQuestion.value)
+  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
   return current?.referenceAnswer || '暂无参考答案'
 })
 
 // 计算当前题目文本
 const currentQuestionText = computed(() => {
-  const current = questions.value.find(q => q.id === currentQuestion.value)
+  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
   return current?.question || '暂无题目内容'
 })
 
-// 加载所有可用的试卷题目
+// 获取当前学生对当前题目的回答
+const currentStudentAnswer = computed(() => {
+  const answer = studentAnswers.value.find(// 找到当前学生对当前题目的回答
+    ans => ans.student_id === currentStudentId.value && 
+           ans.question_id === currentQuestionId.value
+  )
+  return answer?.answer || '该学生未回答此题目'
+})
+
 const loadQuestions = async () => {
   try {
-    // 动态获取所有试卷目录
-    const paperDirectories = await discoverPaperDirectories()
-    const loadedQuestions: Question[] = []
+    // 1. 等待加载题目文件
+    const response = await fetch('/paper/example1/paper.json')
+    const data = await response.json()  // 等待解析JSON
     
-    // 尝试获取配置信息以获得更友好的名称
-    let paperConfigs: any[] = []
-    try {
-      const configResponse = await fetch('/paper/config.json')
-      if (configResponse.ok) {
-        const config = await configResponse.json()
-        paperConfigs = config.papers || []
-      }
-    } catch (error) {
-      console.warn('无法加载配置文件:', error)
-    }
+    // 2. 等待加载答案文件  
+    const answerResponse = await fetch('/paper/example1/answer.json')
+    const answerData = await answerResponse.json()  // 等待解析JSON
     
-    let questionIdCounter = 1
-    
-    for (const dir of paperDirectories) {
-      try {
-        // 加载试卷信息
-        const paperRes = await fetch(`/paper/${dir}/paper.json`)
-        const paperData = await paperRes.json()
-        
-        // 加载参考答案
-        let answerData: any = []
-        try {
-          const answerRes = await fetch(`/paper/${dir}/answer.json`)
-          answerData = await answerRes.json()
-        } catch (error) {
-          console.warn(`无法加载 ${dir} 的参考答案:`, error)
-        }
-        
-        // 从配置中获取试卷信息
-        const paperConfig = paperConfigs.find(config => config.directory === dir)
-        
-        // 处理题目数据（支持单个题目对象或题目数组）
-        const questions = Array.isArray(paperData) ? paperData : [paperData]
-        
-        for (const questionData of questions) {
-          // 查找对应的参考答案
-          const correspondingAnswer = Array.isArray(answerData) 
-            ? answerData.find((ans: any) => ans.question_id === questionData.question_id)
-            : (answerData?.question_id === questionData.question_id ? answerData : null)
-          
-          // 创建题目对象
-          const question: Question = {
-            id: questionIdCounter++,
-            name: `第${questionIdCounter - 1}题`,
-            score: questionData.score || 0,
-            question_id: questionData.question_id,
-            question: questionData.question,
-            referenceAnswer: correspondingAnswer?.answer || ''
-          }
-          
-          loadedQuestions.push(question)
-        }
-      } catch (error) {
-        console.error(`加载试卷 ${dir} 失败:`, error)
-      }
-    }
-    
-    questions.value = loadedQuestions
-    
-    // 设置默认当前题目
-    if (loadedQuestions.length > 0) {
-      currentQuestion.value = loadedQuestions[0].id
-      // 更新当前题目的满分
-      currentMaxScore.value = loadedQuestions[0].score
-    }
-    
-    console.log('加载的题目:', loadedQuestions)
+    // 3. 使用map将两个文件的数据合并成完整的题目对象
+    questions.value = data.map((question: any, index: number) => ({
+      question_id: question.question_id,  // ID
+      question: question.question,                  // 题目内容
+      score: question.score,                        // 分值
+      referenceAnswer: answerData[index]?.answer    // 参考答案
+    }))
   } catch (error) {
     console.error('加载题目失败:', error)
-    ElMessage.error('加载题目失败')
   }
 }
 
-// 动态发现试卷目录
-const discoverPaperDirectories = async (): Promise<string[]> => {
+// 加载学生答案数据
+const loadStudentAnswers = async () => {
   try {
-    // 首先尝试从配置文件获取试卷目录列表
-    try {
-      const configResponse = await fetch('/paper/config.json')
-      if (configResponse.ok) {
-        const config = await configResponse.json()
-        const directories = config.papers?.map((paper: any) => paper.directory) || []
-        
-        // 验证每个目录是否包含有效的paper.json文件
-        const validDirectories: string[] = []
-        for (const dir of directories) {
-          try {
-            const response = await fetch(`/paper/${dir}/paper.json`)
-            if (response.ok) {
-              validDirectories.push(dir)
-            }
-          } catch (error) {
-            console.warn(`目录 ${dir} 不包含有效的paper.json文件`)
-          }
-        }
-        
-        if (validDirectories.length > 0) {
-          return validDirectories
-        }
-      }
-    } catch (error) {
-      console.warn('无法加载配置文件，使用默认配置:', error)
-    }
+    const response = await fetch('/paper/example1/student_answer.json')
+    const data: StudentAnswer[] = await response.json()
     
-    // 如果配置文件不存在或无效，回退到默认目录
-    const knownDirectories = ['example1']
+    studentAnswers.value = data
     
-    // 验证目录是否存在有效的paper.json文件
-    const validDirectories: string[] = []
-    for (const dir of knownDirectories) {
-      try {
-        const response = await fetch(`/paper/${dir}/paper.json`)
-        if (response.ok) {
-          validDirectories.push(dir)
-        }
-      } catch (error) {
-        console.warn(`目录 ${dir} 不包含有效的paper.json文件`)
-      }
-    }
+    // 从学生答案中提取唯一的学生ID列表
+    const uniqueStudentIds = Array.from(new Set(data.map(item => item.student_id)))
     
-    return validDirectories.length > 0 ? validDirectories : ['example1']
+    // 为每个学生创建学生信息
+    studentList.value = uniqueStudentIds.map((id) => ({
+      id: id
+    }))
   } catch (error) {
-    console.error('发现试卷目录失败:', error)
-    return ['example1'] // 回退到默认目录
+    console.error('加载学生答案失败:', error)
   }
 }
 
 // 从paper中读取数据
 onMounted(async () => {
-  await loadQuestions()
+  try {
+    await loadQuestions()
+    await loadStudentAnswers()
+    
+    // 确保初始化当前题目和学生
+    if (questions.value.length > 0) {
+      currentQuestionId.value = 1  // 默认第1题
+    }
+    if (studentList.value.length > 0) {
+      currentStudentId.value = studentList.value[0].id  // 默认第一个学生
+    }
+  } catch (error) {
+    console.error('初始化失败:', error)
+    ElMessage.error('加载试卷数据失败，请刷新页面重试')
+  }
 })
 
-// 页码变化处理
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-  // TODO: 加载对应页码的试卷
-  ElMessage.success(`切换到第 ${page} 份试卷`)
-}
-
-// 跳转到指定学生的试卷
-const handleJumpToStudent = (student: {id?: string, paperIndex?: number }) => {
-  handlePageChange(student.paperIndex!)
-  ElMessage.success(`跳转到 ${student.id} 的试卷`)
+// 学生切换处理（统一处理直接切换和跳转）
+const handleStudentChange = (studentId: number) => {
+  currentStudentId.value = studentId
+  ElMessage.success(`切换到学生ID: ${studentId}`)
 }
 
 // 开始评分
@@ -308,14 +252,8 @@ const showCurrentQuestion = () => {
 
 // 处理题目切换
 const handleQuestionChange = (question: { id: number, name: string, score: number }) => {
-  currentQuestion.value = question.id
-  // 更新当前题目的满分
-  const selectedQuestion = questions.value.find(q => q.id === question.id)
-  if (selectedQuestion) {
-    currentMaxScore.value = selectedQuestion.score
-  }
+  currentQuestionId.value = question.id  // 这里的id是题目序号
   ElMessage.success(`切换到${question.name}，满分${question.score}分`)
-  // TODO: 加载对应题目的内容和统计数据
 }
 
 // 处理答案标记
