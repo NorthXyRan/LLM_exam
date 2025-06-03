@@ -1,9 +1,7 @@
 <template>
   <div class="paper-preview" @mouseup="handleTextSelection">
     <div class="preview-content">
-      <slot name="preview">
-          {{ studentAnswer }}
-      </slot>
+        {{ studentAnswer }}
     </div>
   </div>
 </template>
@@ -111,19 +109,7 @@ defineExpose({
   padding: 20px;
   flex: 1;
   min-height: 0;
-}
-
-/* === 答案内容样式 === */
-.student-answer {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.8);
-  line-height: 1.6;
-  padding: 12px;
-  background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #e5e5e5;
   white-space: pre-wrap;
-  min-height: 100px;
 }
 
 

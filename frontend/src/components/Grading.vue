@@ -168,6 +168,7 @@ const currentStudentAnswer = computed(() => {
   return answer?.answer || '该学生未回答此题目'
 })
 
+// 加载题目和答案
 const loadQuestions = async () => {
   try {
     // 1. 等待加载题目文件
@@ -180,7 +181,7 @@ const loadQuestions = async () => {
     
     // 3. 使用map将两个文件的数据合并成完整的题目对象
     questions.value = data.map((question: any, index: number) => ({
-      question_id: question.question_id,  // ID
+      question_id: question.question_id,            // ID
       question: question.question,                  // 题目内容
       score: question.score,                        // 分值
       referenceAnswer: answerData[index]?.answer    // 参考答案
@@ -190,7 +191,7 @@ const loadQuestions = async () => {
   }
 }
 
-// 加载学生答案数据
+// 加载学生答案
 const loadStudentAnswers = async () => {
   try {
     const response = await fetch('/paper/example1/student_answer.json')
@@ -198,12 +199,9 @@ const loadStudentAnswers = async () => {
     
     studentAnswers.value = data
     
-    // 从学生答案中提取唯一的学生ID列表
-    const uniqueStudentIds = Array.from(new Set(data.map(item => item.student_id)))
-    
-    // 为每个学生创建学生信息
-    studentList.value = uniqueStudentIds.map((id) => ({
-      id: id
+    // 提取学生ID并创建学生对象
+    studentList.value = data.map(item => ({
+      id: item.student_id
     }))
   } catch (error) {
     console.error('加载学生答案失败:', error)

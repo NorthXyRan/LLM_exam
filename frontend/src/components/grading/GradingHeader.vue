@@ -5,7 +5,7 @@
       <div class="select-section">
         <h1>选择试卷题目</h1>
         <div class="select-list">
-          <div 
+          <div
             v-for="(question, index) in questions" 
             :key="question.question_id"
             :class="[

@@ -77,7 +77,7 @@ interface Props {
   maxScore?: number
   studentAnswer?: string
 }
-
+// 从父组件Grading接收的props
 const props = withDefaults(defineProps<Props>(), {
   llmScore: 0,
   maxScore: 100,
