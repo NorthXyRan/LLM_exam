@@ -59,7 +59,6 @@
       <div class="tool-group">
         <el-button 
           type="default" 
-          
           size="medium"
           @click="handleEraseMarks"
           :disabled="!hasSelectedText"
@@ -138,26 +137,53 @@ const handleClearAll = () => {
 <style scoped>
 /* === 高亮工具栏内部样式 === */
 .highlight-toolbar {
-  padding: 0;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  overflow: hidden;
+  padding: 0 16px;
 }
 
 .tool-section {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: flex-start;
   width: 100%;
+  min-width: max-content;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.03);
+}
+
+/* WebKit浏览器（Chrome, Safari）滚动条样式 */
+.tool-section::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tool-section::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+}
+
+.tool-section::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.tool-section::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .tool-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 /* === 按钮样式重写 === */
@@ -166,6 +192,8 @@ const handleClearAll = () => {
   font-weight: 500;
   transition: all 0.2s ease;
   padding: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .highlight-toolbar :deep(.el-button--primary) {
@@ -241,6 +269,7 @@ const handleClearAll = () => {
   border-color: #E5E5E5;
   height: 24px;
   margin: 0 8px;
+  flex-shrink: 0;
 }
 
 /* === 按钮状态样式 === */
@@ -283,8 +312,8 @@ const handleClearAll = () => {
 /* === 响应式调整 === */
 @media (max-width: 768px) {
   .tool-section {
-    flex-wrap: wrap;
     gap: 8px;
+    padding: 4px 6px;
   }
   
   .tool-group {
@@ -292,7 +321,7 @@ const handleClearAll = () => {
   }
   
   .highlight-toolbar :deep(.el-button) {
-    padding: 4px 8px;
+    padding: 6px;
     font-size: 12px;
   }
   
@@ -301,4 +330,29 @@ const handleClearAll = () => {
     margin: 0 6px;
   }
 }
-</style> 
+
+@media (max-width: 480px) {
+  .tool-section {
+    gap: 6px;
+    padding: 4px;
+  }
+  
+  .tool-group {
+    gap: 4px;
+  }
+  
+  .highlight-toolbar :deep(.el-button) {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+  
+  .highlight-toolbar :deep(.el-button .el-icon) {
+    margin-right: 2px;
+  }
+  
+  .highlight-toolbar :deep(.el-divider--vertical) {
+    height: 18px;
+    margin: 0 4px;
+  }
+}
+</style>

@@ -1,18 +1,5 @@
 <template>
-  <div class="feedback-panel">
-    <!-- 标题区域 - 始终显示，内容根据状态切换 -->
-    <div class="feedback-header">
-      <div v-if="!selectedHighlight" class="header-title">
-        <h3>给分理由</h3>
-      </div>
-      <div v-else class="header-tag">
-        <span class="tag-label">标记类型：</span>
-        <el-tag :type="getTagType(selectedHighlight.type)" size="small">
-          {{ getTypeLabel(selectedHighlight.type) }}
-        </el-tag>
-      </div>
-    </div>
-    
+  <div class="feedback-panel"> 
     <!-- 内容区域 -->
     <div class="feedback-content">
       <!-- 给分理由区域 -->
@@ -215,40 +202,6 @@ defineExpose({
   height: 100%;
 }
 
-/* === 头部标题样式 === */
-.feedback-header {
-  padding: 16px 20px;
-  background: #F5F5F5;
-  border-radius: 12px 12px 0 0;
-  border-bottom: 1px solid #E5E5E5;
-  height: 56px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.header-title h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.87);
-  text-align: center;
-}
-
-.header-tag {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tag-label {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.6);
-  font-weight: 500;
-  white-space: nowrap;
-}
-
 /* === 内容区域 === */
 .feedback-content {
   flex: 1;
@@ -256,6 +209,8 @@ defineExpose({
   flex-direction: column;
   padding: 16px;
   background: #FFFFFF;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 /* === 给分理由区域 === */
@@ -263,6 +218,7 @@ defineExpose({
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 /* 理由显示模式 */
@@ -270,6 +226,8 @@ defineExpose({
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .reason-content-text {
@@ -280,6 +238,7 @@ defineExpose({
   font-size: 14px;
   white-space: pre-wrap;
   word-break: break-word;
+  min-height: 0;
 }
 
 /* 输入框模式 */
@@ -408,19 +367,6 @@ defineExpose({
 
 /* === 响应式调整 === */
 @media (max-width: 768px) {
-  .feedback-header {
-    padding: 12px 16px;
-    margin: -12px -12px 0;
-  }
-  
-  .header-title h3 {
-    font-size: 14px;
-  }
-  
-  .tag-label {
-    font-size: 12px;
-  }
-  
   .feedback-content {
     padding: 12px;
   }
@@ -428,7 +374,6 @@ defineExpose({
   .action-buttons {
     flex-direction: column;
     padding: 12px;
-    margin: 0 -12px -12px;
     gap: 8px;
   }
   

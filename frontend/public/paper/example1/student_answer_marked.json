@@ -42,14 +42,14 @@
                     "reason": "与标准答案“逼近有鲁棒性”相反，描述有误，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "逼近误差不为 0，但足够光滑且连续。",
                     "Scoring point": 6,
                     "reason": "描述了逼近“平滑连续”的特点，部分表达了鲁棒性，但未涉及“对噪声或误差有鲁棒性”，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 3
@@ -104,10 +104,10 @@
             "wrong": [
 
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 8
@@ -152,7 +152,7 @@
             "wrong": [
 
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "拉格朗日定理",
                     "Scoring point": 3,
@@ -164,7 +164,7 @@
                     "reason": "仅“多项式逼近”准确，但未涵盖最小二乘法、贝塞尔曲线等典型逼近解法，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 6
@@ -208,7 +208,7 @@
                     "reason": "未明确表达“精确通过所有数据点”，与标准答案有偏差，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "拉格朗日定理",
                     "Scoring point": 3,
@@ -220,7 +220,7 @@
                     "reason": "部分匹配标准答案，但未包括最小二乘法、贝塞尔曲线等主流逼近解法，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 5
@@ -269,14 +269,14 @@
                     "reason": "表达有误，逼近的优点应为“对噪声或误差有鲁棒性”，该句反而描述了噪声的负面影响，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "插值的解法是待定系数法：把各点代入约定的方程中，联立求解",
                     "Scoring point": 3,
                     "reason": "虽描述插值的核心思想，但未具体点出常用方法如多项式插值、拉格朗日插值、样条插值等，因此为模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 6
@@ -320,7 +320,7 @@
                     "reason": "未明确表达“精确通过所有数据点”或相关内容，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "将采样点的数值代入到函数中求解函数中的系数；待定系数法",
                     "Scoring point": 3,
@@ -332,7 +332,7 @@
                     "reason": "未提及“不经过原始数据点，可能失去部分细节”，为模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 5
@@ -387,10 +387,10 @@
             "wrong": [
 
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 8
@@ -439,14 +439,14 @@
                     "reason": "未能体现“不经过原始数据点，可能失去部分细节”，解释性较弱，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "拉格朗日插值法",
                     "Scoring point": 3,
                     "reason": "仅列举一种解法，未覆盖所有主要插值方法（如多项式插值、样条插值等），模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 6
@@ -485,7 +485,7 @@
                     "reason": "缺少逼近优点内容，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "拉格朗日描值法",
                     "Scoring point": 3,
@@ -502,7 +502,7 @@
                     "reason": "与'对噪声敏感'含义相近，但描述模糊，未完整说明高阶插值震荡等特征，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 3
@@ -557,10 +557,10 @@
                     "reason": "表述混乱，未能明确体现“不经过原始数据点，可能失去部分细节”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 0
@@ -604,7 +604,7 @@
                     "reason": "未准确体现“对噪声敏感、高阶插值震荡”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "多项式，将点代入解出系数的值, 比如有n个点就没最高题次数项为x21",
                     "Scoring point": 3,
@@ -616,7 +616,7 @@
                     "reason": "部分体现逼近的实际意义，但未直接说明对噪声的鲁棒性，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 3
@@ -665,14 +665,14 @@
                     "reason": "未表达“不经过原始数据点，可能失去部分细节”等核心缺点，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "插值是给定离散的数据生成数据之间的数值的过程, 为了得到更有规律的插值",
                     "Scoring point": 1,
                     "reason": "基本反映了插值的目的，但未突出“曲线经过所有数据点”，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 3
@@ -727,10 +727,10 @@
                     "reason": "未涉及“不经过原始数据点，可能失去部分细节”等逼近缺点，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 0
@@ -779,14 +779,14 @@
                     "reason": "“拉格朗日法”是插值法，错误归类；“心”无效，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "解法是使用多次贝塞尔曲线或者多项式",
                     "Scoring point": 3,
                     "reason": "“多项式”正确，“贝塞尔曲线”更常用于逼近，非主流插值方法，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 6
@@ -841,10 +841,10 @@
                     "reason": "未描述“不经过原始数据点，可能失去部分细节”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 0
@@ -898,10 +898,10 @@
                     "reason": "未表达“不经过原始数据点，可能失去部分细节”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 2
@@ -950,14 +950,14 @@
                     "reason": "未明确说明“逼近是不一定经过所有点的曲线”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "P(x)Σyili(x)",
                     "Scoring point": 3,
                     "reason": "表达插值函数形式，但未点出标准方法如拉格朗日插值、样条插值，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 5
@@ -1012,10 +1012,10 @@
             "wrong": [
 
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 8
@@ -1065,14 +1065,14 @@
                     "reason": "未表述“不经过原始数据点，可能失去部分细节”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "多项式插值、伯恩斯特、高斯",
                     "Scoring point": 3,
                     "reason": "“多项式插值”正确，但“伯恩斯特、高斯”更常用于逼近，表述混淆，仅部分匹配，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 0
@@ -1122,14 +1122,14 @@
             "wrong": [
 
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "逼近能更高效更简洁",
                     "Scoring point": 6,
                     "reason": "表达了效率和简洁性，部分涵盖标准答案“对噪声鲁棒、适合趋势建模”，但未完全覆盖，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 7
@@ -1183,10 +1183,10 @@
                     "reason": "未描述“不经过原始数据点，可能失去部分细节”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 4
@@ -1240,10 +1240,10 @@
                     "reason": "未描述逼近缺点，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 6
@@ -1283,7 +1283,7 @@
                     "reason": "未表达“对噪声敏感，高阶插值易出现震荡”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "多项式插值",
                     "Scoring point": 3,
@@ -1300,7 +1300,7 @@
                     "reason": "与“不经过原始数据点，可能失去部分细节”相近，但表述模糊"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 0
@@ -1355,10 +1355,10 @@
             "wrong": [
 
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 8
@@ -1412,10 +1412,10 @@
                     "reason": "未能描述“不经过原始数据点，可能失去部分细节”，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 4
@@ -1471,7 +1471,7 @@
                     "reason": "虽未完全覆盖标准答案，但已部分表达逼近的主要缺点，模糊回答"
                 }
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 5
@@ -1528,7 +1528,7 @@
             "ambiguous": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 3
@@ -1583,10 +1583,10 @@
                     "reason": "未体现逼近缺点核心，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 0
@@ -1640,10 +1640,10 @@
                     "reason": "未体现逼近缺点核心，错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
 
             ],
-            "abundant": [
+            "redundant": [
 
             ],
             "total score": 4

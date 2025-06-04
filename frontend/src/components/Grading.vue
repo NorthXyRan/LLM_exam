@@ -8,7 +8,7 @@
       :total-students="studentList.length"
       :graded-count="gradedCount"
       :graded-papers="gradedPapers"
-      :statistics="statistics"
+      :statistics="statisticsData"
       :student-list="studentList"
       @question-change="handleQuestionChange"
       @student-change="handleStudentChange"
@@ -23,6 +23,7 @@
       :max-score="currentMaxScore"
       :student-answer="currentStudentAnswer"
       :highlight-data="currentHighlightData"
+      :reference-answer="currentReferenceAnswer"
       @start-grading="startGrading"
       @mark-answer="handleMarkAnswer"
       @score-change="handleScoreChange"
@@ -46,6 +47,7 @@
         </div>
       </template>
     </el-dialog>
+
     <!-- 当前题目弹窗 -->
     <el-dialog
       v-model="currentQuestionVisible"
@@ -62,7 +64,6 @@
         </div>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
@@ -105,8 +106,8 @@ interface HighlightData {
   answer: {
     correct: HighlightItem[]
     wrong: HighlightItem[]
-    ambiguous: HighlightItem[]
-    abundant: HighlightItem[]
+    unclear: HighlightItem[]
+    redundant: HighlightItem[]
     'total score': number
   }
 }
@@ -139,42 +140,18 @@ const currentStudentId = ref<number>(1)
 const currentQuestionId = ref<number>(1)
 
 /**
- * ===== 批改进度数据 =====
- */
-const gradedCount = ref(20)
-const gradedPapers = ref([1, 2, 3, 5, 8, 13, 21])
-
-/**
  * ===== 主要数据存储 =====
  */
 const studentAnswers = ref<StudentAnswer[]>([])
 const studentList = ref<StudentInfo[]>([])
 const questions = ref<Question[]>([])
-
-// 高亮数据存储
 const highlightDataList = ref<HighlightData[]>([])
-
-/**
- * ===== 统计数据 =====
- */
-const statistics = ref({
-  highest: 8,
-  lowest: 0,
-  average: 4,
-  highestStudent: { id: 2 },
-  lowestStudent: { id: 16 }
-})
 
 /**
  * ===== 弹窗状态控制 =====
  */
 const referenceAnswerVisible = ref(false)
 const currentQuestionVisible = ref(false)
-
-/**
- * ===== 评分相关数据 =====
- */
-const currentLLMScore = ref(8)
 
 /**
  * ===== 计算属性 =====
@@ -226,6 +203,64 @@ const currentHighlightData = computed(() => {
   )
   
   return highlightData || null
+})
+
+// 当前LLM分数 - 从高亮数据中获取
+const currentLLMScore = computed(() => {
+  const highlightData = currentHighlightData.value
+  return highlightData?.answer?.['total score'] || 0
+})
+
+// 统计信息计算
+const statisticsData = computed(() => {
+  // 获取当前题目的所有学生分数
+  const currentQuestionScores = highlightDataList.value
+    .filter(data => data.question_id === currentQuestionId.value)
+    .map(data => ({
+      studentId: data.student_id,
+      score: data.answer['total score']
+    }))
+
+  if (currentQuestionScores.length === 0) {
+    return {
+      highest: 0,
+      lowest: 0,
+      average: 0,
+      highestStudent: { id: undefined },
+      lowestStudent: { id: undefined }
+    }
+  }
+
+  // 计算最高分、最低分、平均分
+  const scores = currentQuestionScores.map(item => item.score)
+  const highest = Math.max(...scores)
+  const lowest = Math.min(...scores)
+  const average = Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
+
+  // 找到最高分和最低分对应的学生
+  const highestStudent = currentQuestionScores.find(item => item.score === highest)
+  const lowestStudent = currentQuestionScores.find(item => item.score === lowest)
+
+  return {
+    highest,
+    lowest,
+    average,
+    highestStudent: { id: highestStudent?.studentId },
+    lowestStudent: { id: lowestStudent?.studentId }
+  }
+})
+
+// 已批改数据计算
+const gradedCount = computed(() => {
+  return highlightDataList.value
+    .filter(data => data.question_id === currentQuestionId.value)
+    .length
+})
+
+const gradedPapers = computed(() => {
+  return highlightDataList.value
+    .filter(data => data.question_id === currentQuestionId.value)
+    .map(data => data.student_id)
 })
 
 /**
@@ -319,6 +354,17 @@ const loadHighlightData = async () => {
 
     highlightDataList.value = data
     console.log(`成功加载 ${data.length} 条高亮标记数据`)
+    
+    // 统计信息
+    const questionScores = data.filter(item => item.question_id === 1).map(item => item.answer['total score'])
+    if (questionScores.length > 0) {
+      console.log('第1题统计:', {
+        最高分: Math.max(...questionScores),
+        最低分: Math.min(...questionScores),
+        平均分: Math.round((questionScores.reduce((sum, score) => sum + score, 0) / questionScores.length) * 10) / 10,
+        参与学生数: questionScores.length
+      })
+    }
   } catch (error) {
     console.error('加载高亮数据失败:', error)
     ElMessage.warning('无法读取高亮标记文件，将使用普通模式')
@@ -330,11 +376,10 @@ const loadHighlightData = async () => {
  */
 onMounted(async () => {
   try {
-    // 并发加载所有数据，包括新的高亮数据
     await Promise.all([
       loadQuestions(),
       loadStudentAnswers(),
-      loadHighlightData() // 新增
+      loadHighlightData()
     ])
 
     if (questions.value.length > 0) {
@@ -359,7 +404,7 @@ const handleStudentChange = (studentId: number) => {
   }
 
   currentStudentId.value = studentId
-  ElMessage.success(`切换到学生ID: ${studentId}`)
+  ElMessage.success(`切换到学生ID: ${studentId}，分数: ${currentLLMScore.value}`)
 }
 
 const handleQuestionChange = (question: { id: number, name: string, score: number }) => {
@@ -368,7 +413,11 @@ const handleQuestionChange = (question: { id: number, name: string, score: numbe
   }
 
   currentQuestionId.value = question.id
-  ElMessage.success(`切换到${question.name}，满分${question.score}分`)
+  
+  // 显示当前题目的统计信息
+  const stats = statisticsData.value
+  ElMessage.success(`切换到${question.name}，满分${question.score}分
+    最高分: ${stats.highest} | 最低分: ${stats.lowest} | 平均分: ${stats.average}`)
 }
 
 const startGrading = () => {
@@ -422,7 +471,6 @@ const showCurrentQuestion = () => {
 </script>
 
 <style scoped>
-/* 保持原有样式不变 */
 .grading-page {
   min-height: 100vh;
   background: #F5F5F5;

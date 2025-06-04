@@ -25,8 +25,8 @@ interface HighlightData {
   answer: {
     correct: HighlightItem[]
     wrong: HighlightItem[]
-    ambiguous: HighlightItem[]
-    abundant: HighlightItem[]
+    unclear: HighlightItem[]
+    redundant: HighlightItem[]
     'total score': number
   }
 }
@@ -34,7 +34,7 @@ interface HighlightData {
 // 选中高亮的数据类型
 interface SelectedHighlight {
   text: string
-  type: 'correct' | 'wrong' | 'ambiguous' | 'abundant'
+  type: 'correct' | 'wrong' | 'unclear' | 'redundant'
   reason: string
   scoringPoint: number
 }
@@ -74,14 +74,14 @@ const HIGHLIGHT_CONFIG = {
     borderColor: '#dc3545',
     label: '错误'
   },
-  ambiguous: { 
-    className: 'highlight-ambiguous', 
+  unclear: { 
+    className: 'highlight-unclear', 
     color: '#fff3cd', 
     borderColor: '#ffc107',
     label: '模糊'
   },
-  abundant: { 
-    className: 'highlight-abundant', 
+  redundant: { 
+    className: 'highlight-redundant', 
     color: '#d1ecf1', 
     borderColor: '#17a2b8',
     label: '冗余'
@@ -192,7 +192,7 @@ const handleHighlightClick = (event: Event) => {
   if (target.classList.contains('text-highlight')) {
     event.stopPropagation() // 阻止事件冒泡
     
-    const type = target.getAttribute('data-type') as 'correct' | 'wrong' | 'ambiguous' | 'abundant'
+    const type = target.getAttribute('data-type') as 'correct' | 'wrong' | 'unclear' | 'redundant'
     const text = target.getAttribute('data-text') || ''
     const reason = target.getAttribute('data-reason') || ''
     const scoringPoint = parseInt(target.getAttribute('data-scoring-point') || '0')
@@ -335,23 +335,23 @@ defineExpose({
 }
 
 /* 模糊答案高亮 */
-.preview-content :deep(.highlight-ambiguous) {
+.preview-content :deep(.highlight-unclear) {
   background-color: #fff3cd !important;
   border-left: 3px solid #ffc107 !important;
 }
 
-.preview-content :deep(.highlight-ambiguous:hover) {
+.preview-content :deep(.highlight-unclear:hover) {
   background-color: #ffeaa7 !important;
   border-left-color: #e0a800 !important;
 }
 
 /* 冗余答案高亮 */
-.preview-content :deep(.highlight-abundant) {
+.preview-content :deep(.highlight-redundant) {
   background-color: #d1ecf1 !important;
   border-left: 3px solid #17a2b8 !important;
 }
 
-.preview-content :deep(.highlight-abundant:hover) {
+.preview-content :deep(.highlight-redundant:hover) {
   background-color: #bee5eb !important;
   border-left-color: #138496 !important;
 }

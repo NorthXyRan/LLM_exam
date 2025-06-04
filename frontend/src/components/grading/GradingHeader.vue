@@ -46,7 +46,7 @@
       <div class="statistics-overview">
         <el-row :gutter="10">
           <!-- 批改进度 -->
-          <el-col :span="4">
+          <el-col :span="5">
             <div class="stat-item">
               <span class="label">已批改/总份数</span>
               <span class="value">{{ gradedCount }}/{{ totalStudents }}</span>
@@ -54,7 +54,7 @@
           </el-col>
           
           <!-- 最高分（可点击跳转） -->
-          <el-col :span="4">
+          <el-col :span="5">
             <div class="stat-item clickable" @click="jumpToStudent(statistics.highestStudent)">
               <span class="label">最高分</span>
               <span class="value highlight-good">{{ statistics.highest }}</span>
@@ -62,7 +62,7 @@
           </el-col>
           
           <!-- 最低分（可点击跳转） -->
-          <el-col :span="4">
+          <el-col :span="5">
             <div class="stat-item clickable" @click="jumpToStudent(statistics.lowestStudent)">
               <span class="label">最低分</span>
               <span class="value highlight-poor">{{ statistics.lowest }}</span>
@@ -70,7 +70,7 @@
           </el-col>
           
           <!-- 平均分 -->
-          <el-col :span="4">
+          <el-col :span="5">
             <div class="stat-item">
               <span class="label">平均分</span>
               <span class="value">{{ statistics.average }}</span>
@@ -87,15 +87,6 @@
             </div>
           </el-col>
           
-          <!-- 参考答案查看 -->
-          <el-col :span="4">
-            <div class="stat-item clickable" @click="emits('showReferenceAnswer')">
-              <span class="label">参考答案</span>
-              <span class="value icon-value">
-                <el-icon><Document /></el-icon>
-              </span>
-            </div>
-          </el-col>
         </el-row>
       </div>
     </div>
@@ -149,8 +140,6 @@ const emits = defineEmits<{
   (e: 'questionChange', question: { id: number; name: string; score: number }): void
   // 学生切换事件
   (e: 'studentChange', studentId: number): void
-  // 显示参考答案事件
-  (e: 'showReferenceAnswer'): void
   // 显示当前题目事件
   (e: 'showCurrentQuestion'): void
 }>()
@@ -246,7 +235,7 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   overflow-x: auto;              /* 水平滚动 */
   flex: 1;
   scrollbar-width: thin;         /* Firefox滚动条样式 */
-  scrollbar-color: #007AFF #F5F5F5;
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.03);
 }
 
 /* WebKit浏览器（Chrome, Safari）滚动条样式 */
@@ -255,13 +244,18 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
 }
 
 .select-list::-webkit-scrollbar-track {
-  background: #F5F5F5;
+  background: rgba(0, 0, 0, 0.03);
   border-radius: 2px;
 }
 
 .select-list::-webkit-scrollbar-thumb {
-  background-color: #007AFF;
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.select-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 /**
