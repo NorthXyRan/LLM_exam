@@ -23,7 +23,7 @@
           </div>
         </div>
 
-        <!-- 预览区域 -->
+        <!-- 预览区域 - 新增高亮数据传递 -->
         <div class="preview-area">
           <div class="area-card">
             <highlight-toolbar
@@ -36,8 +36,10 @@
             <paper-preview
               :highlight-mode="highlightMode"
               :student-answer="props.studentAnswer"
+              :highlight-data="props.highlightData"
               @text-selected="handleTextSelected"
               @mark-answer="handleMarkAnswer"
+              @highlight-clicked="handleHighlightClicked"
             >
               <template #preview>
                 <slot name="preview" />
@@ -46,7 +48,7 @@
           </div>
         </div>
 
-        <!-- 反馈区域 -->
+        <!-- 反馈区域 - 新增选中高亮数据传递 -->
         <div class="feedback-area">
           <div class="area-card">
             <feedback-panel
@@ -71,6 +73,33 @@ import HighlightToolbar from './HighlightToolbar.vue'
 import PaperPreview from './PaperPreview.vue'
 import ScoringSection from './ScoringSection.vue'
 
+// 新增：高亮数据类型定义
+interface HighlightItem {
+  'Student answer': string
+  'Scoring point': number
+  reason: string
+}
+
+interface HighlightData {
+  student_id: number
+  question_id: number
+  answer: {
+    correct: HighlightItem[]
+    wrong: HighlightItem[]
+    ambiguous: HighlightItem[]
+    abundant: HighlightItem[]
+    'total score': number
+  }
+}
+
+// 新增：选中高亮的数据类型
+interface SelectedHighlight {
+  text: string
+  type: 'correct' | 'wrong' | 'ambiguous' | 'abundant'
+  reason: string
+  scoringPoint: number
+}
+
 interface Props {
   paperInfo: {
     studentId?: number
@@ -78,12 +107,15 @@ interface Props {
   llmScore?: number
   maxScore?: number
   studentAnswer?: string
+  highlightData?: HighlightData | null // 新增：高亮数据
 }
-// 从父组件Grading接收的props
+
+// 从父组件Grading接收的props - 新增highlightData
 const props = withDefaults(defineProps<Props>(), {
   llmScore: 0,
   maxScore: 100,
-  studentAnswer: ''
+  studentAnswer: '',
+  highlightData: null // 新增
 })
 
 const emits = defineEmits<{
@@ -99,6 +131,8 @@ const emits = defineEmits<{
 // 高亮模式状态
 const highlightMode = ref(false)
 const hasSelectedText = ref(false)
+
+// 修改：选中高亮的数据结构，适配FeedbackPanel的接口
 const selectedHighlight = ref<{
   text: string
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
@@ -116,6 +150,26 @@ const handleTextSelected = (data: { text: string, hasSelection: boolean }) => {
   hasSelectedText.value = data.hasSelection
 }
 
+// 新增：处理高亮点击事件
+const handleHighlightClicked = (data: SelectedHighlight) => {
+  // 转换类型映射以适配FeedbackPanel
+  const typeMapping = {
+    'ambiguous': 'unclear' as const,
+    'abundant': 'redundant' as const,
+    'correct': 'correct' as const,
+    'wrong': 'wrong' as const
+  }
+
+  selectedHighlight.value = {
+    text: data.text,
+    type: typeMapping[data.type],
+    aiReason: data.reason
+  }
+  
+  ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
+  console.log('高亮点击数据:', data)
+}
+
 // 标记答案
 const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' } | string) => {
   let markData: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }
@@ -130,23 +184,12 @@ const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unc
   }
 
   // 模拟 AI 给分理由
-const aiReasons = {
-  correct: `该答案准确回答了问题的核心要点，
-逻辑清晰，
-表达规范。
-体
-现
-了
-学
-生
-对
-知
-识点
-的准确理解。`,
-  wrong: '该答案存在明显的概念错误或逻辑漏洞，与标准答案不符。需要进一步学习相关知识点。',
-  unclear: '该答案的表述不够清晰明确，可能存在歧义或不完整的地方。建议进一步阐述或补充说明。',
-  redundant: '该部分内容与题目要求不符或存在不必要的重复，应当删除或精简以提高答案质量。'
-}
+  const aiReasons = {
+    correct: `该答案准确回答了问题的核心要点，逻辑清晰，表达规范。体现了学生对知识点的准确理解。`,
+    wrong: '该答案存在明显的概念错误或逻辑漏洞，与标准答案不符。需要进一步学习相关知识点。',
+    unclear: '该答案的表述不够清晰明确，可能存在歧义或不完整的地方。建议进一步阐述或补充说明。',
+    redundant: '该部分内容与题目要求不符或存在不必要的重复，应当删除或精简以提高答案质量。'
+  }
 
   selectedHighlight.value = {
     text: markData.text,
@@ -181,13 +224,17 @@ const handleModifyReason = (data: any) => {
 const handleSaveReason = (data: any) => {
   console.log('保存理由:', data)
   ElMessage.success('理由已保存到本地')
-  // TODO: 实现保存理由到本地存储的逻辑
+  // TODO: 这里可以实现保存修改后的高亮数据到本地存储的逻辑
 }
 
 const handleSubmitReason = (data: any) => {
   console.log('提交理由:', data)
-  ElMessage.success('理由已提交到服务器')
-  // TODO: 实现提交理由到服务器的逻辑
+  ElMessage.success('理由已提交，将重新请求AI评分')
+  // TODO: 这里可以实现调用大模型API重新评分的逻辑
+  // 1. 构造新的prompt，告诉AI这个应该是正确/错误的
+  // 2. 调用API获取新的理由
+  // 3. 更新高亮数据
+  // 4. 刷新显示
 }
 
 const handleEraseMarks = () => {
@@ -243,7 +290,7 @@ const handleClearAll = () => {
   background: #F5F5F5;
   border: 1px solid #E5E5E5;
   border-radius: 12px;
-  padding: px;
+  padding: 0px;
   overflow: hidden;
   display: flex;
   flex-direction: column;

@@ -1,0 +1,1652 @@
+[
+    {
+        "student_id": 1,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值即拟合函数对应数据点的值的情况，能够和给定数据点对应",
+                    "Scoring point": 1,
+                    "reason": "基本匹配给分点 1，正确回答"
+                },
+                {
+                    "Student answer": "逼近即选取某一拟合函数和数据点间的误差足够小，能够反映数据点的分布情况，能够拟合数据点代表对象",
+                    "Scoring point": 2,
+                    "reason": "基本匹配给分点 2，正确回答"
+                },
+                {
+                    "Student answer": "插值误差为 0，能够覆盖并逼近数据点；",
+                    "Scoring point": 5,
+                    "reason": "强调“误差为 0”，与“精确通过所有点”一致，匹配给分点 5，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "插值即得到符合全部数据点的函数，但可能并不符合要求",
+                    "Scoring point": 3,
+                    "reason": "未具体提及如多项式插值、样条插值等方法，未匹配给分点 3，错误回答"
+                },
+                {
+                    "Student answer": "而逼近即根据数据点拟合出要误差足够小的分布曲线, 而函数拟合则是在误差范围内拟合出符合要求的数，对于函数拟合来说则选择可能得函数空间和基数函数，然后通过调整参数得到误差足够小的拟合函数",
+                    "Scoring point": 4,
+                    "reason": "描述了逼近的基本思路，但未提及“最小二乘法、样条逼近、贝塞尔曲线等”具体方法，未匹配给分点 4，错误回答"
+                },
+                {
+                    "Student answer": "插值得到的曲线不光滑、不连续",
+                    "Scoring point": 7,
+                    "reason": "实际插值方法一般是连续的，常见缺点应为“对噪声敏感，高阶插值震荡”，未正确描述，错误回答"
+                },
+                {
+                    "Student answer": "逼近则容易受到噪声点的影响出现意外值",
+                    "Scoring point": 8,
+                    "reason": "与标准答案“逼近有鲁棒性”相反，描述有误，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "逼近误差不为 0，但足够光滑且连续。",
+                    "Scoring point": 6,
+                    "reason": "描述了逼近“平滑连续”的特点，部分表达了鲁棒性，但未涉及“对噪声或误差有鲁棒性”，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 3
+        }
+    },
+    {
+        "student_id": 2,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "确保每个点都经过一条曲线",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可以忽略一些点的情况下得出一条曲线在上下范围内",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "（拉格朗日插值）多项式插值，分段插值，三角插值",
+                    "Scoring point": 3,
+                    "reason": "涵盖多项式插值、拉格朗日插值（标准答案所需），匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小2乘法 正交多项式逼近 正则化",
+                    "Scoring point": 4,
+                    "reason": "提及“最小二乘法”，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "精确通过数值点",
+                    "Scoring point": 5,
+                    "reason": "匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "灵活、稳定、可控制误差",
+                    "Scoring point": 6,
+                    "reason": "基本体现“对噪声或误差有鲁棒性”，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "过拟合，导致在非节点处偏离真实值",
+                    "Scoring point": 7,
+                    "reason": "表达了高阶插值可能出现震荡（Runge现象），匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不精确匹配数据点",
+                    "Scoring point": 8,
+                    "reason": "匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 8
+        }
+    },
+    {
+        "student_id": 3,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "确保每个点都经过曲线 噪声敏感问题",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可以忽略噪声同时生成一条曲线",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "便于操作，精确还原数据点",
+                    "Scoring point": 5,
+                    "reason": "“精确还原数据点”对应“精确通过所有点”，匹配给分点5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "抗噪声能力强",
+                    "Scoring point": 6,
+                    "reason": "对应“对噪声有鲁棒性”，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "过拟合（含噪音时），无法保证准确性",
+                    "Scoring point": 7,
+                    "reason": "“过拟合（含噪音时）”对应“对噪声敏感”，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "无法保证每个点的准确性",
+                    "Scoring point": 8,
+                    "reason": "对应“不经过原始数据点，可能失去部分细节”，匹配给分点8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "拉格朗日定理",
+                    "Scoring point": 3,
+                    "reason": "只列举了拉格朗日插值法，未覆盖多项式插值、样条插值等主流方法，模糊回答"
+                },
+                {
+                    "Student answer": "高斯函数，多项式逼近，Bernstein定理",
+                    "Scoring point": 4,
+                    "reason": "仅“多项式逼近”准确，但未涵盖最小二乘法、贝塞尔曲线等典型逼近解法，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 6
+        }
+    },
+    {
+        "student_id": 4,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "确保，每个点都经过一条曲线",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可以忽略一些点或在点的上下范围内的情况下得出一条曲线",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "抗噪能力强",
+                    "Scoring point": 6,
+                    "reason": "与“对噪声或误差有鲁棒性”一致，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "过拟合，一条极特殊的曲线经过对应点",
+                    "Scoring point": 7,
+                    "reason": "与“高阶插值易出现震荡，对噪声敏感”基本一致，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "无法保证点的准确性",
+                    "Scoring point": 8,
+                    "reason": "与“不经过原始数据点，可能失去部分细节”基本一致，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "易操作计算",
+                    "Scoring point": 5,
+                    "reason": "未明确表达“精确通过所有数据点”，与标准答案有偏差，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "拉格朗日定理",
+                    "Scoring point": 3,
+                    "reason": "仅列举单一方法，未覆盖多项式插值、样条插值等常用解法，模糊回答"
+                },
+                {
+                    "Student answer": "多项式逼近、Bernstein定理",
+                    "Scoring point": 4,
+                    "reason": "部分匹配标准答案，但未包括最小二乘法、贝塞尔曲线等主流逼近解法，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 5
+        }
+    },
+    {
+        "student_id": 5,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "这2者都是为了解决孤立点用光滑曲线边行规律整合，插值是“过点”零误差",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "这2者都是为了解决孤立点用光滑曲线边行规律整合，逼近则是可从点附近过",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近则是使用“最小二乘法”：用最小化平方误差进行拟合",
+                    "Scoring point": 4,
+                    "reason": "匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "用精确数据，所得到的数据是零误差",
+                    "Scoring point": 5,
+                    "reason": "与“精确通过所有数据点”含义一致，匹配给分点5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不适用噪声多的数据集，同时多方程联立解方程困难",
+                    "Scoring point": 7,
+                    "reason": "“不适用噪声多的数据集”与“对噪声敏感”相符，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可能会全丢失局部特征，精确度不够高，在模型选择上要注意",
+                    "Scoring point": 8,
+                    "reason": "“精确度不够高”与“不经过原始数据点，可能失去部分细节”一致，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "对噪声较多的数据集，使用逼近不减少它们的影响，曲线振荡",
+                    "Scoring point": 6,
+                    "reason": "表达有误，逼近的优点应为“对噪声或误差有鲁棒性”，该句反而描述了噪声的负面影响，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "插值的解法是待定系数法：把各点代入约定的方程中，联立求解",
+                    "Scoring point": 3,
+                    "reason": "虽描述插值的核心思想，但未具体点出常用方法如多项式插值、拉格朗日插值、样条插值等，因此为模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 6
+        }
+    },
+    {
+        "student_id": 6,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "最后的函数必定经过采样点。",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "用函数值靠近采样点的极值，不要求一定经过采样点",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘法",
+                    "Scoring point": 4,
+                    "reason": "匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不易受到误差点的影响，比较稳定",
+                    "Scoring point": 6,
+                    "reason": "匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "易受到误差点的影响",
+                    "Scoring point": 7,
+                    "reason": "与“对噪声敏感”相符，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "（无明确描述）",
+                    "Scoring point": 5,
+                    "reason": "未明确表达“精确通过所有数据点”或相关内容，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "将采样点的数值代入到函数中求解函数中的系数；待定系数法",
+                    "Scoring point": 3,
+                    "reason": "仅描述插值思想，未具体列举多项式插值、拉格朗日插值等常见方法，模糊回答"
+                },
+                {
+                    "Student answer": "有可能过拟合，和实际情况差距较大",
+                    "Scoring point": 8,
+                    "reason": "未提及“不经过原始数据点，可能失去部分细节”，为模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 5
+        }
+    },
+    {
+        "student_id": 7,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值：根据样本点描述出的插值曲线经过每个样本点",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近：根据样本点描述出的曲线逼近样本点但不经过。",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "拉格朗日插值法",
+                    "Scoring point": 3,
+                    "reason": "为插值常见方法，虽只列举一种，但已覆盖主要内容，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘法，正则化逼近",
+                    "Scoring point": 4,
+                    "reason": "“最小二乘法”是主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "能完美通过数据点，能保证光滑性",
+                    "Scoring point": 5,
+                    "reason": "“能完美通过数据点”对应“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "适合实际数据，避免过拟合",
+                    "Scoring point": 6,
+                    "reason": "表达了“对噪声或误差有鲁棒性”，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可能过拟合，计算复杂度高",
+                    "Scoring point": 7,
+                    "reason": "“可能过拟合”与“对噪声敏感，高阶插值震荡”一致，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不通过数据点可能丢失局部特征",
+                    "Scoring point": 8,
+                    "reason": "“不经过原始数据点，可能失去部分细节”一致，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 8
+        }
+    },
+    {
+        "student_id": 8,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值要求每个值都在对应的函数上",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近允许在函数附近,表达出点分布的趋势",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘法",
+                    "Scoring point": 4,
+                    "reason": "标准逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "能准确表达出所知值的函数关系",
+                    "Scoring point": 5,
+                    "reason": "“精确通过所有数据点”含义一致，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "符合现实生活实际，数据存在偏差期",
+                    "Scoring point": 6,
+                    "reason": "表达了逼近对误差的适用性，基本匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "所得函数可能存在过拟合,与实际不符",
+                    "Scoring point": 7,
+                    "reason": "与“对噪声敏感，高阶插值易出现震荡”一致，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "所得函数与样本数量关系大",
+                    "Scoring point": 8,
+                    "reason": "未能体现“不经过原始数据点，可能失去部分细节”，解释性较弱，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "拉格朗日插值法",
+                    "Scoring point": 3,
+                    "reason": "仅列举一种解法，未覆盖所有主要插值方法（如多项式插值、样条插值等），模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 6
+        }
+    },
+    {
+        "student_id": 9,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "所有的点都在拟定的函数上",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "所有的点需要在拟合的函数附近",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘通近",
+                    "Scoring point": 4,
+                    "reason": "为主流逼近方法，匹配给分点 4，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "对于大数据来说，能给到一个比较符合的函数，但是计算量下，更复杂。",
+                    "Scoring point": 8,
+                    "reason": "未表达“不经过原始数据点，可能失去部分细节”等核心缺点，错误回答"
+                },
+                {
+                    "Student answer": "未作优点回答",
+                    "Scoring point": 6,
+                    "reason": "缺少逼近优点内容，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "拉格朗日描值法",
+                    "Scoring point": 3,
+                    "reason": "拼写有误但能理解为'拉格朗日插值法'，且只列举一种插值方法，未涵盖其他常见插值法，模糊回答"
+                },
+                {
+                    "Student answer": "插值可以给到一个明确的线",
+                    "Scoring point": 5,
+                    "reason": "“明确的线”表达接近“精确通过所有点”，但不完全等价，表述含混，模糊回答"
+                },
+                {
+                    "Student answer": "但是对于数据过于庞犬的时，误差会比较大",
+                    "Scoring point": 7,
+                    "reason": "与'对噪声敏感'含义相近，但描述模糊，未完整说明高阶插值震荡等特征，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 3
+        }
+    },
+    {
+        "student_id": 10,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+
+            ],
+            "wrong": [
+                {
+                    "Student answer": "未作出插值定义描述",
+                    "Scoring point": 1,
+                    "reason": "未描述“插值是给定一组离散点，寻找一条经过所有点的曲线或函数”，错误回答"
+                },
+                {
+                    "Student answer": "逼近的问题是会造成面数成像剧烈抖动，过拟合化",
+                    "Scoring point": 2,
+                    "reason": "未描述“逼近是寻找一条尽可能接近但不一定经过所有点的曲线或函数”，错误回答"
+                },
+                {
+                    "Student answer": "解法是一",
+                    "Scoring point": 3,
+                    "reason": "无有效内容，错误回答"
+                },
+                {
+                    "Student answer": "解法是调参或减少方程的平方数量",
+                    "Scoring point": 4,
+                    "reason": "表达模糊，未明确提及“最小二乘法、贝塞尔曲线等主流逼近方法”，错误回答"
+                },
+                {
+                    "Student answer": "优点是可使线条平滑",
+                    "Scoring point": 5,
+                    "reason": "未体现“精确通过所有数据点”，且平滑性并非插值法的主要优点，错误回答"
+                },
+                {
+                    "Student answer": "优点是有可能完美贴合",
+                    "Scoring point": 6,
+                    "reason": "逼近不强调“完美贴合”，主要优点应为“对噪声或误差有鲁棒性”，错误回答"
+                },
+                {
+                    "Student answer": "未作出缺点描述",
+                    "Scoring point": 7,
+                    "reason": "无描述内容，错误回答"
+                },
+                {
+                    "Student answer": "会因为过子追求完关而产生噪声…",
+                    "Scoring point": 8,
+                    "reason": "表述混乱，未能明确体现“不经过原始数据点，可能失去部分细节”，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 0
+        }
+    },
+    {
+        "student_id": 11,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "求过一些点的曲线（函数）",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "曲线必过给出的点（代入等于0）",
+                    "Scoring point": 5,
+                    "reason": "匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可能会不过给出的点",
+                    "Scoring point": 8,
+                    "reason": "匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "求一些点的曲线",
+                    "Scoring point": 2,
+                    "reason": "表达不清楚“逼近不一定经过所有点”，错误回答"
+                },
+                {
+                    "Student answer": "利用各种数学方法求解曲线，使得结果逼近实际曲线，比如利用 Gauss 函数解",
+                    "Scoring point": 4,
+                    "reason": "表达模糊，未提及主流逼近方法如最小二乘法，多项式逼近，错误回答"
+                },
+                {
+                    "Student answer": "其他的点可能不做太符合预期，只适合于多项式，而且只能是函数。",
+                    "Scoring point": 7,
+                    "reason": "未准确体现“对噪声敏感、高阶插值震荡”，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "多项式，将点代入解出系数的值, 比如有n个点就没最高题次数项为x21",
+                    "Scoring point": 3,
+                    "reason": "表达了插值思想，未列举主流插值方法（如拉格朗日、样条等），模糊回答"
+                },
+                {
+                    "Student answer": "所得曲线会比较符合实际，可以用于解非函数曲线",
+                    "Scoring point": 6,
+                    "reason": "部分体现逼近的实际意义，但未直接说明对噪声的鲁棒性，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 3
+        }
+    },
+    {
+        "student_id": 12,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "逼近是给定一组数据（通常很多），反向推出一个函数可尽可能的拟合这一组数据",
+                    "Scoring point": 2,
+                    "reason": "“尽可能拟合”但不要求经过所有点，匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "常见的有线性插值，双线性插值等牛顿插值",
+                    "Scoring point": 3,
+                    "reason": "提及插值常用方法，“牛顿插值”正确，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "常见的有多项式逼近，最小二乘法等",
+                    "Scoring point": 4,
+                    "reason": "“最小二乘法”属于主流逼近方法，匹配给分点4，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "未描述逼近优点",
+                    "Scoring point": 6,
+                    "reason": "未涉及“对噪声或误差有鲁棒性”等核心内容，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值优点",
+                    "Scoring point": 5,
+                    "reason": "未明确“精确通过所有数据点”或相关内容，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值缺点",
+                    "Scoring point": 7,
+                    "reason": "未提及“对噪声敏感、高阶插值震荡”等插值缺点，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近缺点",
+                    "Scoring point": 8,
+                    "reason": "未表达“不经过原始数据点，可能失去部分细节”等核心缺点，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "插值是给定离散的数据生成数据之间的数值的过程, 为了得到更有规律的插值",
+                    "Scoring point": 1,
+                    "reason": "基本反映了插值的目的，但未突出“曲线经过所有数据点”，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 3
+        }
+    },
+    {
+        "student_id": 13,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+
+            ],
+            "wrong": [
+                {
+                    "Student answer": "插入信息，用于容量逐放等的调用，更加准动，但它不会完全符合要求，散点化，类似于定点函数",
+                    "Scoring point": 1,
+                    "reason": "未体现“插值是寻找一条经过所有点的曲线或函数”，错误回答"
+                },
+                {
+                    "Student answer": "平滑性其近函物调用，灵活性高，处理难度大，占用大，在实际应用中更为常用，类似于极限",
+                    "Scoring point": 2,
+                    "reason": "未体现“逼近是寻找一条尽可能接近但不一定经过所有点的曲线或函数”，错误回答"
+                },
+                {
+                    "Student answer": "未描述任何主流插值解法",
+                    "Scoring point": 3,
+                    "reason": "未提及多项式插值、拉格朗日插值等主流方法，错误回答"
+                },
+                {
+                    "Student answer": "未描述任何主流逼近解法",
+                    "Scoring point": 4,
+                    "reason": "未提及最小二乘法、多项式逼近等主流方法，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值优点",
+                    "Scoring point": 5,
+                    "reason": "未涉及“精确通过所有数据点”等插值优点，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近优点",
+                    "Scoring point": 6,
+                    "reason": "未涉及“对噪声有鲁棒性”等逼近优点，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值缺点",
+                    "Scoring point": 7,
+                    "reason": "未涉及“对噪声敏感、高阶插值震荡”等缺点，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近缺点",
+                    "Scoring point": 8,
+                    "reason": "未涉及“不经过原始数据点，可能失去部分细节”等逼近缺点，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 0
+        }
+    },
+    {
+        "student_id": 14,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值是指穿过每一个点的曲线，确保了每一个点都会被穿过",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "通近是曲线不经过每一个点，只是会无限或有限地对一些点进行趋近，从而形成一条较为连续平滑的曲线。",
+                    "Scoring point": 2,
+                    "reason": "基本匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "优点是能确保每一个点都会穿过，不会因来一点的特殊而没有穿过，获得最真实的图像",
+                    "Scoring point": 5,
+                    "reason": "基本匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "优点是直观看上去较为舒服，比较平滑连续，不会出现一个离谱的点影响整个曲线的情况",
+                    "Scoring point": 6,
+                    "reason": "基本匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "缺点是会所有点穿过有时候会浪费空间，而且一些过于离谱的点也会影响直观上的感受",
+                    "Scoring point": 7,
+                    "reason": "提到“离谱点影响感受”，对应“对噪声敏感”，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不能精确地对应上每一个点，而导致有时候出现一些无法避免的偏差，影响了对于精确性的要求",
+                    "Scoring point": 8,
+                    "reason": "基本匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "解法是心或者拉格朗日法",
+                    "Scoring point": 4,
+                    "reason": "“拉格朗日法”是插值法，错误归类；“心”无效，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "解法是使用多次贝塞尔曲线或者多项式",
+                    "Scoring point": 3,
+                    "reason": "“多项式”正确，“贝塞尔曲线”更常用于逼近，非主流插值方法，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 6
+        }
+    },
+    {
+        "student_id": 15,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+
+            ],
+            "wrong": [
+                {
+                    "Student answer": "通过一些点来计算曲线",
+                    "Scoring point": 1,
+                    "reason": "未明确“插值是寻找一条经过所有点的曲线或函数”，错误回答"
+                },
+                {
+                    "Student answer": "曲线上每一点都可以用多项式表示",
+                    "Scoring point": 2,
+                    "reason": "表达不清“逼近是寻找尽可能接近但不一定经过所有点的曲线或函数”，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值或逼近主流解法",
+                    "Scoring point": 3,
+                    "reason": "缺乏如拉格朗日插值、样条插值、最小二乘法等主流方法，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值或逼近主流解法",
+                    "Scoring point": 4,
+                    "reason": "缺乏如拉格朗日插值、样条插值、最小二乘法等主流方法，错误回答"
+                },
+                {
+                    "Student answer": "简单",
+                    "Scoring point": 5,
+                    "reason": "未表达“精确通过所有点”，错误回答"
+                },
+                {
+                    "Student answer": "拟合效果好",
+                    "Scoring point": 6,
+                    "reason": "未表达“对噪声有鲁棒性”，错误回答"
+                },
+                {
+                    "Student answer": "拟合效果不好",
+                    "Scoring point": 7,
+                    "reason": "未描述“对噪声敏感，高阶插值易震荡”，错误回答"
+                },
+                {
+                    "Student answer": "复杂",
+                    "Scoring point": 8,
+                    "reason": "未描述“不经过原始数据点，可能失去部分细节”，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 0
+        }
+    },
+    {
+        "student_id": 16,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值有线性插值、二次函数插值等方法，基本上只依靠附近的几个点",
+                    "Scoring point": 3,
+                    "reason": "提及插值的常用方法，“线性插值、二次函数插值”可视为多项式插值类型，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近有多元函数拟合、多项式拟合等方法，一般用梯度下降或最小二乘求之",
+                    "Scoring point": 4,
+                    "reason": "提及“最小二乘法、多项式拟合”，匹配给分点 4，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "插值主要解决补充更多给定点的问题，所求点不一定要求在曲线上",
+                    "Scoring point": 1,
+                    "reason": "表达错误，插值应为“曲线经过所有给定点”，错误回答"
+                },
+                {
+                    "Student answer": "而逼近即为拟合，是想用给定点求出精确的曲线之积",
+                    "Scoring point": 2,
+                    "reason": "表达模糊，未准确反映“逼近为寻找尽可能接近但不一定经过所有点的曲线”，错误回答"
+                },
+                {
+                    "Student answer": "插值理解难度小，方法快而简单",
+                    "Scoring point": 5,
+                    "reason": "未表达“精确通过所有点”，错误回答"
+                },
+                {
+                    "Student answer": "逼近方法求出的点坐标更精确",
+                    "Scoring point": 6,
+                    "reason": "不准确，逼近优点应为“对噪声或误差有鲁棒性”，错误回答"
+                },
+                {
+                    "Student answer": "插值所求的点坐标误差大",
+                    "Scoring point": 7,
+                    "reason": "未表达“对噪声敏感、高阶插值易出现震荡”，错误回答"
+                },
+                {
+                    "Student answer": "逼近方法较复杂，对参数要求严格，存在欠拟合，过拟合等问题",
+                    "Scoring point": 8,
+                    "reason": "未表达“不经过原始数据点，可能失去部分细节”，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 2
+        }
+    },
+    {
+        "student_id": 17,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "最小二乘逼近，Bernstein多项式逼近",
+                    "Scoring point": 4,
+                    "reason": "包含标准答案的逼近主流方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "数据误差为0",
+                    "Scoring point": 5,
+                    "reason": "对应“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不会被坏数据带坏，拟合度好",
+                    "Scoring point": 6,
+                    "reason": "表达了“对噪声有鲁棒性”，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可能被噪声数据影响",
+                    "Scoring point": 7,
+                    "reason": "与“对噪声敏感”含义一致，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "数据误差不为0",
+                    "Scoring point": 8,
+                    "reason": "表达“可能失去部分细节、不精确”，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "未描述插值定义",
+                    "Scoring point": 1,
+                    "reason": "未明确说明“插值是曲线经过所有点”，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近定义",
+                    "Scoring point": 2,
+                    "reason": "未明确说明“逼近是不一定经过所有点的曲线”，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "P(x)Σyili(x)",
+                    "Scoring point": 3,
+                    "reason": "表达插值函数形式，但未点出标准方法如拉格朗日插值、样条插值，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 5
+        }
+    },
+    {
+        "student_id": 18,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "构造一个函数，使其严格经过所有给定的数据点",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "构造一个函数，使其在整体趋势上接近原始数据或函数",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "多项式插值、拉格朗日",
+                    "Scoring point": 3,
+                    "reason": "包含标准答案中的主流插值方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘插值",
+                    "Scoring point": 4,
+                    "reason": "为主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "严格经过所有数据点，适合精确重建",
+                    "Scoring point": 5,
+                    "reason": "“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "忽略噪声影响反映整体趋势，避免高次多项式震荡",
+                    "Scoring point": 6,
+                    "reason": "表达了“对噪声有鲁棒性，适合趋势建模”，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可能有过拟合风险，全局插值当节点较多时效率会下降",
+                    "Scoring point": 7,
+                    "reason": "“过拟合风险”对应“对噪声敏感，高阶插值易出现震荡”，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "可能会忽略掉某些关键节点的信息",
+                    "Scoring point": 8,
+                    "reason": "“不经过原始数据点，可能失去部分细节”，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 8
+        }
+    },
+    {
+        "student_id": 19,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+
+            ],
+            "wrong": [
+                {
+                    "Student answer": "未描述插值的“问题”本质",
+                    "Scoring point": 1,
+                    "reason": "缺乏“插值是曲线经过所有点”的核心定义，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近的“问题”本质",
+                    "Scoring point": 2,
+                    "reason": "缺乏“逼近是不一定经过所有点”的核心定义，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近的解法",
+                    "Scoring point": 4,
+                    "reason": "未提及最小二乘法、多项式逼近等主流逼近方法，错误回答"
+                },
+                {
+                    "Student answer": "表达紧凑、简单稳定、拟合效果较好",
+                    "Scoring point": 5,
+                    "reason": "未表达“精确通过所有数据点”，表述与标准答案有差距，错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近优点",
+                    "Scoring point": 6,
+                    "reason": "未涉及“对噪声有鲁棒性”等内容，错误回答"
+                },
+                {
+                    "Student answer": "未描述插值缺点",
+                    "Scoring point": 7,
+                    "reason": "未提及“对噪声敏感、高阶插值震荡”等内容，错误回答"
+                },
+                {
+                    "Student answer": "可能存在欠拟合或过拟合",
+                    "Scoring point": 8,
+                    "reason": "未表述“不经过原始数据点，可能失去部分细节”，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "多项式插值、伯恩斯特、高斯",
+                    "Scoring point": 3,
+                    "reason": "“多项式插值”正确，但“伯恩斯特、高斯”更常用于逼近，表述混淆，仅部分匹配，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 0
+        }
+    },
+    {
+        "student_id": 20,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "给定一组已知的数据点, 插值函数必须严格等于原始数据，插值强调精确通过每个数据点, 插值误差为零但可能导致高次多项式",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "是在一个整体上尽可能接近这些点的函数，逼近关注总体趋势, 逼近总体误差小",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "酷酷求解线性方程。如拉格朗日求值",
+                    "Scoring point": 3,
+                    "reason": "拉格朗日插值属于主流方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "优化问题，如最小二乘法，切比雪夫逼近",
+                    "Scoring point": 4,
+                    "reason": "“最小二乘法”是主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "优在于精确经过数据点",
+                    "Scoring point": 5,
+                    "reason": "等同于“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "数据量大时，会导致结果不稳定，且复杂度高，需要求很多方程",
+                    "Scoring point": 7,
+                    "reason": "不稳定和高复杂度可理解为“对噪声敏感，高阶插值震荡”，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "不能精确覆盖每个数据",
+                    "Scoring point": 8,
+                    "reason": "等同于“不经过原始数据点，可能失去部分细节”，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "逼近能更高效更简洁",
+                    "Scoring point": 6,
+                    "reason": "表达了效率和简洁性，部分涵盖标准答案“对噪声鲁棒、适合趋势建模”，但未完全覆盖，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 7
+        }
+    },
+    {
+        "student_id": 21,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "通过找到一个函数, 让该函数尽可能逼近这些点（目标点）",
+                    "Scoring point": 2,
+                    "reason": "表达了“整体趋势上接近原始数据”，匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "拉格朗日插值法，牛顿插值等",
+                    "Scoring point": 3,
+                    "reason": "为主流插值方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘法、泰勒展开",
+                    "Scoring point": 4,
+                    "reason": "“最小二乘法”为主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "对于数据点较多时，误差会很大，误差与阶数有关",
+                    "Scoring point": 7,
+                    "reason": "间接表达了“高阶插值易出现震荡”，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "找到一个函数，在某个特定点有一个特定值",
+                    "Scoring point": 1,
+                    "reason": "表达不清“函数必须经过所有给定点”，错误回答"
+                },
+                {
+                    "Student answer": "适用于数据点较少的场景",
+                    "Scoring point": 5,
+                    "reason": "未表达“精确通过所有点”，错误回答"
+                },
+                {
+                    "Student answer": "适用于数据点较多的场景",
+                    "Scoring point": 6,
+                    "reason": "未表达“对噪声或误差有鲁棒性”，错误回答"
+                },
+                {
+                    "Student answer": "逼近的误差与逼近的形式和逼近的函数有关",
+                    "Scoring point": 8,
+                    "reason": "未描述“不经过原始数据点，可能失去部分细节”，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 4
+        }
+    },
+    {
+        "student_id": 22,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值算法一定经过样本点",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近算法可以不经过样本点",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "多项式",
+                    "Scoring point": 3,
+                    "reason": "虽未具体说明拉格朗日、牛顿等主流方法，但“多项式插值”是标准插值方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘法",
+                    "Scoring point": 4,
+                    "reason": "为主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "因为插值经过所有样本点，所以更精确",
+                    "Scoring point": 5,
+                    "reason": "与“精确通过所有数据点”一致，匹配给分点5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "更难运算，插值因为要经过所有样本点，所以容易发生抖动，产生无效结果。",
+                    "Scoring point": 7,
+                    "reason": "“抖动”对应“高阶插值易出现震荡”，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "（无）",
+                    "Scoring point": 6,
+                    "reason": "未描述逼近优点，错误回答"
+                },
+                {
+                    "Student answer": "（无）",
+                    "Scoring point": 8,
+                    "reason": "未描述逼近缺点，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 6
+        }
+    },
+    {
+        "student_id": 23,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+
+            ],
+            "wrong": [
+                {
+                    "Student answer": "插值法通过多项式插值进行函数拟合的一种方法",
+                    "Scoring point": 1,
+                    "reason": "没有描述“插值必须经过所有给定数据点”，错误回答"
+                },
+                {
+                    "Student answer": "逼近法通过数值逼近进行函数拟合的一种方法",
+                    "Scoring point": 2,
+                    "reason": "没有说明“逼近是尽可能接近数据点但不一定经过所有点”，错误回答"
+                },
+                {
+                    "Student answer": "数值逼近",
+                    "Scoring point": 4,
+                    "reason": "未提及主流逼近方法如最小二乘法、多项式逼近等，错误回答"
+                },
+                {
+                    "Student answer": "更加直观",
+                    "Scoring point": 6,
+                    "reason": "未体现“对噪声有鲁棒性，适合趋势建模”，错误回答"
+                },
+                {
+                    "Student answer": "直观程度不够",
+                    "Scoring point": 7,
+                    "reason": "未表达“对噪声敏感，高阶插值易出现震荡”，错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "多项式插值",
+                    "Scoring point": 3,
+                    "reason": "为主流方法，但未具体列举更多常用插值法（如拉格朗日、样条等）"
+                },
+                {
+                    "Student answer": "可以更加精准地进行函数拟合",
+                    "Scoring point": 5,
+                    "reason": "表达接近标准答案“精确通过所有数据点”，但不够明确"
+                },
+                {
+                    "Student answer": "不够精确",
+                    "Scoring point": 8,
+                    "reason": "与“不经过原始数据点，可能失去部分细节”相近，但表述模糊"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 0
+        }
+    },
+    {
+        "student_id": 24,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值核心目标是通过所有已知数据点",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "核心目标拟合尽可能更多的数据，不强制通过数据点使得目标函数与数据点误差尽可能小",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "拉格朗日多项式，通过构造多项式通过所有点",
+                    "Scoring point": 3,
+                    "reason": "为主流插值方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小化二乘法、多项式逼近，优化目标函数",
+                    "Scoring point": 4,
+                    "reason": "均为主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "高精度，严格通过数据点",
+                    "Scoring point": 5,
+                    "reason": "与“精确通过所有数据点”一致，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "模型简洁美观，更能体现数据一般规律",
+                    "Scoring point": 6,
+                    "reason": "表达了“适合趋势建模，鲁棒性强”的含义，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "会导致过拟合",
+                    "Scoring point": 7,
+                    "reason": "与“对噪声敏感，高阶插值震荡”一致，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "无法保证通过数据点，会造成局部误差大",
+                    "Scoring point": 8,
+                    "reason": "与“不经过原始数据点，可能失去部分细节”一致，匹配给分点 8，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 8
+        }
+    },
+    {
+        "student_id": 25,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "求解方程组（拉格朗日求解法）",
+                    "Scoring point": 3,
+                    "reason": "“拉格朗日求解法”为主流插值方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "多项式逼近、最小二乘法、Bernstein构造多项式、RBPF、神经网络",
+                    "Scoring point": 4,
+                    "reason": "包含主流逼近方法（多项式逼近、最小二乘法），匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "与现有数据点完全贴合、无误差",
+                    "Scoring point": 5,
+                    "reason": "等同于“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "受噪声影响，不光滑难以符合现实物理要求",
+                    "Scoring point": 7,
+                    "reason": "“受噪声影响”与“对噪声敏感”一致，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "找到一个函数曲线",
+                    "Scoring point": 1,
+                    "reason": "未明确“插值要求函数曲线经过所有数据点”，错误回答"
+                },
+                {
+                    "Student answer": "拟合现有数据点",
+                    "Scoring point": 2,
+                    "reason": "未明确“不一定经过所有点，只需拟合趋势”，错误回答"
+                },
+                {
+                    "Student answer": "光滑曲线",
+                    "Scoring point": 6,
+                    "reason": "表达不够准确，未体现“对噪声或误差有鲁棒性，适合趋势建模”，错误回答"
+                },
+                {
+                    "Student answer": "过拟合/欠拟合",
+                    "Scoring point": 8,
+                    "reason": "未能描述“不经过原始数据点，可能失去部分细节”，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 4
+        }
+    },
+    {
+        "student_id": 26,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值要求最终的拟合函数严格经过所有样本点",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "而逼近则只要求足够靠近即可",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "能最大程度地拟合样本点",
+                    "Scoring point": 5,
+                    "reason": "等同于“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
+                },
+                {
+                    "Student answer": "一定程度拟合样本，不易受到噪声影响",
+                    "Scoring point": 6,
+                    "reason": "与“对噪声或误差有鲁棒性”一致，匹配给分点 6，正确回答（1分）"
+                },
+                {
+                    "Student answer": "容易受到极端样本和噪声的影响而失真，出现过拟合现象",
+                    "Scoring point": 7,
+                    "reason": "对应“对噪声敏感，高阶插值易出现震荡”，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "（未描述插值解法）",
+                    "Scoring point": 3,
+                    "reason": "未描述任何具体解法（如多项式插值），错误回答"
+                },
+                {
+                    "Student answer": "（未描述逼近解法）",
+                    "Scoring point": 4,
+                    "reason": "未描述任何具体解法（如最小二乘法），错误回答"
+                }
+            ],
+            "ambiguous": [
+                {
+                    "Student answer": "拟合程度可能较低，函数过于平滑，出现欠拟合",
+                    "Scoring point": 8,
+                    "reason": "虽未完全覆盖标准答案，但已部分表达逼近的主要缺点，模糊回答"
+                }
+            ],
+            "abundant": [
+
+            ],
+            "total score": 5
+        }
+    },
+    {
+        "student_id": 27,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值指构造一个函数，使其经过所有样本点，精确匹配",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近指寻找一个函数，使其尽可能接近已知样本点，模糊匹配",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "插值由于要求严格符合所有样本点，容易过拟合，插值通常函数更复杂，多项式次数更高，插值计算成本更高",
+                    "Scoring point": 7,
+                    "reason": "对应“对噪声敏感，高阶插值震荡”，匹配给分点 7，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "（未描述插值的解法）",
+                    "Scoring point": 3,
+                    "reason": "未描述任何具体解法，错误回答"
+                },
+                {
+                    "Student answer": "（未描述逼近的解法）",
+                    "Scoring point": 4,
+                    "reason": "未描述任何具体解法，错误回答"
+                },
+                {
+                    "Student answer": "（未描述插值优点）",
+                    "Scoring point": 5,
+                    "reason": "未明确描述插值优点，错误回答"
+                },
+                {
+                    "Student answer": "（未描述逼近优点）",
+                    "Scoring point": 6,
+                    "reason": "未明确描述逼近优点，错误回答"
+                },
+                {
+                    "Student answer": "（未描述逼近缺点）",
+                    "Scoring point": 8,
+                    "reason": "未描述逼近缺点，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 3
+        }
+    },
+    {
+        "student_id": 28,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+
+            ],
+            "wrong": [
+                {
+                    "Student answer": "未描述插值的本质问题（插值要求经过所有点）",
+                    "Scoring point": 1,
+                    "reason": "错误回答"
+                },
+                {
+                    "Student answer": "未描述逼近的本质问题（逼近仅需接近所有点）",
+                    "Scoring point": 2,
+                    "reason": "错误回答"
+                },
+                {
+                    "Student answer": "根据函数带入点求值",
+                    "Scoring point": 3,
+                    "reason": "描述不具体，未提及主流方法，错误回答"
+                },
+                {
+                    "Student answer": "用曲线去拟合逼近点",
+                    "Scoring point": 4,
+                    "reason": "未具体说明主流方法，错误回答"
+                },
+                {
+                    "Student answer": "（未描述插值优点）",
+                    "Scoring point": 5,
+                    "reason": "错误回答"
+                },
+                {
+                    "Student answer": "精确度更高",
+                    "Scoring point": 6,
+                    "reason": "表述不准确，未体现逼近核心优点，错误回答"
+                },
+                {
+                    "Student answer": "不够光滑",
+                    "Scoring point": 7,
+                    "reason": "与插值缺点不符，错误回答"
+                },
+                {
+                    "Student answer": "易过拟合",
+                    "Scoring point": 8,
+                    "reason": "未体现逼近缺点核心，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 0
+        }
+    },
+    {
+        "student_id": 29,
+        "question_id": 1,
+        "answer": {
+            "correct": [
+                {
+                    "Student answer": "插值是指找到一个精确穿过所有数据点的函数，确保在给定的点中完全匹配",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "是指找到一个整体接近的函数",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "拉格朗日插值多项式，牛顿插值",
+                    "Scoring point": 3,
+                    "reason": "为主流插值方法，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小二乘拟合，泰勒展开",
+                    "Scoring point": 4,
+                    "reason": "包含主流逼近方法，正确回答（1分）"
+                }
+            ],
+            "wrong": [
+                {
+                    "Student answer": "（未明确描述插值优点）",
+                    "Scoring point": 5,
+                    "reason": "错误回答"
+                },
+                {
+                    "Student answer": "（未明确描述逼近优点）",
+                    "Scoring point": 6,
+                    "reason": "错误回答"
+                },
+                {
+                    "Student answer": "插值要求每个数据点均在函数上，难度较大",
+                    "Scoring point": 7,
+                    "reason": "未体现“对噪声敏感，高阶插值易出现震荡”，错误回答"
+                },
+                {
+                    "Student answer": "逼近不要要求每个数据点在函数上，并且可以均不在函数上，难度较小",
+                    "Scoring point": 8,
+                    "reason": "未体现逼近缺点核心，错误回答"
+                }
+            ],
+            "ambiguous": [
+
+            ],
+            "abundant": [
+
+            ],
+            "total score": 4
+        }
+    }
+]

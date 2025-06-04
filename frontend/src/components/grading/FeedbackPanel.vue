@@ -23,10 +23,10 @@
           v-model="editableReason"
           type="textarea"
           placeholder="请输入给分理由..."
+          :rows="6"
           resize="none"
           class="reason-textarea"
         />
-        
         <!-- 显示模式 -->
         <div v-else class="reason-display">
           <div class="reason-content-text">
@@ -68,6 +68,7 @@ interface HighlightData {
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
   reason?: string
   aiReason?: string
+  scoringPoint?: number // 新增：给分点
 }
 
 interface Props {
@@ -89,26 +90,56 @@ const editableReason = ref('')
 // 是否处于编辑模式
 const isEditing = ref(false)
 
+// 给分点信息
+const selectedScoringPoint = computed(() => {
+  return props.selectedHighlight?.scoringPoint || null
+})
+
 // 显示的理由内容
 const displayReason = computed(() => {
-  if (props.selectedHighlight && editableReason.value) {
+  if (!props.selectedHighlight) {
+    return '选择左侧文本查看 AI 给分理由，或点击修改按钮手动输入...'
+  }
+  
+  if (isEditing.value) {
     return editableReason.value
   }
-  return '选择左侧文本查看 AI 给分理由，或点击修改按钮手动输入...'
+  
+  // 优先显示AI理由，如果没有则显示自定义理由
+  const reason = props.selectedHighlight.aiReason || props.selectedHighlight.reason || ''
+  
+  if (!reason) {
+    return '暂无理由信息，点击修改按钮添加理由...'
+  }
+  
+  return reason
 })
 
 // 监听选中的高亮变化
 watch(() => props.selectedHighlight, (newHighlight) => {
-  editableReason.value = newHighlight?.aiReason || ''
-  isEditing.value = false
+  if (newHighlight) {
+    // 优先使用AI理由，如果没有则使用自定义理由
+    editableReason.value = newHighlight.aiReason || newHighlight.reason || ''
+    isEditing.value = false
+    
+    console.log('选中高亮变化:', {
+      text: newHighlight.text,
+      type: newHighlight.type,
+      reason: newHighlight.aiReason || newHighlight.reason,
+      scoringPoint: newHighlight.scoringPoint
+    })
+  } else {
+    editableReason.value = ''
+    isEditing.value = false
+  }
 }, { immediate: true })
 
-// 类型映射
+// 类型映射配置
 const TYPE_CONFIG = {
-  correct: { tag: 'success', label: '正确' },
-  wrong: { tag: 'danger', label: '错误' },
-  unclear: { tag: 'warning', label: '模糊' },
-  redundant: { tag: 'info', label: '冗余' }
+  correct: { tag: 'success', label: '正确', description: '该部分回答正确' },
+  wrong: { tag: 'danger', label: '错误', description: '该部分回答有误' },
+  unclear: { tag: 'warning', label: '模糊', description: '该部分回答不够清晰' },
+  redundant: { tag: 'info', label: '冗余', description: '该部分内容冗余' }
 } as const
 
 // 获取标签类型
@@ -123,10 +154,10 @@ const getTypeLabel = (type: string) => {
 
 // 修改理由
 const modifyReason = () => {
-  isEditing.value = true
   if (props.selectedHighlight) {
     emits('modifyReason', props.selectedHighlight)
   }
+  isEditing.value = true
   ElMessage.info('现在可以编辑理由内容')
 }
 
@@ -138,7 +169,6 @@ const saveReason = () => {
   }
   
   isEditing.value = false
-  
   if (props.selectedHighlight) {
     emits('saveReason', {
       highlight: props.selectedHighlight,
@@ -154,6 +184,7 @@ const submitReason = () => {
     ElMessage.warning('请输入理由内容')
     return
   }
+  
   if (props.selectedHighlight) {
     emits('submitReason', {
       highlight: props.selectedHighlight,
@@ -163,12 +194,16 @@ const submitReason = () => {
   }
 }
 
+// 暴露方法给父组件
 defineExpose({
   setReason: (text: string) => {
     editableReason.value = text
   },
   clearReason: () => {
     editableReason.value = ''
+  },
+  startEditing: () => {
+    isEditing.value = true
   }
 })
 </script>
@@ -254,6 +289,12 @@ defineExpose({
   flex-direction: column;
 }
 
+.reason-textarea :deep(.el-textarea) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .reason-textarea :deep(.el-textarea__inner) {
   border-radius: 8px;
   border: 1px solid #E5E5E5;
@@ -281,7 +322,6 @@ defineExpose({
   gap: 12px;
   padding: 16px;
   background: #F5F5F5;
-
   border-radius: 0 0 12px 12px;
   border-top: 1px solid #E5E5E5;
 }
@@ -291,6 +331,7 @@ defineExpose({
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s ease;
+  font-size: 13px;
 }
 
 .action-buttons .el-button--primary {
@@ -311,7 +352,7 @@ defineExpose({
   color: rgba(0, 0, 0, 0.6);
 }
 
-.action-buttons .el-button--default:hover {
+.action-buttons .el-button--default:hover:not(.is-disabled) {
   background: #D1D1D1;
   border-color: #D1D1D1;
   transform: translateY(-1px);
@@ -327,6 +368,11 @@ defineExpose({
   background: #3AC85A;
   border-color: #3AC85A;
   transform: translateY(-1px);
+}
+
+.action-buttons .el-button:disabled {
+  opacity: 0.4;
+  transform: none !important;
 }
 
 /* === 标签样式重写 === */
