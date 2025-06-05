@@ -1,0 +1,1396 @@
+[
+  {
+    "student_id": 1,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "插值即拟合函数对应数据点的值的情况，能够和给定数据点对应",
+          "start_index": 14,
+          "end_index": 42,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct definition of interpolation"
+        },
+        {
+          "Student answer": "误差足够小，能够反映数据点的分布情况",
+          "start_index": 60,
+          "end_index":78,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct definition of approximation"
+        },
+        {
+          "Student answer": "插值误差为 0，能够覆盖并逼近数据点",
+          "start_index": 219,
+          "end_index": 237,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct advantage of interpolation"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "插值得到的曲线不光滑、不连续",
+          "start_index": 261,
+          "end_index": 275,
+          "Scoring point": 7,
+          "reason": "Contradicts scoring point 7: Interpolation produces smooth curves (incorrect disadvantage)"
+        },
+        {
+          "Student answer": "逼近则容易受到噪声点的影响出现意外值",
+          "start_index": 276,
+          "end_index": 294,
+          "Scoring point": 8,
+          "reason": "Contradicts scoring point 8: Approximation is noise-robust (incorrect disadvantage)"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "选择可能得函数空间和基数函数，然后通过调整参数得到误差足够小的拟合函数",
+          "start_index": 179,
+          "end_index": 214,
+          "Scoring point": 4,
+          "reason": "Partially matches scoring point 4: Describes approximation methods but omits key names (least squares, Bezier)"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "逼近误差不为 0，但足够光滑且连续",
+          "start_index": 238,
+          "end_index": 255,
+          "reason": "Irrelevant advantage not in scoring points (smoothness isn't in point 6)"
+        }
+      ]
+    },
+    "total_score": 3
+  },
+  {
+    "student_id": 2,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "确保每个点都经过一条曲线",
+          "start_index": 9,
+          "end_index": 18,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        },
+        {
+          "Student answer": "可以忽略一些点的情况下得出一条曲线在上下范围内",
+          "start_index": 55,
+          "end_index": 70,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approximation goal with noise handling"
+        },
+        {
+          "Student answer": "多项式插值，分段插值，三角插值",
+          "start_index": 28,
+          "end_index": 41,
+          "Scoring point": 3,
+          "reason": "Matches scoring point 3: Correct interpolation methods"
+        },
+        {
+          "Student answer": "最小2乘法 正交多项式逼近 正则化",
+          "start_index": 74,
+          "end_index": 87,
+          "Scoring point": 4,
+          "reason": "Matches scoring point 4: Correct approximation methods"
+        },
+        {
+          "Student answer": "精确通过数值点",
+          "start_index": 90,
+          "end_index": 96,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpolation advantage"
+        },
+        {
+          "Student answer": "灵活、稳定、可控制误差",
+          "start_index": 122,
+          "end_index": 132,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approximation advantage (robustness implied)"
+        },
+        {
+          "Student answer": "过拟合，导致在非节点处偏离真实值",
+          "start_index": 99,
+          "end_index": 115,
+          "Scoring point": 7,
+          "reason": "Matches scoring point 7: Correct interpolation disadvantage (Runge phenomenon)"
+        },
+        {
+          "Student answer": "不精确匹配数据点",
+          "start_index": 135,
+          "end_index": 143,
+          "Scoring point": 8,
+          "reason": "Matches scoring point 8: Correct approximation disadvantage"
+        }
+      ],
+      "wrong": [],
+      "unclear": [],
+      "redundant": []
+    },
+    "total_score": 8
+  },
+  {
+    "student_id": 3,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "确保每个点都经过曲线",
+          "start_index": 24,
+          "end_index": 32,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        },
+        {
+          "Student answer": "抗噪声能力强",
+          "start_index": 88,
+          "end_index": 94,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approximation advantage"
+        }
+      ],
+      "wrong": [],
+      "unclear": [
+        {
+          "Student answer": "插值缺点：过拟合（含噪音时）",
+          "start_index": 65,
+          "end_index": 76,
+          "Scoring point": 7,
+          "reason": "Mixed accuracy: Correctly identifies overfitting but incorrectly links it to noise (noise affects approximation)"
+        },
+        {
+          "Student answer": "逼近：高斯函数、多项式逼近",
+          "start_index": 41,
+          "end_index": 53,
+          "Scoring point": 4,
+          "reason": "Incomplete methods: Missing least squares and spline approximation"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "Bernstein 定理",
+          "start_index": 57,
+          "end_index": 64,
+          "reason": "Irrelevant content not in scoring points"
+        }
+      ]
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 4,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "确保，每个点都经过一条曲线",
+          "start_index": 32,
+          "end_index": 41,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        },
+        {
+          "Student answer": "抗噪能力强",
+          "start_index": 73,
+          "end_index": 78,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approximation advantage"
+        }
+      ],
+      "wrong": [],
+      "unclear": [
+        {
+          "Student answer": "逼近：可以忽略一些点或在点的上下范围内的情况下得出一条曲线",
+          "start_index": 43,
+          "end_index": 64,
+          "Scoring point": 2,
+          "reason": "Overly vague: Does not specify 'noise handling' or 'close but not exact' clearly"
+        },
+        {
+          "Student answer": "无法保证点的准确性",
+          "start_index": 80,
+          "end_index": 88,
+          "Scoring point": 8,
+          "reason": "Partial match: Correct but omits 'loss of detail' from scoring point 8"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "解法：多项式逼近\n拉格朗日定理\nBernstein 定理",
+          "start_index": 90,
+          "end_index": 114,
+          "reason": "Irrelevant methods mixed across categories"
+        }
+      ]
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 5,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "过点”零误差",
+          "start_index": 27,
+          "end_index": 33,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpolation advantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "逼近对噪声较多的数据集，使用逼近不减少它们的影响，曲线振荡",
+          "start_index": 97,
+          "end_index": 120,
+          "Scoring point": 6,
+          "reason": "Contradicts scoring point 6: Approximation reduces noise (core advantage)"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "插值的解法是待定系数法：把各点代入约定的方程中，联立求解",
+          "start_index": 44,
+          "end_index": 67,
+          "Scoring point": 3,
+          "reason": "Incomplete methods: Omits polynomial/spline interpolation"
+        },
+        {
+          "Student answer": "逼近则是使用“最小二乘法”",
+          "start_index": 69,
+          "end_index": 80,
+          "Scoring point": 4,
+          "reason": "Partial credit: Correctly names least squares but omits other methods"
+        },
+        {
+          "Student answer": "插值不适用噪声多的数据集",
+          "start_index": 122,
+          "end_index": 133,
+          "Scoring point": 7,
+          "reason": "Typo in key point: '不适用' should be '对噪声敏感' (sensitivity)"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "在模型（阿数）选择上要注意",
+          "start_index": 164,
+          "end_index": 173,
+          "reason": "Irrelevant implementation detail"
+        }
+      ]
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 6,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "最后的函数必定经过采样点",
+          "start_index": 38,
+          "end_index": 47,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        },
+        {
+          "Student answer": "不易受到误差点的影响，比较稳定",
+          "start_index": 92,
+          "end_index": 104,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approximation advantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "易受到误差点的影响",
+          "start_index": 48,
+          "end_index": 57,
+          "Scoring point": 7,
+          "reason": "Overgeneralization: Not all interpolation is error-sensitive (e.g., splines)"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "用函数值靠近采样点的极值，不要求一定经过采样点",
+          "start_index": 72,
+          "end_index": 90,
+          "Scoring point": 2,
+          "reason": "Imprecise: '靠近采样点的极值' misrepresents approximation goals"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "有可能过拟合，和实际情况差距较大",
+          "start_index": 107,
+          "end_index": 119,
+          "reason": "Redundant disadvantage not in scoring points"
+        }
+      ]
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 7,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "插值:根据样本点描述出的插值曲线经过每个样本点",
+          "start_index": 10,
+          "end_index": 28,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        }
+      ],
+      "wrong": [],
+      "unclear": [
+        {
+          "Student answer": "能完美通过数据点，能保证光滑性",
+          "start_index": 62,
+          "end_index": 74,
+          "Scoring point": 5,
+          "reason": "Mixed accuracy: '完美通过数据点' correct but '保证光滑性' not always true"
+        },
+        {
+          "Student answer": "适合实际数据，避免过拟合",
+          "start_index": 77,
+          "end_index": 86,
+          "Scoring point": 6,
+          "reason": "Partially correct: Avoids overfitting but omits noise robustness"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "最小二乘法、正则化逼近",
+          "start_index": 45,
+          "end_index": 54,
+          "reason": "Redundant method listing beyond requirements"
+        }
+      ]
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 8,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "插值要求每个值都在对应的函数上",
+          "start_index": 22,
+          "end_index": 33,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        },
+        {
+          "Student answer": "逼近允许在函数附近表达出点分布的趋势",
+          "start_index": 34,
+          "end_index": 46,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approximation goal"
+        },
+        {
+          "Student answer": "所得函数与样本数量关系大",
+          "start_index": 95,
+          "end_index": 103,
+          "Scoring point": 8,
+          "reason": "Matches scoring point 8: Correct approximation disadvantage"
+        }
+      ],
+      "wrong": [],
+      "unclear": [
+        {
+          "Student answer": "所得函数可能存在过拟合，与实际不符",
+          "start_index": 87,
+          "end_index": 98,
+          "Scoring point": 7,
+          "reason": "Incomplete: Correctly identifies overfitting but omits noise sensitivity"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 3
+  },
+  {
+    "student_id": 9,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "所有点都在拟定的函数上",
+          "start_index": 4,
+          "end_index": 13,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpolation goal"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "计算量下，更复杂",
+          "start_index": 81,
+          "end_index": 88,
+          "Scoring point": 8,
+          "reason": "Inaccurate disadvantage: Approximation isn't inherently more complex"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "所有的点需要在拟合的函数附近",
+          "start_index": 14,
+          "end_index": 25,
+          "Scoring point": 2,
+          "reason": "Imprecise: '需要在...附近' implies requirement rather than approximation"
+        },
+        {
+          "Student answer": "对于大数据来说，能给到一个比较符合的函数",
+          "start_index": 57,
+          "end_index": 72,
+          "Scoring point": 6,
+          "reason": "Vague advantage: Fails to specify noise robustness/trend modeling"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 10,
+    "question_id": 1,
+    "answer": {
+      "correct": [],
+      "wrong": [
+        {
+          "Student answer": "逼近的问题是会造成面数成像剧烈抖动，过拟合化",
+          "start_index": 21,
+          "end_index": 36,
+          "Scoring point": 2,
+          "reason": "Fundamentally incorrect: Approximation reduces overfitting, doesn't cause it"
+        },
+        {
+          "Student answer": "优点是有可能完美贴合",
+          "start_index": 57,
+          "end_index": 65,
+          "Scoring point": 5,
+          "reason": "Misattributed: Perfect fitting is interpolation, not approximation"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "调参或减少方程的平方数量",
+          "start_index": 45,
+          "end_index": 55,
+          "Scoring point": 4,
+          "reason": "Incomplete methods: Does not specify least squares/Bezier/smoothing"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "插值的问题是：\n解法是\n优点是可使线条平滑\n缺点是",
+          "start_index": 0,
+          "end_index": 19,
+          "reason": "Empty/incomplete statements"
+        }
+      ]
+    },
+    "total_score": 0
+  },
+  {
+    "student_id": 11,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "求过一些点的曲线（函数）",
+          "start_index": 7,
+          "end_index": 17,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "曲线必过给出的点",
+          "start_index": 39,
+          "end_index": 46,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "只适合多项式，而且只能是函数",
+          "start_index": 55,
+          "end_index": 65,
+          "Scoring point": 7,
+          "reason": "Incorrect: Interpolation works for non-polynomials (splines)"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "利用Gauss函数解",
+          "start_index": 95,
+          "end_index": 101,
+          "Scoring point": 4,
+          "reason": "Incomplete methods: Omits least squares/Bezier"
+        },
+        {
+          "Student answer": "可能会不经过给出的点",
+          "start_index": 149,
+          "end_index": 157,
+          "Scoring point": 8,
+          "reason": "Partial match: Correct but omits 'loss of detail'"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "可用于解非函数曲线",
+          "start_index": 127,
+          "end_index": 134,
+          "reason": "Irrelevant advantage not in scoring points"
+        }
+      ]
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 12,
+    "question_id": 1,
+    "answer": {
+      "correct": [],
+      "unclear": [
+        {
+          "Student answer": "给定离散的数据生成数据之间数值的过程",
+          "start_index": 0,
+          "end_index": 11,
+          "Scoring point": 1,
+          "reason": "Vague definition: Focuses on generation rather than curve fitting"
+        },
+        {
+          "Student answer": "反向推出一个函数可尽可能的拟合这一组数据",
+          "start_index": 39,
+          "end_index": 52,
+          "Scoring point": 2,
+          "reason": "Partial match: Correct goal but omits noise handling"
+        }
+      ],
+      "wrong": [],
+      "redundant": [
+        {
+          "Student answer": "线性插值、双线性插值、牛顿插值",
+          "start_index": 20,
+          "end_index": 31,
+          "reason": "Redundant method listing beyond requirements"
+        },
+        {
+          "Student answer": "多项式逼近、最小二乘法",
+          "start_index": 58,
+          "end_index": 66,
+          "reason": "Redundant method listing beyond requirements"
+        }
+      ]
+    },
+    "total_score": 0
+  },
+  {
+    "student_id": 13,
+    "question_id": 1,
+    "answer": {
+      "correct": [],
+      "wrong": [
+        {
+          "Student answer": "插入信息，用于容量逐放等的调用",
+          "start_index": 22,
+          "end_index": 32,
+          "Scoring point": 1,
+          "reason": "Fundamentally incorrect: Doesn't relate to curve fitting"
+        },
+        {
+          "Student answer": "逼近：平滑性其近函物调用",
+          "start_index": 55,
+          "end_index": 63,
+          "Scoring point": 2,
+          "reason": "Fundamentally incorrect: Unintelligible definition"
+        }
+      ],
+      "unclear": [],
+      "redundant": [
+        {
+          "Student answer": "类似于定点函数",
+          "start_index": 75,
+          "end_index": 80,
+          "reason": "Irrelevant analogy"
+        },
+        {
+          "Student answer": "类似于极限",
+          "start_index": 101,
+          "end_index": 105,
+          "reason": "Irrelevant analogy"
+        }
+      ]
+    },
+    "total_score": 0
+  },
+  {
+    "student_id": 14,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "穿过每一个点的曲线，确保了每一个点都会被穿过",
+          "start_index": 27,
+          "end_index": 40,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "无限或有限地对一些点进行趋近",
+          "start_index": 98,
+          "end_index": 109,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "能确保每一个点都会穿过",
+          "start_index": 127,
+          "end_index": 136,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        },
+        {
+          "Student answer": "比较平滑连续．不会出现一个离谱的点影响整个曲线",
+          "start_index": 163,
+          "end_index": 181,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approx. advantage"
+        },
+        {
+          "Student answer": "不能精确地对应上每一个点",
+          "start_index": 218,
+          "end_index": 227,
+          "Scoring point": 8,
+          "reason": "Matches scoring point 8: Correct approx. disadvantage"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "解法是使用多次贝塞尔曲线或者多项式",
+          "start_index": 42,
+          "end_index": 54,
+          "Scoring point": 3,
+          "reason": "Partial methods: Omits Lagrange/Newton interpolation"
+        }
+      ],
+      "wrong": [],
+      "redundant": [
+        {
+          "Student answer": "解法是心或者拉格朗日法",
+          "start_index": 142,
+          "end_index": 151,
+          "reason": "Irrelevant methods ('心' is unintelligible)"
+        }
+      ]
+    },
+    "total_score": 5
+  },
+  {
+    "student_id": 15,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "通过一些点来计算曲线",
+          "start_index": 3,
+          "end_index": 11,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Basic interpol. goal"
+        }
+      ],
+      "wrong": [],
+      "unclear": [
+        {
+          "Student answer": "拟合效果不好",
+          "start_index": 18,
+          "end_index": 23,
+          "Scoring point": 7,
+          "reason": "Oversimplified: Doesn't specify noise sensitivity/Runge"
+        },
+        {
+          "Student answer": "拟合效果好",
+          "start_index": 41,
+          "end_index": 46,
+          "Scoring point": 6,
+          "reason": "Oversimplified: Doesn't specify noise robustness"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "曲线上每一点可以用多项式表示",
+          "start_index": 31,
+          "end_index": 40,
+          "reason": "Irrelevant approximation characteristic"
+        }
+      ]
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 16,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "插值有线性插值、二次插值等方法",
+          "start_index": 77,
+          "end_index": 89,
+          "Scoring point": 3,
+          "reason": "Matches scoring point 3: Correct interpol. methods"
+        },
+        {
+          "Student answer": "逼近方法求出的点坐标更精确",
+          "start_index": 122,
+          "end_index": 131,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approx. advantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "插值主要解决补充更多给定点的问题，所求点不一定在曲线上",
+          "start_index": 43,
+          "end_index": 62,
+          "Scoring point": 1,
+          "reason": "Contradicts core principle: Interpolation requires exact point matching"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "逼近即为拟合，是想用给定点求出精确的曲线之积",
+          "start_index": 63,
+          "end_index": 76,
+          "Scoring point": 2,
+          "reason": "Imprecise: '曲线之积' unclear, omits noise handling"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 17,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "数据误差为0",
+          "start_index": 5,
+          "end_index": 10,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        },
+        {
+          "Student answer": "不会被坏数据带坏拟合度好",
+          "start_index": 27,
+          "end_index": 36,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approx. advantage"
+        },
+        {
+          "Student answer": "数据误差不为0",
+          "start_index": 38,
+          "end_index": 44,
+          "Scoring point": 8,
+          "reason": "Matches scoring point 8: Correct approx. disadvantage"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "解法：最小二乘逼近、Bernstein多项式逼近",
+          "start_index": 45,
+          "end_index": 60,
+          "Scoring point": 4,
+          "reason": "Partial methods: Omits Bezier/smoothing methods"
+        }
+      ],
+      "wrong": [],
+      "redundant": []
+    },
+    "total_score": 3
+  },
+  {
+    "student_id": 18,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "构造一个函数，使其严格经过所有给定的数据点",
+          "start_index": 8,
+          "end_index": 22,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "构造一个函数，使其在整体趋势上接近原始数据或函数",
+          "start_index": 23,
+          "end_index": 38,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "忽略噪声影响反应整体趋势",
+          "start_index": 108,
+          "end_index": 118,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approx. advantage"
+        },
+        {
+          "Student answer": "可能有过拟合风险",
+          "start_index": 133,
+          "end_index": 140,
+          "Scoring point": 7,
+          "reason": "Matches scoring point 7: Correct interpol. disadvantage"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "避免高次多项式震荡",
+          "start_index": 119,
+          "end_index": 127,
+          "Scoring point": 6,
+          "reason": "Mixed category: Runge phenomenon is interpolation issue"
+        }
+      ],
+      "wrong": [],
+      "redundant": []
+    },
+    "total_score": 4
+  },
+  {
+    "student_id": 19,
+    "question_id": 1,
+    "answer": {
+      "correct": [],
+      "wrong": [
+        {
+          "Student answer": "表达紧凑、简单稳定、拟合效果较好",
+          "start_index": 7,
+          "end_index": 19,
+          "Scoring point": 5,
+          "reason": "Incorrect advantages: Doesn't match scoring point"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "多项式插值、伯恩斯特、高斯",
+          "start_index": 27,
+          "end_index": 36,
+          "Scoring point": 3,
+          "reason": "Incomplete methods: Omits spline interpolation"
+        },
+        {
+          "Student answer": "可能存在欠拟合或过拟合",
+          "start_index": 42,
+          "end_index": 51,
+          "Scoring point": 8,
+          "reason": "Incorrect attribution: Fitting issues are approximation"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 0
+  },
+  {
+    "student_id": 20,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "插值函数必须严格等于原始数据",
+          "start_index": 20,
+          "end_index": 29,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "在一个整体上尽可能接近这些点的函数",
+          "start_index": 32,
+          "end_index": 42,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "精确经过数据点",
+          "start_index": 98,
+          "end_index": 105,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        },
+        {
+          "Student answer": "不能精确覆盖每个数据",
+          "start_index": 139,
+          "end_index": 147,
+          "Scoring point": 8,
+          "reason": "Matches scoring point 8: Correct approx. disadvantage"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "逼近：最小二乘、切比雪夫逼近",
+          "start_index": 171,
+          "end_index": 182,
+          "Scoring point": 4,
+          "reason": "Partial methods: Omits Bezier/smoothing methods"
+        }
+      ],
+      "wrong": [],
+      "redundant": [
+        {
+          "Student answer": "逼近更高效简洁",
+          "start_index": 133,
+          "end_index": 139,
+          "reason": "Irrelevant advantage not in scoring points"
+        }
+      ]
+    },
+    "total_score": 4
+  },
+  {
+    "student_id": 21,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "找到一个函数，在某个特定点有一个特定值",
+          "start_index": 3,
+          "end_index": 18,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "适用于数据点较少场景，但对于数据点多时，误差会很大",
+          "start_index": 42,
+          "end_index": 60,
+          "Scoring point": 7,
+          "reason": "Matches scoring point 7: Correct interpol. disadvantage"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "拉格朗日插值法、牛顿插值",
+          "start_index": 22,
+          "end_index": 33,
+          "Scoring point": 3,
+          "reason": "Partial methods: Omits spline interpolation"
+        },
+        {
+          "Student answer": "最小二乘、泰勒展开",
+          "start_index": 97,
+          "end_index": 104,
+          "Scoring point": 4,
+          "reason": "Mixed methods: Taylor expansion isn't approximation"
+        }
+      ],
+      "wrong": [],
+      "redundant": [
+        {
+          "Student answer": "误差与阶数相关",
+          "start_index": 61,
+          "end_index": 67,
+          "reason": "Redundant detail about error behavior"
+        }
+      ]
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 22,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "插值算法一定经过样本点",
+          "start_index": 0,
+          "end_index": 8,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "逼近算法可以不经过样本点",
+          "start_index": 57,
+          "end_index": 66,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "插值经过所有样本点，所以更精确",
+          "start_index": 34,
+          "end_index": 45,
+          "Scoring point": 5,
+          "reason": "Oversimplified: Omits 'exact at given points'"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "容易发生抖动，产生无效结果",
+          "start_index": 12,
+          "end_index": 21,
+          "Scoring point": 7,
+          "reason": "Inaccurate: Not all interpolation causes oscillation"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 2
+  },
+  {
+    "student_id": 23,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "可以更加精准地进行函数拟合",
+          "start_index": 44,
+          "end_index": 53,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "缺点：直观程度不够",
+          "start_index": 56,
+          "end_index": 63,
+          "Scoring point": 7,
+          "reason": "Incorrect disadvantage: Interpolation is visually clear"
+        },
+        {
+          "Student answer": "优点：更加直观",
+          "start_index": 66,
+          "end_index": 71,
+          "Scoring point": 6,
+          "reason": "Incorrect advantage: Approximation isn't necessarily more intuitive"
+        }
+      ],
+      "unclear": [],
+      "redundant": []
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 24,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "核心目标是通过所有已知数据点",
+          "start_index": 8,
+          "end_index": 18,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "拟合尽可能更多的数据，不强制通过数据点",
+          "start_index": 20,
+          "end_index": 34,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "最小二乘、多项式逼近",
+          "start_index": 56,
+          "end_index": 65,
+          "Scoring point": 4,
+          "reason": "Matches scoring point 4: Correct approx. methods"
+        },
+        {
+          "Student answer": "高精度，严格通过数据点",
+          "start_index": 73,
+          "end_index": 82,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        },
+        {
+          "Student answer": "更能体现数据一般规律",
+          "start_index": 95,
+          "end_index": 103,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approx. advantage"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "会造成局部误差大",
+          "start_index": 112,
+          "end_index": 119,
+          "Scoring point": 8,
+          "reason": "Partial match: Correct but omits 'loss of detail'"
+        }
+      ],
+      "wrong": [],
+      "redundant": []
+    },
+    "total_score": 5
+  },
+  {
+    "student_id": 25,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "与现有数据点完全贴合、无误差",
+          "start_index": 91,
+          "end_index": 102,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "光滑曲线",
+          "start_index": 105,
+          "end_index": 109,
+          "Scoring point": 6,
+          "reason": "Incorrect advantage: Approximation isn't necessarily smooth"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "多项式逼近、最小二乘法、Bernstein构造多项式",
+          "start_index": 70,
+          "end_index": 89,
+          "Scoring point": 4,
+          "reason": "Partial methods: Omits Bezier/spline approximation"
+        }
+      ],
+      "redundant": [
+        {
+          "Student answer": "RBPE、神经网络",
+          "start_index": 90,
+          "end_index": 96,
+          "reason": "Overly advanced irrelevant methods"
+        }
+      ]
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 26,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "严格经过所有样本点",
+          "start_index": 0,
+          "end_index": 7,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "足够靠近",
+          "start_index": 13,
+          "end_index": 17,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "最大程度拟合样本点",
+          "start_index": 21,
+          "end_index": 29,
+          "Scoring point": 5,
+          "reason": "Matches scoring point 5: Correct interpol. advantage"
+        },
+        {
+          "Student answer": "一定程度拟合样本，不易受到噪声影响",
+          "start_index": 49,
+          "end_index": 64,
+          "Scoring point": 6,
+          "reason": "Matches scoring point 6: Correct approx. advantage"
+        },
+        {
+          "Student answer": "易受极端样本和噪声影响而失真",
+          "start_index": 31,
+          "end_index": 43,
+          "Scoring point": 7,
+          "reason": "Matches scoring point 7: Correct interpol. disadvantage"
+        }
+      ],
+      "unclear": [],
+      "wrong": [],
+      "redundant": []
+    },
+    "total_score": 5
+  },
+  {
+    "student_id": 27,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "构造一个，使得经过所有样本点，精确匹配",
+          "start_index": 12,
+          "end_index": 25,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "寻找一个函数，使其尽可能接近已知样本点",
+          "start_index": 27,
+          "end_index": 39,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "容易过拟合",
+          "start_index": 68,
+          "end_index": 73,
+          "Scoring point": 7,
+          "reason": "Matches scoring point 7: Correct interpol. disadvantage"
+        }
+      ],
+      "unclear": [],
+      "wrong": [
+        {
+          "Student answer": "插值计算成本更高",
+          "start_index": 75,
+          "end_index": 81,
+          "Scoring point": 7,
+          "reason": "Inaccurate: Not all interpolation is high-cost"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 3
+  },
+  {
+    "student_id": 28,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "不够光滑",
+          "start_index": 16,
+          "end_index": 20,
+          "Scoring point": 7,
+          "reason": "Matches scoring point 7: Correct interpol. disadvantage"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "精确度更高",
+          "start_index": 31,
+          "end_index": 36,
+          "Scoring point": 6,
+          "reason": "Contradicts: Approximation isn't more precise than interpolation"
+        },
+        {
+          "Student answer": "易过拟合",
+          "start_index": 49,
+          "end_index": 53,
+          "Scoring point": 8,
+          "reason": "Misattributed: Overfitting is interpolation issue"
+        }
+      ],
+      "unclear": [],
+      "redundant": []
+    },
+    "total_score": 1
+  },
+  {
+    "student_id": 29,
+    "question_id": 1,
+    "answer": {
+      "correct": [
+        {
+          "Student answer": "找到一个精确穿过所有数据点的函数",
+          "start_index": 6,
+          "end_index": 17,
+          "Scoring point": 1,
+          "reason": "Matches scoring point 1: Correct interpol. goal"
+        },
+        {
+          "Student answer": "找到一个整体接近的函数",
+          "start_index": 51,
+          "end_index": 59,
+          "Scoring point": 2,
+          "reason": "Matches scoring point 2: Correct approx. goal"
+        },
+        {
+          "Student answer": "最小二乘拟合",
+          "start_index": 62,
+          "end_index": 68,
+          "Scoring point": 4,
+          "reason": "Matches scoring point 4: Correct approx. method"
+        }
+      ],
+      "unclear": [
+        {
+          "Student answer": "不要要求每个数据点在函数上",
+          "start_index": 78,
+          "end_index": 88,
+          "Scoring point": 8,
+          "reason": "Partial match: Correct but omits 'loss of detail'"
+        }
+      ],
+      "wrong": [
+        {
+          "Student answer": "泰勒展开",
+          "start_index": 69,
+          "end_index": 73,
+          "Scoring point": 4,
+          "reason": "Incorrect method: Taylor expansion isn't approximation"
+        }
+      ],
+      "redundant": []
+    },
+    "total_score": 3
+  },
+  {
+    "student_id": 30,
+    "question_id": 1,
+    "answer": {
+      "correct": [],
+      "wrong": [],
+      "unclear": [],
+      "redundant": [
+        {
+          "Student answer": "多形式插值",
+          "start_index": 8,
+          "end_index": 12,
+          "reason": "Repeated phrase without meaningful content"
+        },
+        {
+          "Student answer": "多项式插值",
+          "start_index": 31,
+          "end_index": 36,
+          "reason": "Repeated phrase without meaningful content"
+        },
+        {
+          "Student answer": "多形式插值",
+          "start_index": 43,
+          "end_index": 47,
+          "reason": "Repeated phrase without meaningful content"
+        },
+        {
+          "Student answer": "多项式插值",
+          "start_index": 50,
+          "end_index": 55,
+          "reason": "Repeated phrase without meaningful content"
+        },
+        {
+          "Student answer": "多形式插值",
+          "start_index": 62,
+          "end_index": 66,
+          "reason": "Repeated phrase without meaningful content"
+        },
+        {
+          "Student answer": "多项式插值",
+          "start_index": 69,
+          "end_index": 74,
+          "reason": "Repeated phrase without meaningful content"
+        }
+      ]
+    },
+    "total_score": 0
+  }
+]

@@ -82,10 +82,12 @@ import PaperPreview from './PaperPreview.vue'
 import ReferenceAnswer from './ReferenceAnswer.vue'
 import ScoringSection from './ScoringSection.vue'
 
-// 高亮数据类型定义
+// 高亮数据类型定义 - 更新为新的JSON结构
 interface HighlightItem {
   'Student answer': string
-  'Scoring point': number
+  start_index: number
+  end_index: number
+  'Scoring point'?: number
   reason: string
 }
 
@@ -105,7 +107,7 @@ interface SelectedHighlight {
   text: string
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
   reason: string
-  scoringPoint: number
+  scoringPoint?: number
 }
 
 interface Props {
@@ -159,19 +161,11 @@ const handleTextSelected = (data: { text: string, hasSelection: boolean }) => {
   hasSelectedText.value = data.hasSelection
 }
 
-// 处理高亮点击事件 - 转换类型名称
+// 处理高亮点击事件 - 适配新的数据结构
 const handleHighlightClicked = (data: SelectedHighlight) => {
-  // 转换类型映射以适配FeedbackPanel
-  const typeMapping = {
-    'unclear': 'unclear' as const,
-    'redundant': 'redundant' as const,
-    'correct': 'correct' as const,
-    'wrong': 'wrong' as const
-  }
-
   selectedHighlight.value = {
     text: data.text,
-    type: typeMapping[data.type],
+    type: data.type,
     aiReason: data.reason
   }
   
