@@ -97,8 +97,8 @@ interface HighlightData {
     wrong: HighlightItem[]
     unclear: HighlightItem[]
     redundant: HighlightItem[]
-    'total score': number
   }
+  total_score: number
 }
 
 interface SelectedHighlight {
@@ -137,7 +137,7 @@ const emits = defineEmits<{
 
 // 计算当前LLM分数 - 优先使用高亮数据中的分数
 const currentLLMScore = computed(() => {
-  return props.highlightData?.answer?.['total score'] || props.llmScore || 0
+  return props.highlightData?.total_score || props.llmScore || 0
 })
 
 // 状态

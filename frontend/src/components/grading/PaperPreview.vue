@@ -27,8 +27,8 @@ interface HighlightData {
     wrong: HighlightItem[]
     unclear: HighlightItem[]
     redundant: HighlightItem[]
-    'total score': number
   }
+  total_score: number
 }
 
 // 选中高亮的数据类型
@@ -116,7 +116,6 @@ const highlightedContent = computed(() => {
   //  收集所有高亮片段  //
   /////////////////////
   Object.entries(props.highlightData.answer).forEach(([type, items]) => {
-    if (type === 'total score') return
     
     // 确保 items 是数组类型
     if (Array.isArray(items)) {
@@ -162,7 +161,6 @@ const highlightedContent = computed(() => {
     return true
   })
 
-  // 从后往前替换，避免位置偏移
   // 生成高亮后的HTML内容
   let result = content
   validHighlights.reverse().forEach(highlight => {
