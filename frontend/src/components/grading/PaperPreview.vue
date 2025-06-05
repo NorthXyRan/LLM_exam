@@ -88,7 +88,10 @@ const HIGHLIGHT_CONFIG = {
   }
 }
 
-// 计算高亮后的HTML内容
+
+////////////////////////////////////////////////////////////
+//                  计算高亮后的HTML内容                     //
+////////////////////////////////////////////////////////////
 const highlightedContent = computed(() => {
   if (!props.studentAnswer) {
     return props.studentAnswer
@@ -109,15 +112,17 @@ const highlightedContent = computed(() => {
     endIndex: number
   }> = []
 
-   // 收集所有高亮片段
-   Object.entries(props.highlightData.answer).forEach(([type, items]) => {
+  ////////////////////// 
+  //  收集所有高亮片段  //
+  /////////////////////
+  Object.entries(props.highlightData.answer).forEach(([type, items]) => {
     if (type === 'total score') return
     
     // 确保 items 是数组类型
     if (Array.isArray(items)) {
       items.forEach((item: HighlightItem) => {
         const text = item['Student answer']
-        const startIndex = content.indexOf(text)
+        const startIndex = content.indexOf(text)    // 获取文本在内容中的位置
         
         if (startIndex !== -1) {
           highlights.push({
@@ -158,6 +163,7 @@ const highlightedContent = computed(() => {
   })
 
   // 从后往前替换，避免位置偏移
+  // 生成高亮后的HTML内容
   let result = content
   validHighlights.reverse().forEach(highlight => {
     const { text, type, reason, scoringPoint } = highlight
