@@ -119,7 +119,12 @@
         "answer": {
             "correct": [
                 {
-                    "Student answer": "确保每个点都经过曲线 噪声敏感问题",
+                    "Student answer": "确保每个点都经过曲线",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "噪声敏感问题",
                     "Scoring point": 1,
                     "reason": "匹配给分点 1，正确回答（1分）"
                 },
@@ -159,7 +164,12 @@
                     "reason": "只列举了拉格朗日插值法，未覆盖多项式插值、样条插值等主流方法，模糊回答"
                 },
                 {
-                    "Student answer": "高斯函数，多项式逼近，Bernstein定理",
+                    "Student answer": "高斯函数、多项式逼近",
+                    "Scoring point": 4,
+                    "reason": "仅“多项式逼近”准确，但未涵盖最小二乘法、贝塞尔曲线等典型逼近解法，模糊回答"
+                },
+                {
+                    "Student answer": "Bernstein 定理",
                     "Scoring point": 4,
                     "reason": "仅“多项式逼近”准确，但未涵盖最小二乘法、贝塞尔曲线等典型逼近解法，模糊回答"
                 }
@@ -215,7 +225,12 @@
                     "reason": "仅列举单一方法，未覆盖多项式插值、样条插值等常用解法，模糊回答"
                 },
                 {
-                    "Student answer": "多项式逼近、Bernstein定理",
+                    "Student answer": "多项式逼近",
+                    "Scoring point": 4,
+                    "reason": "部分匹配标准答案，但未包括最小二乘法、贝塞尔曲线等主流逼近解法，模糊回答"
+                },
+                {
+                    "Student answer": "Bernstein 定理",
                     "Scoring point": 4,
                     "reason": "部分匹配标准答案，但未包括最小二乘法、贝塞尔曲线等主流逼近解法，模糊回答"
                 }
@@ -232,12 +247,12 @@
         "answer": {
             "correct": [
                 {
-                    "Student answer": "这2者都是为了解决孤立点用光滑曲线边行规律整合，插值是“过点”零误差",
+                    "Student answer": "插值是“过点”零误差",
                     "Scoring point": 1,
                     "reason": "匹配给分点 1，正确回答（1分）"
                 },
                 {
-                    "Student answer": "这2者都是为了解决孤立点用光滑曲线边行规律整合，逼近则是可从点附近过",
+                    "Student answer": "逼近则是可从点附近过",
                     "Scoring point": 2,
                     "reason": "匹配给分点 2，正确回答（1分）"
                 },
@@ -257,7 +272,7 @@
                     "reason": "“不适用噪声多的数据集”与“对噪声敏感”相符，匹配给分点 7，正确回答（1分）"
                 },
                 {
-                    "Student answer": "可能会全丢失局部特征，精确度不够高，在模型选择上要注意",
+                    "Student answer": "可能会全丢失局部特征，精确度不够高，在模型（阿数）选择上要注意",
                     "Scoring point": 8,
                     "reason": "“精确度不够高”与“不经过原始数据点，可能失去部分细节”一致，匹配给分点 8，正确回答（1分）"
                 }
