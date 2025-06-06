@@ -3,7 +3,7 @@
     <div class="header-content">
       <!-- 题目选择区域 -->
       <div class="select-section">
-        <h1>选择试卷题目</h1>
+        <h1>Select Question</h1>
         <div class="select-list">
           <div
             v-for="(question, index) in questions" 
@@ -15,14 +15,14 @@
             @click="handleQuestionChange(index + 1, question)"
             :title="`${question.question.substring(0, 50)}...（${question.score}分）`"
           >
-            第{{ index + 1 }}题
+            Question {{ index + 1 }}
           </div>
         </div>
       </div>
 
       <!-- 学生选择区域 -->
       <div class="select-section">
-        <h1>选择学生试卷</h1>
+        <h1>Select Student</h1>
         <div class="select-list">
           <div 
             v-for="student in studentList" 
@@ -49,7 +49,7 @@
           <!-- 批改进度 -->
           <el-col :span="5">
             <div class="stat-item">
-              <span class="label">已批改/总份数</span>
+              <span class="label">Marked/Total</span>
               <span class="value">{{ gradedCount }}/{{ totalStudents }}</span>
             </div>
           </el-col>
@@ -57,7 +57,7 @@
           <!-- 最高分（可点击跳转） -->
           <el-col :span="5">
             <div class="stat-item clickable" @click="jumpToStudent(statistics.highestStudent)">
-              <span class="label">最高分</span>
+              <span class="label">Highest</span>
               <span class="value highlight-good">{{ statistics.highest }}</span>
             </div>
           </el-col>
@@ -65,7 +65,7 @@
           <!-- 最低分（可点击跳转） -->
           <el-col :span="5">
             <div class="stat-item clickable" @click="jumpToStudent(statistics.lowestStudent)">
-              <span class="label">最低分</span>
+              <span class="label">Lowest</span>
               <span class="value highlight-poor">{{ statistics.lowest }}</span>
             </div>
           </el-col>
@@ -73,7 +73,7 @@
           <!-- 平均分 -->
           <el-col :span="5">
             <div class="stat-item">
-              <span class="label">平均分</span>
+              <span class="label">Average</span>
               <span class="value">{{ statistics.average }}</span>
             </div>
           </el-col>
@@ -81,7 +81,7 @@
           <!-- 当前题目查看 -->
           <el-col :span="4">
             <div class="stat-item clickable" @click="emits('showCurrentQuestion')">
-              <span class="label">当前题目</span>
+              <span class="label">Current Question</span>
               <span class="value icon-value">
                 <el-icon><Document /></el-icon>
               </span>
