@@ -12,7 +12,6 @@
       :student-list="studentList"
       @question-change="handleQuestionChange"
       @student-change="handleStudentChange"
-      @show-reference-answer="showReferenceAnswer"
       @show-current-question="showCurrentQuestion"
     />
     
@@ -30,23 +29,6 @@
       @erase-marks="handleEraseMarks"
       @clear-all="handleClearAll"
     />
-
-    <!-- 参考答案弹窗 -->
-    <el-dialog
-      v-model="referenceAnswerVisible"
-      title="参考答案"
-      width="50%"
-      :close-on-click-modal="true"
-    >
-      <div class="reference-answer-content">
-        {{ currentReferenceAnswer }}
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="referenceAnswerVisible = false">关闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
 
     <!-- 当前题目弹窗 -->
     <el-dialog
@@ -234,6 +216,7 @@ const statisticsData = computed(() => {
   // 计算最高分、最低分、平均分
   const scores = currentQuestionScores.map(item => item.score)
   const highest = Math.max(...scores)
+  
   const lowest = Math.min(...scores)
   const average = Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
 
