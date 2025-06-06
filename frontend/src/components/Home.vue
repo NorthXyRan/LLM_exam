@@ -1,28 +1,28 @@
 <template>
   <div class="main-content">
-    <h2>欢迎使用智能阅卷系统</h2>
-    <p>请从左侧菜单选择功能开始使用</p>
+    <h2>Welcome to the Intelligent Grading System</h2>
+    <p>Please select a function from the left menu to start using</p>
     <div class="feature-cards">
       <el-row :gutter="20">
         <el-col :span="8">
           <el-card class="feature-card" @click="handleCardClick('uploading')">
             <el-icon class="card-icon"><Upload /></el-icon>
-            <h3>文件上传</h3>
-            <p>上传考试文件进行智能评分</p>
+            <h3>File Upload</h3>
+            <p>Upload exam files for intelligent grading</p>
           </el-card>
         </el-col>
         <el-col :span="8">
           <el-card class="feature-card" @click="handleCardClick('grading')">
             <el-icon class="card-icon"><Document /></el-icon>
-            <h3>智能评分</h3>
-            <p>AI 自动评分，快速准确</p>
+            <h3>Intelligent Grading</h3>
+            <p>AI automatic grading, fast and accurate</p>
           </el-card>
         </el-col>
         <el-col :span="8">
           <el-card class="feature-card" @click="handleCardClick('result')">
             <el-icon class="card-icon"><DataAnalysis /></el-icon>
-            <h3>结果分析</h3>
-            <p>详细的评分报告和数据分析</p>
+            <h3>Result Analysis</h3>
+            <p>Detailed scoring reports and data analysis</p>
           </el-card>
         </el-col>
       </el-row>
