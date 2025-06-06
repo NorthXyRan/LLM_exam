@@ -232,19 +232,18 @@ const handleClearAll = () => {
 }
 
 .highlight-toolbar :deep(.el-button--info) {
-  background: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.3);
-  color: rgba(0, 0, 0, 0.6);
+  background: rgb(12, 5, 214);
+  border-color: rgb(12, 5, 214);
 }
 
 .highlight-toolbar :deep(.el-button--info:hover) {
-  background: rgba(0, 0, 0, 0.15);
-  border-color: rgba(0, 0, 0, 0.4);
+  background: rgb(12, 5, 214);
+  border-color: rgb(12, 5, 214);
   transform: translateY(-1px);
 }
 
 .highlight-toolbar :deep(.el-button--default) {
-  background: #E5E5E5;
+  background: #e5e5e5;
   border-color: #E5E5E5;
   color: rgba(0, 0, 0, 0.6);
 }
@@ -265,8 +264,8 @@ const handleClearAll = () => {
 
 /* === 按钮状态样式 === */
 .active {
-  background-color: #007AFF !important;
-  border-color: #007AFF !important;
+  background-color: #ffd900c1 !important;
+  border-color: #ffd900c1 !important;
   color: white !important;
 }
 
