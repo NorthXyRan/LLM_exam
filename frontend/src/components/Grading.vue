@@ -216,7 +216,7 @@ const statisticsData = computed(() => {
   // 计算最高分、最低分、平均分
   const scores = currentQuestionScores.map(item => item.score)
   const highest = Math.max(...scores)
-  
+
   const lowest = Math.min(...scores)
   const average = Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
 

@@ -821,7 +821,7 @@
                     "reason": "未明确“插值是寻找一条经过所有点的曲线或函数”，错误回答"
                 },
                 {
-                    "Student answer": "曲线上每一点都可以用多项式表示",
+                    "Student answer": "曲线上每一点可以用多项式表示",
                     "Scoring point": 2,
                     "reason": "表达不清“逼近是寻找尽可能接近但不一定经过所有点的曲线或函数”，错误回答"
                 },
@@ -928,12 +928,12 @@
         "answer": {
             "correct": [
                 {
-                    "Student answer": "最小二乘逼近，Bernstein多项式逼近",
+                    "Student answer": "最小二乘逼近、Bernstein 多项式逼近",
                     "Scoring point": 4,
                     "reason": "包含标准答案的逼近主流方法，匹配给分点 4，正确回答（1分）"
                 },
                 {
-                    "Student answer": "数据误差为0",
+                    "Student answer": "数据误差为 0",
                     "Scoring point": 5,
                     "reason": "对应“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
                 },
@@ -948,7 +948,7 @@
                     "reason": "与“对噪声敏感”含义一致，匹配给分点 7，正确回答（1分）"
                 },
                 {
-                    "Student answer": "数据误差不为0",
+                    "Student answer": "数据误差不为 0",
                     "Scoring point": 8,
                     "reason": "表达“可能失去部分细节、不精确”，匹配给分点 8，正确回答（1分）"
                 }
@@ -1004,7 +1004,7 @@
                     "reason": "为主流逼近方法，匹配给分点 4，正确回答（1分）"
                 },
                 {
-                    "Student answer": "严格经过所有数据点，适合精确重建",
+                    "Student answer": "严格经过所有数据点适合精确重建",
                     "Scoring point": 5,
                     "reason": "“精确通过所有数据点”，匹配给分点 5，正确回答（1分）"
                 },
@@ -1099,22 +1099,42 @@
         "answer": {
             "correct": [
                 {
-                    "Student answer": "给定一组已知的数据点, 插值函数必须严格等于原始数据，插值强调精确通过每个数据点, 插值误差为零但可能导致高次多项式",
+                    "Student answer": "给定一组已知的数据点，插值函数必须严格等于原始数据",
                     "Scoring point": 1,
                     "reason": "匹配给分点 1，正确回答（1分）"
                 },
                 {
-                    "Student answer": "是在一个整体上尽可能接近这些点的函数，逼近关注总体趋势, 逼近总体误差小",
+                    "Student answer": "插值强调精确通过每个数据点",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "插值误差为零但可能导致高次多项式",
+                    "Scoring point": 1,
+                    "reason": "匹配给分点 1，正确回答（1分）"
+                },
+                {
+                    "Student answer": "是在一个整体上尽可能接近这些点的函数",
                     "Scoring point": 2,
                     "reason": "匹配给分点 2，正确回答（1分）"
                 },
                 {
-                    "Student answer": "酷酷求解线性方程。如拉格朗日求值",
+                    "Student answer": "逼近关注总体趋势",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "逼近总体误差小",
+                    "Scoring point": 2,
+                    "reason": "匹配给分点 2，正确回答（1分）"
+                },
+                {
+                    "Student answer": "库库求解线性方程组。如拉格朗日求值。",
                     "Scoring point": 3,
                     "reason": "拉格朗日插值属于主流方法，匹配给分点 3，正确回答（1分）"
                 },
                 {
-                    "Student answer": "优化问题，如最小二乘法，切比雪夫逼近",
+                    "Student answer": "优化问题 如最小二乘法，切比雪夫逼近",
                     "Scoring point": 4,
                     "reason": "“最小二乘法”是主流逼近方法，匹配给分点 4，正确回答（1分）"
                 },
@@ -1156,7 +1176,7 @@
         "answer": {
             "correct": [
                 {
-                    "Student answer": "通过找到一个函数, 让该函数尽可能逼近这些点（目标点）",
+                    "Student answer": "找到一个函数，让该函数尽可能逼近这些点（目标点）",
                     "Scoring point": 2,
                     "reason": "表达了“整体趋势上接近原始数据”，匹配给分点 2，正确回答（1分）"
                 },
@@ -1238,7 +1258,7 @@
                     "reason": "与“精确通过所有数据点”一致，匹配给分点5，正确回答（1分）"
                 },
                 {
-                    "Student answer": "更难运算，插值因为要经过所有样本点，所以容易发生抖动，产生无效结果。",
+                    "Student answer": "插值因为要经过所有样本点，所以容易发生抖动，产生无效结果。",
                     "Scoring point": 7,
                     "reason": "“抖动”对应“高阶插值易出现震荡”，匹配给分点 7，正确回答（1分）"
                 }
@@ -1262,7 +1282,7 @@
 
             ]
         },
-        "total_score": 4
+        "total_score": 5
     },
     {
         "student_id": 23,
@@ -1337,12 +1357,22 @@
                     "reason": "匹配给分点 2，正确回答（1分）"
                 },
                 {
-                    "Student answer": "拉格朗日多项式，通过构造多项式通过所有点",
+                    "Student answer": "拉格朗日多项式",
                     "Scoring point": 3,
                     "reason": "为主流插值方法，匹配给分点 3，正确回答（1分）"
                 },
                 {
-                    "Student answer": "最小化二乘法、多项式逼近，优化目标函数",
+                    "Student answer": "通过构造多项式通过所有点",
+                    "Scoring point": 3,
+                    "reason": "为主流插值方法，匹配给分点 3，正确回答（1分）"
+                },
+                {
+                    "Student answer": "最小化二乘法、多项式逼近",
+                    "Scoring point": 4,
+                    "reason": "均为主流逼近方法，匹配给分点 4，正确回答（1分）"
+                },
+                {
+                    "Student answer": "优化目标函数",
                     "Scoring point": 4,
                     "reason": "均为主流逼近方法，匹配给分点 4，正确回答（1分）"
                 },
@@ -1479,7 +1509,7 @@
                     "reason": "未描述任何具体解法（如最小二乘法），错误回答"
                 }
             ],
-            "ambiguous": [
+            "unclear": [
                 {
                     "Student answer": "拟合程度可能较低，函数过于平滑，出现欠拟合",
                     "Scoring point": 8,
@@ -1508,7 +1538,17 @@
                     "reason": "匹配给分点 2，正确回答（1分）"
                 },
                 {
-                    "Student answer": "插值由于要求严格符合所有样本点，容易过拟合，插值通常函数更复杂，多项式次数更高，插值计算成本更高",
+                    "Student answer": "插值通常函数更复杂，多项式次数更高",
+                    "Scoring point": 7,
+                    "reason": "对应“对噪声敏感，高阶插值震荡”，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "插值由于要求严格符合所有样本点，容易过拟合",
+                    "Scoring point": 7,
+                    "reason": "对应“对噪声敏感，高阶插值震荡”，匹配给分点 7，正确回答（1分）"
+                },
+                {
+                    "Student answer": "插值计算成本更高",
                     "Scoring point": 7,
                     "reason": "对应“对噪声敏感，高阶插值震荡”，匹配给分点 7，正确回答（1分）"
                 }
