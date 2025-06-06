@@ -5,9 +5,9 @@
       <el-header class="header">
         <span>Human-AI Collaborative Intelligent Grading System with Visual Interaction</span>
         <!-- 在头部添加折叠按钮 -->
-        <el-button 
+        <el-button
           class="collapse-button"
-          size="large" 
+          size="large"
           @click="toggleCollapse"
           style="margin-left: auto;"
         >
@@ -26,7 +26,7 @@
             :default-active="activeMenu"
             class="sidebar-menu"
             :collapse="isCollapse"
-            background-color= "transparent"
+            background-color="transparent"
             text-color="#ffffff"
             @open="handleOpen"
             @close="handleClose"
@@ -65,7 +65,6 @@
               <el-icon><Setting /></el-icon>
               <template #title>Prompt Setting</template>
             </el-menu-item>
-            
           </el-menu>
         </el-aside>
         
@@ -106,7 +105,7 @@ const activeMenu = computed(() => {
       return '1'
     case '/grading':
       return '2'
-      case '/result/report':
+    case '/result/report':
       return '3-1'
     case '/result/analysis':
       return '3-2'
@@ -211,13 +210,14 @@ const handleSelect = (index: string) => {
 
 .sidebar-menu .el-menu-item,
 .sidebar-menu .el-sub-menu__title {
-  color: #ffffff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+
 .sidebar-menu .el-menu-item.is-active {
-  background-color: #ffd04b;
-  color: #3870a8;
+  background-color: #ffd04b !important;
+  color: #3870a8 !important;
   font-weight: bold;
 }
 
@@ -227,4 +227,14 @@ const handleSelect = (index: string) => {
   padding: 20px;
   transition: margin-left 0.3s ease;
 }
-</style> 
+
+</style>
+
+<!-- 全局样式 - 修复折叠状态下的子菜单样式 -->
+<style>
+.el-menu--popup-container {
+  background: linear-gradient(135deg, #BC95C6, #7DC4CC) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+</style>
