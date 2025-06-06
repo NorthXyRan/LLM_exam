@@ -49,7 +49,7 @@
       <div class="reference-area">
         <div class="area-card">
           <div class="reference-header">
-            <h3>参考答案</h3>
+            <h3>Reference Answer</h3>
           </div>
           <reference-answer :reference-answer="props.referenceAnswer" />
         </div>
@@ -58,7 +58,7 @@
       <div class="feedback-area">
         <div class="area-card">
           <div class="feedback-header">
-            <h3>给分理由</h3>
+            <h3>Score Reason</h3>
           </div>
           <feedback-panel
             :selected-highlight="selectedHighlight"
