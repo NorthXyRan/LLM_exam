@@ -3,7 +3,7 @@
     <el-container class="container">
       <!-- 头部 -->
       <el-header class="header">
-        <span>人与大模型可视交互协同的智能阅卷系统</span>
+        <span>Human-AI Collaborative Intelligent Grading System with Visual Interaction</span>
         <!-- 在头部添加折叠按钮 -->
         <el-button 
           type="primary" 
@@ -36,35 +36,35 @@
             <!-- 主界面 -->
             <el-menu-item index="0">
               <el-icon><House /></el-icon>
-              <template #title>主界面</template>
+              <template #title>Home</template>
             </el-menu-item>
             
             <!-- 文件上传 -->
             <el-menu-item index="1">
               <el-icon><Upload /></el-icon>
-              <template #title>文件上传</template>
+              <template #title>File Upload</template>
             </el-menu-item>
             
             <!-- 智能评分 -->
             <el-menu-item index="2">
               <el-icon><Document /></el-icon>
-              <template #title>智能评分</template>
+              <template #title>Intelligent Grading</template>
             </el-menu-item>
             
             <!-- 结果查看 -->
             <el-sub-menu index="3">
               <template #title>
                 <el-icon><DataAnalysis /></el-icon>
-                <span>结果查看</span>
+                <span>Result View</span>
               </template>
-              <el-menu-item index="3-1">评分报告</el-menu-item>
-              <el-menu-item index="3-2">详细分析</el-menu-item>
+              <el-menu-item index="3-1">Score Report</el-menu-item>
+              <el-menu-item index="3-2">Detailed Analysis</el-menu-item>
             </el-sub-menu>
             
             <!-- 系统设置 -->
             <el-menu-item index="4">
               <el-icon><Setting /></el-icon>
-              <template #title>prompt设置</template>
+              <template #title>Prompt Setting</template>
             </el-menu-item>
             
           </el-menu>

@@ -6,7 +6,7 @@
           <div class="icon-wrapper">
             <el-icon class="card-icon"><document /></el-icon>
           </div>
-          <h3>试卷管理</h3>
+          <h3>Paper Management</h3>
         </div>
         <el-tag 
           v-if="examPaper.status === 'ready'" 
@@ -15,7 +15,7 @@
           class="status-tag"
         >
           <el-icon><check /></el-icon>
-          已就绪
+          Ready
         </el-tag>
         <el-tag 
           v-else 
@@ -24,7 +24,7 @@
           class="status-tag waiting-tag"
         >
           <el-icon><clock /></el-icon>
-          待设置
+          Waiting for Setting
         </el-tag>
       </div>
     </template>
@@ -34,7 +34,7 @@
       <div class="upload-section">
         <div class="section-header">
           <el-icon class="section-icon"><upload /></el-icon>
-          <h4>上传试卷文件</h4>
+          <h4>Upload Paper File</h4>
         </div>
         <el-upload
           v-model:file-list="paperFileList"
@@ -51,8 +51,8 @@
           <div class="upload-content">
             <el-icon class="upload-icon"><upload-filled /></el-icon>
             <div class="upload-text">
-              <p class="upload-main">点击或拖拽文件到此处</p>
-              <p class="upload-hint">支持 TXT、DOC、DOCX、PDF 格式</p>
+              <p class="upload-main">Click or drag the file here</p>
+              <p class="upload-hint">Support TXT, DOC, DOCX, PDF format</p>
             </div>
           </div>
         </el-upload>

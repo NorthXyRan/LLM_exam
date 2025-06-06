@@ -5,11 +5,11 @@
         <div class="action-buttons">
           <el-button type="primary" size="medium" @click="handleStartGrading">
             <el-icon><VideoPlay /></el-icon>
-            开始评分
+            Start Grading
           </el-button>
           <el-button type="success" size="medium" @click="handleBatchGrading">
             <el-icon><Document /></el-icon>
-            全部评分
+            Batch Grading
           </el-button>
         </div>
       </div>

@@ -6,7 +6,7 @@
           <div class="icon-wrapper">
             <el-icon class="card-icon"><user /></el-icon>
           </div>
-          <h3>学生答卷</h3>
+          <h3>Student Papers</h3>
         </div>
         <el-tag 
           v-if="studentPapers.length > 0 && validStudentPapers > 0" 
@@ -15,7 +15,7 @@
           class="status-tag"
         >
           <el-icon><check /></el-icon>
-          {{ validStudentPapers }}份有效
+          {{ validStudentPapers }} valid papers
         </el-tag>
         <el-tag 
           v-else-if="disabled" 
@@ -24,7 +24,7 @@
           class="status-tag waiting-tag"
         >
           <el-icon><clock /></el-icon>
-          等待上传
+          Waiting for Upload
         </el-tag>
         <el-tag 
           v-else 
@@ -33,7 +33,7 @@
           class="status-tag waiting-tag"
         >
           <el-icon><clock /></el-icon>
-          待上传
+          Waiting for Upload
         </el-tag>
       </div>
     </template>
@@ -41,7 +41,7 @@
     <div class="student-content">
       <el-alert 
         v-if="disabled" 
-        title="请先完成试卷和参考答案的设置" 
+        title="Please complete the paper and reference answer setting first" 
         type="warning" 
         :closable="false"
         show-icon
@@ -53,7 +53,7 @@
         <div class="upload-section">
           <div class="section-header">
             <el-icon class="section-icon"><upload /></el-icon>
-            <h4>批量上传答卷</h4>
+            <h4>Batch Upload Student Papers</h4>
           </div>
           <el-upload
             class="student-upload"
@@ -67,15 +67,15 @@
             <div class="upload-content">
               <el-icon class="upload-icon"><upload-filled /></el-icon>
               <div class="upload-text">
-                <p class="upload-main">批量上传学生答卷</p>
-                <p class="upload-hint">支持多文件拖拽，TXT、CSV 格式</p>
+                <p class="upload-main">Batch Upload Student Papers</p>
+                <p class="upload-hint">Support multiple file dragging, TXT, CSV format</p>
               </div>
             </div>
           </el-upload>
           
           <div v-if="parsing" class="parsing-status">
             <el-icon class="is-loading"><loading /></el-icon>
-            <span>正在解析答卷文件...</span>
+            <span>Parsing Student Papers...</span>
           </div>
         </div>
         

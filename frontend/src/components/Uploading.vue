@@ -32,7 +32,7 @@
 
     <!-- 独立的重置按钮 -->
     <div class="reset-button-container">
-      <el-button type="danger" @click="resetAll">重置全部</el-button>
+      <el-button type="danger" @click="resetAll">Reset</el-button>
     </div>
   </div>
 </template>

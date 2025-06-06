@@ -6,7 +6,7 @@
           <div class="icon-wrapper">
             <el-icon class="card-icon"><document-checked /></el-icon>
           </div>
-          <h3>参考答案</h3>
+          <h3>Reference Answer</h3>
         </div>
         <el-tag 
           v-if="referenceAnswer.status === 'ready'" 
@@ -15,7 +15,7 @@
           class="status-tag"
         >
           <el-icon><check /></el-icon>
-          已就绪
+          Ready
         </el-tag>
         <el-tag 
           v-else-if="disabled" 
@@ -24,7 +24,7 @@
           class="status-tag waiting-tag"
         >
           <el-icon><clock /></el-icon>
-          等待试卷
+          Waiting for Paper
         </el-tag>
         <el-tag 
           v-else 
@@ -33,7 +33,7 @@
           class="status-tag waiting-tag"
         >
           <el-icon><clock /></el-icon>
-          待设置
+          Waiting for Setting
         </el-tag>
       </div>
     </template>
@@ -41,7 +41,7 @@
     <div class="answer-content">
       <el-alert 
         v-if="disabled" 
-        title="请先完成试卷设置" 
+        title="Please complete the paper setting first" 
         type="warning" 
         :closable="false"
         show-icon
@@ -53,7 +53,7 @@
         <div class="upload-section">
           <div class="section-header">
             <el-icon class="section-icon"><upload /></el-icon>
-            <h4>上传答案文件</h4>
+            <h4>Upload Answer File</h4>
           </div>
           <el-upload
             v-model:file-list="answerFileList"
@@ -70,8 +70,8 @@
             <div class="upload-content">
               <el-icon class="upload-icon"><upload-filled /></el-icon>
               <div class="upload-text">
-                <p class="upload-main">点击或拖拽文件到此处</p>
-                <p class="upload-hint">支持 TXT、DOC、DOCX 格式</p>
+                <p class="upload-main">Click or drag the file here</p>
+                <p class="upload-hint">Support TXT, DOC, DOCX format</p>
               </div>
             </div>
           </el-upload>

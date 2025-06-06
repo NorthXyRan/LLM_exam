@@ -2,17 +2,17 @@
   <div class="scoring-section">
     <div class="score-group">
       <div class="score-item">
-        <span class="score-label">LLM批改分数</span>
+        <span class="score-label">Score by LLM</span>
         <div class="score-display">
           <span class="score-value">{{ llmScore }}</span>
-          <span class="score-unit">分</span>
+          <span class="score-unit">points</span>
         </div>
       </div>
       
       <el-divider direction="vertical" />
       
       <div class="score-item">
-        <span class="score-label">最终评分</span>
+        <span class="score-label">Final Score</span>
         <div class="score-input-group">
           <el-input
             v-model="teacherScore"
@@ -21,14 +21,14 @@
             class="score-input"
             @input="handleTeacherScoreInput"
           />
-          <span class="score-unit">分</span>
+          <span class="score-unit">points</span>
         </div>
       </div>
       
       <el-divider direction="vertical" />
       
       <div class="score-item">
-        <span class="score-label">操作</span>
+        <span class="score-label">Operation</span>
         <div class="score-actions-inline">
           <el-button 
             type="primary" 
@@ -36,7 +36,7 @@
             @click="saveScore"
             :disabled="!teacherScore"
           >
-            保存并提交
+            Save and Submit
           </el-button>
         </div>
       </div>
