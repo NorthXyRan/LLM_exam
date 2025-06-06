@@ -6,10 +6,9 @@
           :type="highlightMode ? 'primary' : 'default'"
           :class="{ 'active': highlightMode }"
           @click="toggleHighlightMode"
-          size="medium"
         >
           <el-icon><Edit /></el-icon>
-          高亮笔
+          highlight
         </el-button>
       </div>
       
@@ -18,39 +17,35 @@
       <div class="tool-group">
         <el-button 
           type="success" 
-          size="medium"
           @click="() => handleMarkAnswer('correct')"
           :disabled="!hasSelectedText"
         >
           <el-icon><Check /></el-icon>
-          正确
+          correct
         </el-button>
         <el-button 
           type="danger" 
-          size="medium"
           @click="() => handleMarkAnswer('wrong')"
           :disabled="!hasSelectedText"
         >
           <el-icon><Close /></el-icon>
-          错误
+          wrong
         </el-button>
         <el-button 
           type="warning" 
-          size="medium"
           @click="() => handleMarkAnswer('unclear')"
           :disabled="!hasSelectedText"
         >
           <el-icon><QuestionFilled /></el-icon>
-          模糊
+          unclear
         </el-button>
         <el-button 
           type="info" 
-          size="medium"
           @click="() => handleMarkAnswer('redundant')"
           :disabled="!hasSelectedText"
         >
           <el-icon><RemoveFilled /></el-icon>
-          冗余
+          redundant
         </el-button>
       </div>
       
@@ -58,23 +53,19 @@
       
       <div class="tool-group">
         <el-button 
-          type="default" 
-          size="medium"
           @click="handleEraseMarks"
           :disabled="!hasSelectedText"
           class="eraser-btn"
         >
           <el-icon><Delete /></el-icon>
-          橡皮
+          erase
         </el-button>
         <el-button 
-          type="default" 
-          size="medium"
           @click="handleClearAll"
           class="clear-btn"
         >
           <el-icon><Refresh /></el-icon>
-          清屏
+          reset
         </el-button>
       </div>
     </div>

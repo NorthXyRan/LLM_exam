@@ -94,16 +94,6 @@ interface HighlightData {
   total_score: number
 }
 
-// 学生评分接口
-interface StudentScore {
-  student_id: number
-  question_id: number
-  llm_score?: number
-  teacher_score?: number
-  final_score: number
-  is_graded: boolean
-}
-
 // 学生信息接口
 interface StudentInfo {
   id: number
@@ -124,15 +114,14 @@ const currentQuestionId = ref<number>(1)
 /**
  * ===== 主要数据存储 =====
  */
-const studentAnswers = ref<StudentAnswer[]>([])
-const studentList = ref<StudentInfo[]>([])
-const questions = ref<Question[]>([])
-const highlightDataList = ref<HighlightData[]>([])
+const studentAnswers = ref<StudentAnswer[]>([])         // 数组，存储所有学生的答案
+const studentList = ref<StudentInfo[]>([])              // 数组，存储所有学生的信息
+const questions = ref<Question[]>([])                   // 数组，存储所有题目
+const highlightDataList = ref<HighlightData[]>([])      // 数组，存储所有高亮数据
 
 /**
  * ===== 弹窗状态控制 =====
  */
-const referenceAnswerVisible = ref(false)
 const currentQuestionVisible = ref(false)
 
 /**
@@ -250,9 +239,8 @@ const gradedPapers = computed(() => {
  * ===== 数据加载函数 =====
  */
 
-/**
- * 加载题目和参考答案数据
- */
+
+// 加载题目和参考答案数据
 const loadQuestions = async () => {
   try {
     const [paperResponse, answerResponse] = await Promise.all([
@@ -287,9 +275,7 @@ const loadQuestions = async () => {
   }
 }
 
-/**
- * 加载学生答案数据
- */
+// 加载学生答案数据
 const loadStudentAnswers = async () => {
   try {
     const response = await fetch('/paper/example1/student_answer.json')
@@ -317,9 +303,7 @@ const loadStudentAnswers = async () => {
   }
 }
 
-/**
- * 加载高亮标记数据
- */
+// 加载高亮标记数据
 const loadHighlightData = async () => {
   try {
     const response = await fetch('/paper/example1/student_answer_marked.json')
@@ -336,18 +320,9 @@ const loadHighlightData = async () => {
     }
 
     highlightDataList.value = data
+
     console.log(`成功加载 ${data.length} 条高亮标记数据`)
-    
-    // 统计信息
-    const questionScores = data.filter(item => item.question_id === 1).map(item => item.total_score)
-    if (questionScores.length > 0) {
-      console.log('第1题统计:', {
-        最高分: Math.max(...questionScores),
-        最低分: Math.min(...questionScores),
-        平均分: Math.round((questionScores.reduce((sum, score) => sum + score, 0) / questionScores.length) * 10) / 10,
-        参与学生数: questionScores.length
-      })
-    }
+
   } catch (error) {
     console.error('加载高亮数据失败:', error)
     ElMessage.warning('无法读取高亮标记文件，将使用普通模式')
@@ -436,14 +411,6 @@ const handleClearAll = () => {
 /**
  * ===== 弹窗控制函数 =====
  */
-const showReferenceAnswer = () => {
-  if (!currentQuestionId.value) {
-    ElMessage.warning('请先选择题目')
-    return
-  }
-  referenceAnswerVisible.value = true
-}
-
 const showCurrentQuestion = () => {
   if (!currentQuestionId.value) {
     ElMessage.warning('请先选择题目')
