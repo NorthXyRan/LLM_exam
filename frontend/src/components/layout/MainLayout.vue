@@ -6,7 +6,7 @@
         <span>Human-AI Collaborative Intelligent Grading System with Visual Interaction</span>
         <!-- 在头部添加折叠按钮 -->
         <el-button 
-          type="primary" 
+          class="collapse-button"
           size="large" 
           @click="toggleCollapse"
           style="margin-left: auto;"
@@ -26,9 +26,8 @@
             :default-active="activeMenu"
             class="sidebar-menu"
             :collapse="isCollapse"
-            background-color="#3870a8"
+            background-color= "transparent"
             text-color="#ffffff"
-            active-text-color="#ffd04b"
             @open="handleOpen"
             @close="handleClose"
             @select="handleSelect"
@@ -86,9 +85,8 @@ import {
   Expand,
   Fold,
   House,
-  QuestionFilled,
   Setting,
-  Upload,
+  Upload
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
@@ -178,7 +176,8 @@ const handleSelect = (index: string) => {
 }
 
 .header {
-  background-color: #409eff;
+  background: linear-gradient(135deg, #BC95C6, #7DC4CC);
+  backdrop-filter: blur(10px);
   color: white;
   display: flex;
   align-items: center;
@@ -188,8 +187,16 @@ const handleSelect = (index: string) => {
   height: 70px;
 }
 
+.collapse-button {
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  color: white;
+  transition: all 0.3s ease;
+}
+
 .aside {
-  background-color: #3870a8;
+  background: linear-gradient(135deg, #BC95C6, #7DC4CC);
+  backdrop-filter: blur(10px);
   color: white;
   height: 100%;
   overflow: hidden;
@@ -206,11 +213,6 @@ const handleSelect = (index: string) => {
 .sidebar-menu .el-sub-menu__title {
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-menu .el-menu-item:hover,
-.sidebar-menu .el-sub-menu__title:hover {
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-menu .el-menu-item.is-active {
