@@ -175,7 +175,7 @@ const handleSelect = (index: string) => {
 }
 
 .header {
-  background: linear-gradient(135deg, #BC95C6, #7DC4CC);
+  background: linear-gradient(135deg, #F6736B, #934F91);
   backdrop-filter: blur(10px);
   color: white;
   display: flex;
@@ -194,7 +194,7 @@ const handleSelect = (index: string) => {
 }
 
 .aside {
-  background: linear-gradient(135deg, #BC95C6, #7DC4CC);
+  background: linear-gradient(135deg, #F6736B, #934F91);
   backdrop-filter: blur(10px);
   color: white;
   height: 100%;
@@ -233,7 +233,7 @@ const handleSelect = (index: string) => {
 <!-- 全局样式 - 修复折叠状态下的子菜单样式 -->
 <style>
 .el-menu--popup-container {
-  background: linear-gradient(135deg, #BC95C6, #7DC4CC) !important;
+  background: linear-gradient(135deg, #F6736B, #934F91) !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
