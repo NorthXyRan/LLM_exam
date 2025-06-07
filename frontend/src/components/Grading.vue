@@ -3,6 +3,7 @@
     
     <!-- 头部 -->
     <grading-header
+      class="hover"
       :current-question="currentQuestionId"
       :current-student-id="currentStudentId"
       :questions="questions"
@@ -16,12 +17,12 @@
     <!-- 第一行：评分 + 操作 (7:3) -->
     <div class="grading-row grading-row-top">
       <scoring-section
-        class="grading-card scoring-card"
+        class="grading-card scoring-card hover"
         :llm-score="currentLLMScore"
         @score-change="handleScoreChange"
       />
       <action-section
-        class="grading-card action-card"
+        class="grading-card action-card hover"
         @start-grading="startGrading"
         @batch-grading="handleBatchGrading"
       />
@@ -30,7 +31,7 @@
     <!-- 第二行：预览 + 参考答案 + 反馈 (4:3:3) -->
     <div class="grading-row grading-row-main">
       <!-- 预览区域 -->
-      <div class="grading-card preview-card">
+      <div class="grading-card preview-card hover">
         <highlight-toolbar
           ref="highlightToolbarRef"
           :paper-preview-ref="paperPreviewRef"
@@ -46,7 +47,7 @@
       </div>
 
       <!-- 参考答案区域 -->
-      <div class="grading-card reference-card">
+      <div class="grading-card reference-card hover">
         <div class="card-header">
           <h3>Reference Answer</h3>
         </div>
@@ -57,7 +58,7 @@
       </div>
 
       <!-- 反馈区域 -->
-      <div class="grading-card feedback-card">
+      <div class="grading-card feedback-card hover">
         <div class="card-header">
           <h3>Score Reason</h3>
         </div>
@@ -357,6 +358,17 @@ onMounted(async () => {
   min-height: 500px;
 }
 
+/* ===== 卡片悬停效果 ===== */
+.hover {
+  transition: all 0.3s ease;
+}
+
+.hover:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  transform: translateY(-4px) scale(1.01);
+}
+
+
 /* ===== 卡片样式 ===== */
 .grading-card {
   background: #FFFFFF;
@@ -369,13 +381,10 @@ onMounted(async () => {
   transition: all 0.2s ease;
 }
 
-.grading-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 
 /* ===== 卡片比例 ===== */
-.scoring-card { flex: 7; background: #F5F5F5; }
-.action-card { flex: 3; background: #F5F5F5; }
+.scoring-card { flex: 7; }
+.action-card { flex: 3; }
 .preview-card { flex: 4; }
 .reference-card { flex: 3; }
 .feedback-card { flex: 3; }

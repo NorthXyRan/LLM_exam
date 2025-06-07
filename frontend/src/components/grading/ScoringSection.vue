@@ -98,9 +98,9 @@ const saveScore = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 适配父组件的样式 */
-  background: transparent;
-  border: none;
+
+  background: rgba(255, 255, 255, 0.9) !important;
+
   padding: 0;
   margin: 0;
   box-sizing: border-box;
