@@ -3,11 +3,11 @@
     <div class="action-group">
       <div class="score-item">
         <div class="action-buttons">
-          <el-button type="primary" size="medium" @click="handleStartGrading">
+          <el-button type="primary" size="default" @click="handleStartGrading">
             <el-icon><VideoPlay /></el-icon>
             Start Grading
           </el-button>
-          <el-button type="success" size="medium" @click="handleBatchGrading">
+          <el-button type="success" size="default" @click="handleBatchGrading">
             <el-icon><Document /></el-icon>
             Batch Grading
           </el-button>

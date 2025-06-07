@@ -423,7 +423,7 @@ const showCurrentQuestion = () => {
 <style scoped>
 .grading {
   min-height: 100vh;
-  background: #F5F5F5;
+  background: transparent;
   display: flex;
   flex-direction: column;
   gap: 16px;

@@ -17,7 +17,7 @@
           <el-input
             v-model="teacherScore"
             type="number"
-            size="medium"
+            size="default"
             class="score-input"
             @input="handleTeacherScoreInput"
           />
@@ -32,7 +32,7 @@
         <div class="score-actions-inline">
           <el-button 
             type="primary" 
-            size="medium"
+            size="default"
             @click="saveScore"
             :disabled="!teacherScore"
           >

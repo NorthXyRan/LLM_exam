@@ -260,7 +260,6 @@ const handleClearAll = () => {
   gap: 16px;
   height: 85vh;
   padding: 16px;
-  background: #FFFFFF;
 }
 
 /* 网格区域分配 */
