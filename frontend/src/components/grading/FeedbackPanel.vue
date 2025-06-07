@@ -2,20 +2,6 @@
   <div class="feedback-panel"> 
     <!-- 内容区域 -->
     <div class="feedback-content">
-      <!-- 选中内容信息 -->
-      <div v-if="selectedHighlight" class="selected-info">
-        <div class="selected-text">
-          <span class="label">选中内容：</span>
-          <span class="text">{{ selectedHighlight.text.substring(0, 50) }}...</span>
-        </div>
-        <div class="selected-type">
-          <span class="label">标记类型：</span>
-          <el-tag :type="getTagType(selectedHighlight.type)">
-            {{ getTypeLabel(selectedHighlight.type) }}
-          </el-tag>
-        </div>
-      </div>
-
       <!-- 给分理由区域 -->
       <div class="reason-area">
         <!-- 输入框模式 -->
@@ -87,22 +73,18 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// 事件定义 - 简化了，只保留必要的
+// 事件定义 - 只保留必要的
 const emits = defineEmits<{
   (e: 'modifyReason', data: any): void
   (e: 'saveReason', data: any): void  
   (e: 'submitReason', data: any): void
 }>()
 
-// === 内部状态管理（从主组件移过来） ===
+// === 内部状态管理 ===
 const selectedHighlight = ref<SelectedHighlight | null>(null)
 const editableReason = ref('')
 const isEditing = ref(false)
 
-// 给分点信息
-const selectedScoringPoint = computed(() => {
-  return selectedHighlight.value?.scoringPoint || null
-})
 
 // 显示的理由内容
 const displayReason = computed(() => {
@@ -124,9 +106,9 @@ const displayReason = computed(() => {
   return reason
 })
 
-// === 从主组件移过来的逻辑 ===
 
-// 处理高亮点击事件（从主组件移过来）
+
+// 处理高亮点击事件
 const handleHighlightClicked = (data: HighlightClickData) => {
   const typeMapping = {
     'unclear': 'unclear' as const,
@@ -144,7 +126,7 @@ const handleHighlightClicked = (data: HighlightClickData) => {
   ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
 }
 
-// 处理标记答案事件（从主组件移过来）
+// 处理标记答案事件
 const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' } | string) => {
   let markData: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }
   
@@ -273,39 +255,6 @@ defineExpose({
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-/* === 选中信息区域 === */
-.selected-info {
-  padding: 12px 0;
-  border-bottom: 1px solid #E5E5E5;
-  margin-bottom: 12px;
-}
-
-.selected-text,
-.selected-type {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.selected-text:last-child,
-.selected-type:last-child {
-  margin-bottom: 0;
-}
-
-.selected-info .label {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.6);
-  font-weight: 500;
-  margin-right: 8px;
-  min-width: 70px;
-}
-
-.selected-info .text {
-  font-size: 13px;
-  color: rgba(0, 0, 0, 0.87);
-  line-height: 1.4;
 }
 
 /* === 内容区域 === */
