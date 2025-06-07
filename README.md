@@ -44,14 +44,16 @@ upload/
 ## 评分组件
 
 ```
-GradingPage (主组件)
-├── GradingHeader (试卷/题目选择导航)
-└── GradingPageContent (具体评分界面)
-    ├── ScoringSection (LLM分数 + 教师评分)
-    ├── ActionSection (开始评分/全部评分按钮)
-    ├── HighlightToolbar (标记工具)
-    ├── PaperPreview (当前题目内容显示)
-    └── FeedbackPanel (理由查看/编辑)
+grading/
+├── Grading.vue          # 主组件
+└── grading/
+    ├── GradingHeader.vue    # 头部组件
+    ├── ScoringSection.vue   # 评分组件
+    ├── ActionSection.vue    # 操作组件
+    ├── HighlightToolbar.vue # 工具栏组件
+    ├── PaperPreview.vue     # 预览组件
+    ├── ReferenceAnswer.vue  # 参考答案组件
+    └── FeedbackPanel.vue    # 反馈组件
 ```
 
 ## 结果组件
