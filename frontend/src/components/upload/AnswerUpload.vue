@@ -188,20 +188,14 @@ const handleAnswerExceed = (files, fileList) => {
 .answer-upload-card {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e8f4fd;
-  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
   transition: all 0.3s ease;
   overflow: hidden;
+  border: 0px;
 }
 
 .answer-upload-card:hover {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
-}
-
-.answer-upload-card.disabled {
-  opacity: 0.7;
-  filter: grayscale(0.3);
 }
 
 .answer-upload-card :deep(.el-card__header) {

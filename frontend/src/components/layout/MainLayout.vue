@@ -175,13 +175,13 @@ const handleSelect = (index: string) => {
 }
 
 .header {
-  background: linear-gradient(135deg, #F6736B, #934F91);
+  background: transparent;
   backdrop-filter: blur(10px);
   color: white;
   display: flex;
   align-items: center;
   padding: 0 20px;
-  font-size: 18px;
+  font-size: 23px;
   font-weight: bold;
   height: 70px;
 }
@@ -194,7 +194,7 @@ const handleSelect = (index: string) => {
 }
 
 .aside {
-  background: linear-gradient(135deg, #F6736B, #934F91);
+  background: transparent;
   backdrop-filter: blur(10px);
   color: white;
   height: 100%;
@@ -222,7 +222,7 @@ const handleSelect = (index: string) => {
 }
 
 .main {
-  background-color: #f5f5f5;
+  background-color: transparent;
   height: 100%;
   padding: 20px;
   transition: margin-left 0.3s ease;

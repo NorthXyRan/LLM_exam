@@ -155,7 +155,7 @@ const handlePaperExceed = () => {
 .paper-upload-card {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e8f4fd;
+  border: 0px;
   background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
   transition: all 0.3s ease;
   overflow: hidden;

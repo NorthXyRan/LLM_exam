@@ -99,6 +99,7 @@ const savePrompt = () => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
   overflow: hidden;
+  border: 0px;
 }
 
 .prompt-card :deep(.el-card__header) {

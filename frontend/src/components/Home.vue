@@ -43,7 +43,7 @@ const handleCardClick = (path: string) => {
 
 <style scoped>
 .main-content {
-  background: white;
+  background: rgb(255, 255, 255);
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);

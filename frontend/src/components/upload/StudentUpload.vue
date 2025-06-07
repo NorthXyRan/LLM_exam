@@ -205,7 +205,7 @@ const handleStudentPapersUpload = (file, fileList) => {
 .student-upload-card {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e8f4fd;
+  border: 0px;
   background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
   transition: all 0.3s ease;
   overflow: hidden;
@@ -216,10 +216,6 @@ const handleStudentPapersUpload = (file, fileList) => {
   transform: translateY(-2px);
 }
 
-.student-upload-card.disabled {
-  opacity: 0.7;
-  filter: grayscale(0.3);
-}
 
 .student-upload-card :deep(.el-card__header) {
   border-bottom: none;  /* 去掉卡片头部下划线 */
