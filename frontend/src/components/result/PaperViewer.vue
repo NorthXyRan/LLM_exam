@@ -120,7 +120,7 @@ defineProps<Props>()
 
 .exam-info {
   font-weight: 500;
-  color: #007AFF;
+  color: #007aff;
 }
 
 .score-summary {
@@ -141,7 +141,7 @@ defineProps<Props>()
 .score {
   font-size: 28px;
   font-weight: 600;
-  color: #007AFF;
+  color: #007aff;
 }
 
 .max-score {
@@ -175,7 +175,7 @@ defineProps<Props>()
 }
 
 .question-score {
-  color: #007AFF;
+  color: #007aff;
   font-weight: 500;
   margin-left: 8px;
 }
@@ -190,7 +190,7 @@ defineProps<Props>()
   font-weight: 600;
   color: rgba(0, 0, 0, 0.87);
   margin-bottom: 12px;
-  border-left: 4px solid #007AFF;
+  border-left: 4px solid #007aff;
   padding-left: 12px;
 }
 
@@ -209,12 +209,12 @@ defineProps<Props>()
   .paper-viewer {
     padding: 16px;
   }
-  
+
   .paper-header {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .score-summary {
     text-align: left;
   }
