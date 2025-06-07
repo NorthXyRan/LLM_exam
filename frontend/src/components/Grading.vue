@@ -1,9 +1,8 @@
 <template>
   <div class="grading-page">
     
-    <!-- 头部：题目选择、学生选择、统计信息 -->
+    <!-- 头部 -->
     <grading-header
-      class="grading-header-section"
       :current-question="currentQuestionId"
       :current-student-id="currentStudentId"
       :questions="questions"
@@ -14,7 +13,7 @@
       @show-current-question="showCurrentQuestion"
     />
 
-    <!-- 第一行：评分区域 + 操作区域 (7:3) -->
+    <!-- 第一行：评分 + 操作 (7:3) -->
     <div class="grading-row grading-row-top">
       <scoring-section
         class="grading-card scoring-card"
@@ -30,16 +29,14 @@
 
     <!-- 第二行：预览 + 参考答案 + 反馈 (4:3:3) -->
     <div class="grading-row grading-row-main">
-      <!-- 预览区域：工具栏 + 答案预览 -->
+      <!-- 预览区域 -->
       <div class="grading-card preview-card">
         <highlight-toolbar
-          class="preview-toolbar"
           ref="highlightToolbarRef"
           :paper-preview-ref="paperPreviewRef"
           @mark-answer="handleMarkAnswer"
         />
         <paper-preview
-          class="preview-content"
           ref="paperPreviewRef"
           :student-answer="currentStudentAnswer"
           :highlight-data="currentHighlightData"
@@ -75,19 +72,10 @@
     </div>
 
     <!-- 当前题目弹窗 -->
-    <el-dialog
-      v-model="currentQuestionVisible"
-      title="当前题目"
-      width="50%"
-      :close-on-click-modal="true"
-    >
-      <div class="current-question-content">
-        {{ currentQuestionText }}
-      </div>
+    <el-dialog v-model="currentQuestionVisible" title="当前题目" width="50%">
+      <div class="question-content">{{ currentQuestionText }}</div>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="currentQuestionVisible = false">关闭</el-button>
-        </div>
+        <el-button @click="currentQuestionVisible = false">关闭</el-button>
       </template>
     </el-dialog>
   </div>
@@ -105,7 +93,7 @@ import ReferenceAnswer from './grading/ReferenceAnswer.vue'
 import FeedbackPanel from './grading/FeedbackPanel.vue'
 
 /**
- * ===== 数据类型定义 =====
+ * ===== 数据类型 =====
  */
 interface Question {
   question_id: number
@@ -140,17 +128,17 @@ interface HighlightData {
 
 interface StudentInfo {
   id: number
-  total_score?: number
 }
 
 /**
- * ===== 核心状态：当前选中的学生和题目 =====
+ * ===== 核心状态 =====
  */
 const currentStudentId = ref<number>(1)
 const currentQuestionId = ref<number>(1)
+const currentQuestionVisible = ref(false)
 
 /**
- * ===== 数据存储：从文件加载的所有数据 =====
+ * ===== 数据存储 =====
  */
 const studentAnswers = ref<StudentAnswer[]>([])         
 const studentList = ref<StudentInfo[]>([])              
@@ -158,19 +146,14 @@ const questions = ref<Question[]>([])
 const highlightDataList = ref<HighlightData[]>([])      
 
 /**
- * ===== UI 状态：弹窗控制 =====
- */
-const currentQuestionVisible = ref(false)
-
-/**
- * ===== 组件引用：用于调用子组件方法 =====
+ * ===== 组件引用 =====
  */
 const feedbackPanelRef = ref()
 const paperPreviewRef = ref()
 const highlightToolbarRef = ref()
 
 /**
- * ===== 计算属性：基于当前学生和题目的数据 =====
+ * ===== 计算属性 =====
  */
 const currentReferenceAnswer = computed(() => {
   const current = questions.value.find(q => q.question_id === currentQuestionId.value)
@@ -196,25 +179,20 @@ const currentStudentAnswer = computed(() => {
 })
 
 const currentHighlightData = computed(() => {
-  if (!currentStudentId.value || !currentQuestionId.value) {
-    return null
-  }
+  if (!currentStudentId.value || !currentQuestionId.value) return null
 
-  const highlightData = highlightDataList.value.find(
+  return highlightDataList.value.find(
     data => data.student_id === currentStudentId.value && 
             data.question_id === currentQuestionId.value
-  )
-  
-  return highlightData || null
+  ) || null
 })
 
 const currentLLMScore = computed(() => {
-  const highlightData = currentHighlightData.value
-  return highlightData?.total_score || 0
+  return currentHighlightData.value?.total_score || 0
 })
 
 /**
- * ===== 数据加载：从静态文件加载试卷数据 =====
+ * ===== 数据加载 =====
  */
 const loadQuestions = async () => {
   try {
@@ -259,7 +237,6 @@ const loadStudentAnswers = async () => {
 
     studentAnswers.value = data
     
-    // 提取学生ID列表
     const uniqueStudentIds = [...new Set(data.map(item => item.student_id))]
     studentList.value = uniqueStudentIds.map(id => ({ id }))
 
@@ -291,7 +268,7 @@ const loadHighlightData = async () => {
 }
 
 /**
- * ===== 核心事件：学生和题目切换 =====
+ * ===== 事件处理 =====
  */
 const handleStudentChange = (studentId: number) => {
   if (studentId === currentStudentId.value) return
@@ -313,22 +290,16 @@ const showCurrentQuestion = () => {
   currentQuestionVisible.value = true
 }
 
-/**
- * ===== 子组件间通信：事件转发 =====
- */
-// 高亮点击 → 转发给 FeedbackPanel
+// 事件转发
 const handleHighlightClicked = (data: any) => {
   feedbackPanelRef.value?.handleHighlightClicked(data)
 }
 
-// 标记答案 → 转发给 FeedbackPanel
 const handleMarkAnswer = (data: any) => {
   feedbackPanelRef.value?.handleMarkAnswer(data)
 }
 
-/**
- * ===== 简单事件：只做消息提示 =====
- */
+// 简单事件
 const startGrading = () => ElMessage.success('开始AI评分...')
 const handleBatchGrading = () => ElMessage.success('开始批量评分')
 const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => {
@@ -339,24 +310,18 @@ const handleSaveReason = () => ElMessage.success('理由已保存')
 const handleSubmitReason = () => ElMessage.success('理由已提交，重新评分中...')
 
 /**
- * ===== 页面初始化：加载数据并设置默认值 =====
+ * ===== 初始化 =====
  */
 onMounted(async () => {
   try {
-    // 并行加载所有数据
     await Promise.all([
       loadQuestions(),
       loadStudentAnswers(),
       loadHighlightData()
     ])
 
-    // 设置默认选中项
-    if (questions.value.length > 0) {
-      currentQuestionId.value = 1
-    }
-    if (studentList.value.length > 0) {
-      currentStudentId.value = studentList.value[0].id
-    }
+    if (questions.value.length > 0) currentQuestionId.value = 1
+    if (studentList.value.length > 0) currentStudentId.value = studentList.value[0].id
 
     console.log('🎉 初始化完成')
   } catch (error) {
@@ -367,7 +332,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* ===== 主容器：垂直布局 ===== */
+/* ===== 主布局 ===== */
 .grading-page {
   min-height: 100vh;
   background: transparent;
@@ -377,13 +342,6 @@ onMounted(async () => {
   padding: 16px;
 }
 
-/* ===== 头部区域 ===== */
-.grading-header-section {
-  /* GradingHeader 自己的样式已经包含了卡片样式 */
-  flex-shrink: 0;
-}
-
-/* ===== 行容器：水平布局 ===== */
 .grading-row {
   display: flex;
   gap: 16px;
@@ -391,16 +349,15 @@ onMounted(async () => {
 }
 
 .grading-row-top {
-  height: 80px; /* 第一行固定高度 */
+  height: 80px;
 }
 
 .grading-row-main {
   height: 500px;
-  flex-shrink: 0;
-  min-height: 500px; /* 允许内容滚动 */
+  min-height: 500px;
 }
 
-/* ===== 通用卡片样式 ===== */
+/* ===== 卡片样式 ===== */
 .grading-card {
   background: #FFFFFF;
   border: 1px solid #E5E5E5;
@@ -416,53 +373,12 @@ onMounted(async () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== 第一行卡片：评分 + 操作 (7:3) ===== */
-.scoring-card {
-  flex: 7;
-  background: #F5F5F5;
-}
-
-.action-card {
-  flex: 3;
-  background: #F5F5F5;
-}
-
-/* ===== 第二行卡片：预览 + 参考答案 + 反馈 (4:3:3) ===== */
-.preview-card {
-  flex: 4;
-  background: #FFFFFF;
-}
-
-.reference-card {
-  flex: 3;
-  background: #FFFFFF;
-}
-
-.feedback-card {
-  flex: 3;
-  background: #FFFFFF;
-}
-
-/* ===== 预览卡片内部布局 ===== */
-.preview-toolbar {
-  background: #F5F5F5;
-  height: 56px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #E5E5E5;
-  flex-shrink: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.preview-content {
-  background: #ffffff;
-  flex: 1;
-  color: rgba(0, 0, 0, 0.87);
-  overflow-y: auto;
-  min-height: 0;
-}
+/* ===== 卡片比例 ===== */
+.scoring-card { flex: 7; background: #F5F5F5; }
+.action-card { flex: 3; background: #F5F5F5; }
+.preview-card { flex: 4; }
+.reference-card { flex: 3; }
+.feedback-card { flex: 3; }
 
 /* ===== 卡片头部 ===== */
 .card-header {
@@ -493,13 +409,29 @@ onMounted(async () => {
   min-height: 0;
 }
 
-/* ===== 滚动条全局样式 ===== */
+/* ===== 滚动条样式 ===== */
 .grading-page :deep(*)::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-.current-question-content {
+.grading-page :deep(*)::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+}
+
+.grading-page :deep(*)::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.grading-page :deep(*)::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== 弹窗 ===== */
+.question-content {
   white-space: pre-line;
   line-height: 1.6;
   font-size: 14px;
@@ -511,30 +443,16 @@ onMounted(async () => {
   overflow-y: auto;
 }
 
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
 .grading-page :deep(.el-dialog) {
   border-radius: 12px;
-  background: #FFFFFF;
 }
 
 .grading-page :deep(.el-dialog__header) {
   background: #F5F5F5;
   border-bottom: 1px solid #E5E5E5;
-  padding: 16px 20px;
 }
 
-.grading-page :deep(.el-dialog__title) {
-  color: rgba(0, 0, 0, 0.87);
-  font-weight: 600;
-}
-
-/* ===== 响应式设计 ===== */
+/* ===== 响应式 ===== */
 @media (max-width: 1080px) {
   .grading-row {
     flex-direction: column;
@@ -547,6 +465,10 @@ onMounted(async () => {
   
   .grading-row-top .grading-card {
     height: 80px;
+  }
+  
+  .grading-row-main {
+    height: auto;
   }
   
   .grading-row-main .grading-card {
@@ -570,13 +492,6 @@ onMounted(async () => {
   
   .grading-row-main .grading-card {
     min-height: 250px;
-  }
-  
-  .preview-toolbar {
-    padding: 8px 12px;
-    height: 48px;
-    overflow-x: auto;
-    overflow-y: hidden;
   }
 }
 

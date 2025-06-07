@@ -77,21 +77,20 @@ import { Check, Close, Delete, Edit, QuestionFilled, Refresh, RemoveFilled } fro
 import { ElMessage } from 'element-plus';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 
-// Props 接口 - 现在不需要 hasSelectedText，会从 PaperPreview 获取
+// Props 接口
 interface Props {
-  paperPreviewRef?: any  // PaperPreview 组件的引用
+  paperPreviewRef?: any
 }
 
 const props = defineProps<Props>()
 
-// 简化的事件定义 - 只保留必要的
 const emits = defineEmits<{
   (e: 'markAnswer', type: 'correct' | 'wrong' | 'unclear' | 'redundant'): void
   (e: 'eraseMarks'): void
   (e: 'clearAll'): void
 }>()
 
-// === 内部状态管理（从主组件移过来） ===
+// 内部状态管理
 const highlightMode = ref(false)
 const hasSelectedText = ref(false)
 
@@ -109,14 +108,13 @@ const startPolling = () => {
         hasSelectedText.value = currentHasSelection
       }
     } else {
-      // 如果没有 paperPreviewRef，直接检查 DOM 选择
       const selection = window.getSelection()
       const hasSelection = !!(selection && selection.toString().trim())
       if (hasSelection !== hasSelectedText.value) {
         hasSelectedText.value = hasSelection
       }
     }
-  }, 200) // 每200ms检查一次
+  }, 200)
 }
 
 // 停止轮询
@@ -155,17 +153,16 @@ const toggleHighlightMode = () => {
   }
 }
 
-// 标记答案 - 直接调用 PaperPreview 的方法
+// 标记答案
 const handleMarkAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
   if (props.paperPreviewRef) {
     props.paperPreviewRef.markAnswer(type)
   } else {
-    // 回退到事件方式
     emits('markAnswer', type)
   }
 }
 
-// 橡皮功能 - 清除选中文本的标记
+// 橡皮功能
 const handleEraseMarks = () => {
   if (props.paperPreviewRef) {
     props.paperPreviewRef.clearSelection()
@@ -175,7 +172,7 @@ const handleEraseMarks = () => {
   }
 }
 
-// 清屏功能 - 一键清除所有标记
+// 清屏功能
 const handleClearAll = () => {
   if (props.paperPreviewRef) {
     props.paperPreviewRef.clearAllMarks()
@@ -197,7 +194,6 @@ const getSelectedText = () => {
 const handleKeyDown = (event: KeyboardEvent) => {
   if (!hasSelectedText.value) return
   
-  // Ctrl/Cmd + 数字键快速标记
   if (event.ctrlKey || event.metaKey) {
     switch (event.key) {
       case '1':
@@ -224,7 +220,6 @@ const handleKeyDown = (event: KeyboardEvent) => {
     }
   }
   
-  // H 键切换高亮模式
   if (event.key === 'h' || event.key === 'H') {
     if (!event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault()
@@ -233,40 +228,29 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 }
 
-// 组件挂载时添加键盘监听
 onMounted(() => {
   document.addEventListener('keydown', handleKeyDown)
 })
 
-// 组件卸载时移除键盘监听
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
 })
 
 // 暴露方法给父组件
 defineExpose({
-  // 模式控制
   toggleHighlightMode,
   setHighlightMode: (mode: boolean) => {
     highlightMode.value = mode
   },
   getHighlightMode: () => highlightMode.value,
-  
-  // 标记功能
   markCorrect: () => handleMarkAnswer('correct'),
   markWrong: () => handleMarkAnswer('wrong'),
   markUnclear: () => handleMarkAnswer('unclear'),
   markRedundant: () => handleMarkAnswer('redundant'),
-  
-  // 清除功能
   eraseMarks: handleEraseMarks,
   clearAll: handleClearAll,
-  
-  // 状态查询
   getSelectedText,
   hasSelection: () => hasSelectedText.value,
-  
-  // 只读状态
   readonly: {
     highlightMode: () => highlightMode.value,
     hasSelectedText: () => hasSelectedText.value
@@ -275,15 +259,16 @@ defineExpose({
 </script>
 
 <style scoped>
-/* === 高亮工具栏内部样式 === */
 .highlight-toolbar {
   width: 100%;
-  height: 100%;
+  height: 56px; /* 固定高度 */
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  overflow: hidden;
-  padding: 0 16px;
+  background: #F5F5F5;
+  border-bottom: 1px solid #E5E5E5;
+  flex-shrink: 0;
+  padding: 0;
 }
 
 .tool-section {
@@ -291,67 +276,28 @@ defineExpose({
   align-items: center;
   gap: 12px;
   width: 100%;
-  min-width: max-content;
+  height: 100%;
   overflow-x: auto;
-  overflow-y: hidden;
-  padding: 8px 0;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.03);
+  padding: 8px 16px;
+  box-sizing: border-box;
+  
+  /* 确保内容不换行 */
+  white-space: nowrap;
+  flex-wrap: nowrap;
+
 }
 
-/* WebKit浏览器（Chrome, Safari）滚动条样式 */
-.tool-section::-webkit-scrollbar {
-  height: 4px;
-}
 
-.tool-section::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 2px;
-}
-
-.tool-section::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  transition: background 0.2s ease;
-}
-
-.tool-section::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.tool-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-/* === 按钮样式重写 === */
+/* === 按钮样式 === */
 .highlight-toolbar :deep(.el-button) {
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s ease;
-  padding: 8px;
+  padding: 8px 12px;
   white-space: nowrap;
-  flex-shrink: 0;
+  flex-shrink: 0; /* 防止按钮被压缩 */
+  min-width: max-content; /* 确保按钮完整显示 */
   position: relative;
-}
-
-/* 添加快捷键提示 */
-.highlight-toolbar :deep(.el-button):hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  white-space: nowrap;
-  z-index: 1000;
-  pointer-events: none;
 }
 
 .highlight-toolbar :deep(.el-button--primary) {
@@ -404,8 +350,8 @@ defineExpose({
 }
 
 .highlight-toolbar :deep(.el-button--info:hover) {
-  background: rgb(12, 5, 214);
-  border-color: rgb(12, 5, 214);
+  background: rgb(10, 4, 180);
+  border-color: rgb(10, 4, 180);
   transform: translateY(-1px);
 }
 
@@ -436,7 +382,7 @@ defineExpose({
   color: white !important;
 }
 
-/* === 橡皮和清屏按钮样式 === */
+/* === 特殊按钮样式 === */
 .eraser-btn {
   background: #F0F0F0 !important;
   border-color: #D0D0D0 !important;
@@ -468,9 +414,13 @@ defineExpose({
 
 /* === 响应式调整 === */
 @media (max-width: 768px) {
+  .highlight-toolbar {
+    height: 48px;
+  }
+  
   .tool-section {
     gap: 8px;
-    padding: 4px 6px;
+    padding: 4px 12px;
   }
   
   .tool-group {
@@ -478,7 +428,7 @@ defineExpose({
   }
   
   .highlight-toolbar :deep(.el-button) {
-    padding: 6px;
+    padding: 6px 8px;
     font-size: 12px;
   }
   
@@ -486,12 +436,21 @@ defineExpose({
     height: 20px;
     margin: 0 6px;
   }
+  
+  /* 移动端滚动条更明显 */
+  .tool-section::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .tool-section::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 }
 
 @media (max-width: 480px) {
   .tool-section {
     gap: 6px;
-    padding: 4px;
+    padding: 4px 8px;
   }
   
   .tool-group {
