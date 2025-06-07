@@ -2,6 +2,20 @@
   <div class="feedback-panel"> 
     <!-- 内容区域 -->
     <div class="feedback-content">
+      <!-- 选中内容信息 -->
+      <div v-if="selectedHighlight" class="selected-info">
+        <div class="selected-text">
+          <span class="label">选中内容：</span>
+          <span class="text">{{ selectedHighlight.text.substring(0, 50) }}...</span>
+        </div>
+        <div class="selected-type">
+          <span class="label">标记类型：</span>
+          <el-tag :type="getTagType(selectedHighlight.type)">
+            {{ getTypeLabel(selectedHighlight.type) }}
+          </el-tag>
+        </div>
+      </div>
+
       <!-- 给分理由区域 -->
       <div class="reason-area">
         <!-- 输入框模式 -->
@@ -50,41 +64,49 @@
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 
-interface HighlightData {
+// 接收高亮点击事件的数据结构
+interface HighlightClickData {
+  text: string
+  type: 'correct' | 'wrong' | 'unclear' | 'redundant'
+  reason?: string
+}
+
+// 内部选中高亮的数据结构
+interface SelectedHighlight {
   text: string
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
   reason?: string
   aiReason?: string
-  scoringPoint?: number // 新增：给分点
+  scoringPoint?: number
 }
 
+// Props 接口
 interface Props {
-  selectedHighlight?: HighlightData | null
+  // 移除原来的 selectedHighlight prop，改为监听事件
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  selectedHighlight: null
-})
+const props = defineProps<Props>()
 
+// 事件定义 - 简化了，只保留必要的
 const emits = defineEmits<{
-  (e: 'modifyReason', data: HighlightData): void
-  (e: 'saveReason', data: { highlight: HighlightData, reason: string }): void
-  (e: 'submitReason', data: { highlight: HighlightData, reason: string }): void
+  (e: 'modifyReason', data: any): void
+  (e: 'saveReason', data: any): void  
+  (e: 'submitReason', data: any): void
 }>()
 
-// 可编辑的理由文本
+// === 内部状态管理（从主组件移过来） ===
+const selectedHighlight = ref<SelectedHighlight | null>(null)
 const editableReason = ref('')
-// 是否处于编辑模式
 const isEditing = ref(false)
 
 // 给分点信息
 const selectedScoringPoint = computed(() => {
-  return props.selectedHighlight?.scoringPoint || null
+  return selectedHighlight.value?.scoringPoint || null
 })
 
 // 显示的理由内容
 const displayReason = computed(() => {
-  if (!props.selectedHighlight) {
+  if (!selectedHighlight.value) {
     return '选择左侧文本查看 AI 给分理由，或点击修改按钮手动输入...'
   }
   
@@ -93,7 +115,7 @@ const displayReason = computed(() => {
   }
   
   // 优先显示AI理由，如果没有则显示自定义理由
-  const reason = props.selectedHighlight.aiReason || props.selectedHighlight.reason || ''
+  const reason = selectedHighlight.value.aiReason || selectedHighlight.value.reason || ''
   
   if (!reason) {
     return '暂无理由信息，点击修改按钮添加理由...'
@@ -102,8 +124,56 @@ const displayReason = computed(() => {
   return reason
 })
 
+// === 从主组件移过来的逻辑 ===
+
+// 处理高亮点击事件（从主组件移过来）
+const handleHighlightClicked = (data: HighlightClickData) => {
+  const typeMapping = {
+    'unclear': 'unclear' as const,
+    'redundant': 'redundant' as const,
+    'correct': 'correct' as const,
+    'wrong': 'wrong' as const
+  }
+
+  selectedHighlight.value = {
+    text: data.text,
+    type: typeMapping[data.type as keyof typeof typeMapping],
+    aiReason: data.reason
+  }
+  
+  ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
+}
+
+// 处理标记答案事件（从主组件移过来）
+const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' } | string) => {
+  let markData: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }
+  
+  if (typeof data === 'string') {
+    const selection = window.getSelection()
+    const selectedText = selection?.toString().trim() || ''
+    markData = { text: selectedText, type: data as 'correct' | 'wrong' | 'unclear' | 'redundant' }
+  } else {
+    markData = data
+  }
+
+  const aiReasons = {
+    correct: `该答案准确回答了问题的核心要点，逻辑清晰，表达规范。`,
+    wrong: '该答案存在明显的概念错误或逻辑漏洞，与标准答案不符。',
+    unclear: '该答案的表述不够清晰明确，可能存在歧义或不完整的地方。',
+    redundant: '该部分内容与题目要求不符或存在不必要的重复。'
+  }
+
+  selectedHighlight.value = {
+    text: markData.text,
+    type: markData.type,
+    aiReason: aiReasons[markData.type]
+  }
+
+  ElMessage.success(`已标记为"${markData.type}"：${markData.text.substring(0, 20)}...`)
+}
+
 // 监听选中的高亮变化
-watch(() => props.selectedHighlight, (newHighlight) => {
+watch(() => selectedHighlight.value, (newHighlight) => {
   if (newHighlight) {
     // 优先使用AI理由，如果没有则使用自定义理由
     editableReason.value = newHighlight.aiReason || newHighlight.reason || ''
@@ -141,8 +211,8 @@ const getTypeLabel = (type: string) => {
 
 // 修改理由
 const modifyReason = () => {
-  if (props.selectedHighlight) {
-    emits('modifyReason', props.selectedHighlight)
+  if (selectedHighlight.value) {
+    emits('modifyReason', selectedHighlight.value)
   }
   isEditing.value = true
   ElMessage.info('现在可以编辑理由内容')
@@ -156,9 +226,9 @@ const saveReason = () => {
   }
   
   isEditing.value = false
-  if (props.selectedHighlight) {
+  if (selectedHighlight.value) {
     emits('saveReason', {
-      highlight: props.selectedHighlight,
+      highlight: selectedHighlight.value,
       reason: editableReason.value.trim()
     })
   }
@@ -172,9 +242,9 @@ const submitReason = () => {
     return
   }
   
-  if (props.selectedHighlight) {
+  if (selectedHighlight.value) {
     emits('submitReason', {
-      highlight: props.selectedHighlight,
+      highlight: selectedHighlight.value,
       reason: editableReason.value.trim()
     })
     ElMessage.success('理由已提交')
@@ -191,7 +261,10 @@ defineExpose({
   },
   startEditing: () => {
     isEditing.value = true
-  }
+  },
+  // 新增：暴露事件处理方法给父组件调用
+  handleHighlightClicked,
+  handleMarkAnswer
 })
 </script>
 
@@ -200,6 +273,39 @@ defineExpose({
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+/* === 选中信息区域 === */
+.selected-info {
+  padding: 12px 0;
+  border-bottom: 1px solid #E5E5E5;
+  margin-bottom: 12px;
+}
+
+.selected-text,
+.selected-type {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.selected-text:last-child,
+.selected-type:last-child {
+  margin-bottom: 0;
+}
+
+.selected-info .label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+  margin-right: 8px;
+  min-width: 70px;
+}
+
+.selected-info .text {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.87);
+  line-height: 1.4;
 }
 
 /* === 内容区域 === */

@@ -97,12 +97,26 @@
 <script setup lang="ts">
 import { Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { computed } from 'vue'
 
 /**
  * ===== TypeScript 接口定义 =====
  */
 
-// 组件Props接口
+// 高亮数据接口（新增）
+interface HighlightData {
+  student_id: number
+  question_id: number
+  answer: {
+    correct: any[]
+    wrong: any[]
+    unclear: any[]
+    redundant: any[]
+  }
+  total_score: number
+}
+
+// 组件Props接口（简化后）
 interface Props {
   currentQuestion: number           // 当前选中的题目序号（1, 2, 3...）
   currentStudentId: number          // 当前选中的学生ID
@@ -111,30 +125,76 @@ interface Props {
     question: string               // 题目内容
     score: number                  // 题目分值
   }>
-  totalStudents: number            // 学生总数
-  gradedCount: number             // 已批改的学生数量
-  gradedPapers: number[]          // 已批改的学生ID列表
-  studentList: Array<{            // 学生列表（移除可选标记，简化逻辑）
+  studentList: Array<{            // 学生列表
     id: number
   }>
-  statistics: {                   // 统计信息
-    highest: number               // 最高分
-    lowest: number                // 最低分
-    average: number               // 平均分
-    highestStudent?: {            // 最高分学生信息
-      id?: number
-    }
-    lowestStudent?: {             // 最低分学生信息
-      id?: number
-    }
-  }
+  highlightDataList: HighlightData[]  // 高亮数据列表（新增）
 }
 
 const props = defineProps<Props>()
 
 /**
+ * ===== 内部计算属性（从主组件移过来） =====
+ */
+
+// 学生总数
+const totalStudents = computed(() => {
+  return props.studentList.length
+})
+
+// 已批改的学生ID列表
+const gradedPapers = computed(() => {
+  return props.highlightDataList
+    .filter(data => data.question_id === props.currentQuestion)
+    .map(data => data.student_id)
+})
+
+// 已批改数量
+const gradedCount = computed(() => {
+  return gradedPapers.value.length
+})
+
+// 统计信息计算
+const statistics = computed(() => {
+  // 获取当前题目的所有学生分数
+  const currentQuestionScores = props.highlightDataList
+    .filter(data => data.question_id === props.currentQuestion)
+    .map(data => ({
+      studentId: data.student_id,
+      score: data.total_score
+    }))
+
+  if (currentQuestionScores.length === 0) {
+    return {
+      highest: 0,
+      lowest: 0,
+      average: 0,
+      highestStudent: { id: undefined },
+      lowestStudent: { id: undefined }
+    }
+  }
+
+  // 计算最高分、最低分、平均分
+  const scores = currentQuestionScores.map(item => item.score)
+  const highest = Math.max(...scores)
+  const lowest = Math.min(...scores)
+  const average = Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
+
+  // 找到最高分和最低分对应的学生
+  const highestStudent = currentQuestionScores.find(item => item.score === highest)
+  const lowestStudent = currentQuestionScores.find(item => item.score === lowest)
+
+  return {
+    highest,
+    lowest,
+    average,
+    highestStudent: { id: highestStudent?.studentId },
+    lowestStudent: { id: lowestStudent?.studentId }
+  }
+})
+
+/**
  * ===== 事件定义 =====
- * 定义组件向父组件发送的事件
  */
 const emits = defineEmits<{
   // 题目切换事件

@@ -50,12 +50,10 @@ import { ref } from 'vue';
 
 interface Props {
   llmScore?: number
-  maxScore?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   llmScore: 0,
-  maxScore: 100
 })
 
 const emits = defineEmits<{

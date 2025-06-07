@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 // 高亮数据类型定义
 interface HighlightItem {
@@ -40,25 +40,25 @@ interface SelectedHighlight {
 }
 
 interface Props {
-  highlightMode?: boolean
   studentAnswer?: string
   highlightData?: HighlightData | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  highlightMode: false,
   studentAnswer: '',
   highlightData: null
 })
 
 const emits = defineEmits<{
-  (e: 'textSelected', data: { text: string, hasSelection: boolean }): void
-  (e: 'markAnswer', data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }): void
+  // 简化事件：只发送必要的信息给父组件
   (e: 'highlightClicked', data: SelectedHighlight): void
+  (e: 'markAnswer', data: { text: string, type: 'correct' | 'wrong' | 'unclear' | 'redundant' }): void
 }>()
 
+// === 内部状态管理（从主组件移过来） ===
 const hasSelectedText = ref(false)
 const selectedText = ref('')
+const highlightMode = ref(false)
 
 // 高亮类型配置
 const HIGHLIGHT_CONFIG = {
@@ -87,7 +87,6 @@ const HIGHLIGHT_CONFIG = {
     label: '冗余'
   }
 }
-
 
 ////////////////////////////////////////////////////////////
 //                  计算高亮后的HTML内容                     //
@@ -221,13 +220,9 @@ const handleTextSelection = () => {
   if (selection && selection.toString().trim()) {
     selectedText.value = selection.toString().trim()
     hasSelectedText.value = true
-    emits('textSelected', {
-      text: selectedText.value,
-      hasSelection: true
-    })
     
     // 高亮模式下自动标记为正确（示例）
-    if (props.highlightMode) {
+    if (highlightMode.value) {
       setTimeout(() => {
         markAnswer('correct')
       }, 100)
@@ -235,10 +230,6 @@ const handleTextSelection = () => {
   } else {
     hasSelectedText.value = false
     selectedText.value = ''
-    emits('textSelected', {
-      text: '',
-      hasSelection: false
-    })
   }
 }
 
@@ -264,18 +255,65 @@ const markAnswer = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
   ElMessage.success(`已标记为"${markLabels[type]}"：${selectedText.value.substring(0, 20)}...`)
   
   // 清除选择
+  clearSelection()
+}
+
+// 清除文本选择
+const clearSelection = () => {
   window.getSelection()?.removeAllRanges()
   hasSelectedText.value = false
   selectedText.value = ''
-  emits('textSelected', {
-    text: '',
-    hasSelection: false
-  })
 }
 
-// 暴露方法给父组件
+// 设置高亮模式
+const setHighlightMode = (mode: boolean) => {
+  highlightMode.value = mode
+  console.log('高亮模式:', mode ? '开启' : '关闭')
+}
+
+// 获取当前选中的文本
+const getSelectedText = () => {
+  return selectedText.value
+}
+
+// 检查是否有选中文本
+const getHasSelectedText = () => {
+  return hasSelectedText.value
+}
+
+// 快捷标记方法
+const quickMark = (type: 'correct' | 'wrong' | 'unclear' | 'redundant') => {
+  markAnswer(type)
+}
+
+// 清除所有标记（如果需要的话）
+const clearAllMarks = () => {
+  clearSelection()
+  ElMessage.info('已清除当前选择')
+}
+
+// 监听 props 变化，在内容改变时清除选择
+watch(() => props.studentAnswer, () => {
+  clearSelection()
+})
+
+// 暴露方法给父组件和其他组件使用
 defineExpose({
-  markAnswer
+  // 原有方法
+  markAnswer,
+  // 新增的内部状态管理方法
+  setHighlightMode,
+  getSelectedText,
+  getHasSelectedText,
+  clearSelection,
+  quickMark,
+  clearAllMarks,
+  // 只读状态访问
+  readonly: {
+    hasSelectedText: () => hasSelectedText.value,
+    selectedText: () => selectedText.value,
+    highlightMode: () => highlightMode.value
+  }
 })
 </script>
 
@@ -371,23 +409,15 @@ defineExpose({
   color: white;
 }
 
-/* === 滚动条样式 === */
-.paper-preview::-webkit-scrollbar {
-  width: 6px;
+/* 高亮模式下的选择样式 */
+.paper-preview.highlight-mode ::selection {
+  background-color: #4CD964;
+  color: white;
 }
 
-.paper-preview::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-}
-
-.paper-preview::-webkit-scrollbar-thumb {
-  background: rgba(64, 158, 255, 0.6);
-  border-radius: 3px;
-}
-
-.paper-preview::-webkit-scrollbar-thumb:hover {
-  background: rgba(64, 158, 255, 0.8);
+.paper-preview.highlight-mode ::-moz-selection {
+  background-color: #4CD964;
+  color: white;
 }
 
 /* === 响应式调整 === */
