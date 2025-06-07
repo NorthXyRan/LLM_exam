@@ -1,8 +1,9 @@
 <template>
-  <div class="grading">
+  <div class="grading-page">
     
-    <!-- 头部：题目选择、学生选择、统计信息（自治组件） -->
+    <!-- 头部：题目选择、学生选择、统计信息 -->
     <grading-header
+      class="grading-header-section"
       :current-question="currentQuestionId"
       :current-student-id="currentStudentId"
       :questions="questions"
@@ -13,73 +14,63 @@
       @show-current-question="showCurrentQuestion"
     />
 
-    <!-- 主体：评分界面 -->
-    <div class="page-content">
-      <div class="content-grid">
-        
-        <!-- 评分区域 -->
-        <div class="scoring-area">
-          <div class="area-card">
-            <scoring-section
-              :llm-score="currentLLMScore"
-              @score-change="handleScoreChange"
-            />
-          </div>
-        </div>
+    <!-- 第一行：评分区域 + 操作区域 (7:3) -->
+    <div class="grading-row grading-row-top">
+      <scoring-section
+        class="grading-card scoring-card"
+        :llm-score="currentLLMScore"
+        @score-change="handleScoreChange"
+      />
+      <action-section
+        class="grading-card action-card"
+        @start-grading="startGrading"
+        @batch-grading="handleBatchGrading"
+      />
+    </div>
 
-        <!-- 操作区域 -->
-        <div class="action-area">
-          <div class="area-card">
-            <action-section
-              @start-grading="startGrading"
-              @batch-grading="handleBatchGrading"
-            />
-          </div>
-        </div>
+    <!-- 第二行：预览 + 参考答案 + 反馈 (4:3:3) -->
+    <div class="grading-row grading-row-main">
+      <!-- 预览区域：工具栏 + 答案预览 -->
+      <div class="grading-card preview-card">
+        <highlight-toolbar
+          class="preview-toolbar"
+          ref="highlightToolbarRef"
+          :paper-preview-ref="paperPreviewRef"
+          @mark-answer="handleMarkAnswer"
+        />
+        <paper-preview
+          class="preview-content"
+          ref="paperPreviewRef"
+          :student-answer="currentStudentAnswer"
+          :highlight-data="currentHighlightData"
+          @mark-answer="handleMarkAnswer"
+          @highlight-clicked="handleHighlightClicked"
+        />
+      </div>
 
-        <!-- 预览区域：工具栏 + 学生答案预览（自治组件） -->
-        <div class="preview-area">
-          <div class="area-card">
-            <highlight-toolbar
-              ref="highlightToolbarRef"
-              :paper-preview-ref="paperPreviewRef"
-              @mark-answer="handleMarkAnswer"
-            />
-            <paper-preview
-              ref="paperPreviewRef"
-              :student-answer="currentStudentAnswer"
-              :highlight-data="currentHighlightData"
-              @mark-answer="handleMarkAnswer"
-              @highlight-clicked="handleHighlightClicked"
-            />
-          </div>
+      <!-- 参考答案区域 -->
+      <div class="grading-card reference-card">
+        <div class="card-header">
+          <h3>Reference Answer</h3>
         </div>
+        <reference-answer 
+          class="card-content"
+          :reference-answer="currentReferenceAnswer" 
+        />
+      </div>
 
-        <!-- 参考答案区域 -->
-        <div class="reference-area">
-          <div class="area-card">
-            <div class="reference-header">
-              <h3>Reference Answer</h3>
-            </div>
-            <reference-answer :reference-answer="currentReferenceAnswer" />
-          </div>
+      <!-- 反馈区域 -->
+      <div class="grading-card feedback-card">
+        <div class="card-header">
+          <h3>Score Reason</h3>
         </div>
-
-        <!-- 反馈区域：理由查看和编辑（自治组件） -->
-        <div class="feedback-area">
-          <div class="area-card">
-            <div class="feedback-header">
-              <h3>Score Reason</h3>
-            </div>
-            <feedback-panel
-              ref="feedbackPanelRef"
-              @modify-reason="handleModifyReason"
-              @save-reason="handleSaveReason"
-              @submit-reason="handleSubmitReason"
-            />
-          </div>
-        </div>
-        
+        <feedback-panel
+          class="card-content"
+          ref="feedbackPanelRef"
+          @modify-reason="handleModifyReason"
+          @save-reason="handleSaveReason"
+          @submit-reason="handleSubmitReason"
+        />
       </div>
     </div>
 
@@ -376,8 +367,8 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* ===== 主容器布局 ===== */
-.grading {
+/* ===== 主容器：垂直布局 ===== */
+.grading-page {
   min-height: 100vh;
   background: transparent;
   display: flex;
@@ -386,99 +377,74 @@ onMounted(async () => {
   padding: 16px;
 }
 
-/* ===== 主体内容区域 ===== */
-.page-content {
+/* ===== 头部区域 ===== */
+.grading-header-section {
+  /* GradingHeader 自己的样式已经包含了卡片样式 */
+  flex-shrink: 0;
+}
+
+/* ===== 行容器：水平布局 ===== */
+.grading-row {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.grading-row-top {
+  height: 80px; /* 第一行固定高度 */
+}
+
+.grading-row-main {
+  height: 500px;
+  flex-shrink: 0;
+  min-height: 500px; /* 允许内容滚动 */
+}
+
+/* ===== 通用卡片样式 ===== */
+.grading-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #E5E5E5;
-  overflow: hidden;
-  background: #FFFFFF;
-}
-
-/* ===== 网格布局：2行10列 ===== */
-.content-grid {
-  display: grid;
-  grid-template-areas: 
-    "scoring scoring scoring scoring scoring scoring scoring action action action"
-    "preview preview preview preview reference reference reference feedback feedback feedback";
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: 80px 1fr;
-  gap: 16px;
-  height: 85vh;
-  padding: 16px;
-}
-
-/* ===== 网格区域分配 ===== */
-.scoring-area { grid-area: scoring; }
-.action-area { grid-area: action; }
-.preview-area { grid-area: preview; }
-.reference-area { grid-area: reference; }
-.feedback-area { grid-area: feedback; }
-
-/* ===== 卡片容器 ===== */
-.area-card {
-  background: #F5F5F5;
-  border: 1px solid #E5E5E5;
-  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100%;
   transition: all 0.2s ease;
 }
 
-.area-card:hover {
+.grading-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 预览和参考答案区域使用白色背景 */
-.preview-area .area-card,
-.reference-area .area-card {
+/* ===== 第一行卡片：评分 + 操作 (7:3) ===== */
+.scoring-card {
+  flex: 7;
+  background: #F5F5F5;
+}
+
+.action-card {
+  flex: 3;
+  background: #F5F5F5;
+}
+
+/* ===== 第二行卡片：预览 + 参考答案 + 反馈 (4:3:3) ===== */
+.preview-card {
+  flex: 4;
   background: #FFFFFF;
 }
 
-/* ===== 子组件容器 ===== */
-.preview-area,
-.reference-area,
-.feedback-area {
-  overflow: hidden;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+.reference-card {
+  flex: 3;
+  background: #FFFFFF;
 }
 
-.preview-area .area-card,
-.reference-area .area-card,
-.feedback-area .area-card {
-  overflow: hidden;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+.feedback-card {
+  flex: 3;
+  background: #FFFFFF;
 }
 
-/* ===== 子组件样式重置 ===== */
-.scoring-area :deep(.scoring-section),
-.action-area :deep(.action-section) {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  flex: 1;
-}
-
-.feedback-area :deep(.feedback-panel) {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  flex: 1;
-  border-radius: 0 0 12px 12px;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.preview-area :deep(.highlight-toolbar) {
+/* ===== 预览卡片内部布局 ===== */
+.preview-toolbar {
   background: #F5F5F5;
   height: 56px;
   box-sizing: border-box;
@@ -490,7 +456,7 @@ onMounted(async () => {
   overflow-y: hidden;
 }
 
-.preview-area :deep(.paper-preview) {
+.preview-content {
   background: #ffffff;
   flex: 1;
   color: rgba(0, 0, 0, 0.87);
@@ -498,17 +464,8 @@ onMounted(async () => {
   min-height: 0;
 }
 
-.reference-area :deep(.reference-answer) {
-  background: #ffffff;
-  flex: 1;
-  color: rgba(0, 0, 0, 0.87);
-  overflow-y: auto;
-  min-height: 0;
-}
-
-/* ===== 区域标题 ===== */
-.reference-header,
-.feedback-header {
+/* ===== 卡片头部 ===== */
+.card-header {
   padding: 16px 20px;
   background: #F5F5F5;
   border-bottom: 1px solid #E5E5E5;
@@ -520,21 +477,28 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-.reference-header h3,
-.feedback-header h3 {
+.card-header h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.87);
 }
 
-/* ===== 滚动条样式 ===== */
-.content-grid :deep(*)::-webkit-scrollbar {
+/* ===== 卡片内容 ===== */
+.card-content {
+  background: #ffffff;
+  flex: 1;
+  color: rgba(0, 0, 0, 0.87);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ===== 滚动条全局样式 ===== */
+.grading-page :deep(*)::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-/* ===== 弹窗样式 ===== */
 .current-question-content {
   white-space: pre-line;
   line-height: 1.6;
@@ -554,52 +518,61 @@ onMounted(async () => {
   margin-top: 20px;
 }
 
-.grading :deep(.el-dialog) {
+.grading-page :deep(.el-dialog) {
   border-radius: 12px;
   background: #FFFFFF;
 }
 
-.grading :deep(.el-dialog__header) {
+.grading-page :deep(.el-dialog__header) {
   background: #F5F5F5;
   border-bottom: 1px solid #E5E5E5;
   padding: 16px 20px;
 }
 
-.grading :deep(.el-dialog__title) {
+.grading-page :deep(.el-dialog__title) {
   color: rgba(0, 0, 0, 0.87);
   font-weight: 600;
 }
 
 /* ===== 响应式设计 ===== */
 @media (max-width: 1080px) {
-  .content-grid {
-    grid-template-areas:
-      "scoring"
-      "action"
-      "preview"
-      "reference"
-      "feedback";
-    grid-template-columns: 1fr;
-    grid-template-rows: 80px 80px 1fr 1fr 1fr;
+  .grading-row {
+    flex-direction: column;
     gap: 12px;
-    height: 90vh;
+  }
+  
+  .grading-row-top {
+    height: auto;
+  }
+  
+  .grading-row-top .grading-card {
+    height: 80px;
+  }
+  
+  .grading-row-main .grading-card {
+    min-height: 300px;
   }
 }
 
 @media (max-width: 768px) {
-  .grading {
+  .grading-page {
     gap: 12px;
     padding: 12px;
   }
   
-  .content-grid {
-    padding: 12px;
+  .grading-row {
     gap: 8px;
-    grid-template-rows: 70px 70px 1fr 1fr 1fr;
-    height: 95vh;
   }
   
-  .preview-area :deep(.highlight-toolbar) {
+  .grading-row-top .grading-card {
+    height: 70px;
+  }
+  
+  .grading-row-main .grading-card {
+    min-height: 250px;
+  }
+  
+  .preview-toolbar {
     padding: 8px 12px;
     height: 48px;
     overflow-x: auto;
@@ -608,7 +581,7 @@ onMounted(async () => {
 }
 
 @media (max-width: 480px) {
-  .grading {
+  .grading-page {
     gap: 8px;
     padding: 8px;
   }

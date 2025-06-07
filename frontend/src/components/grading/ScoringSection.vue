@@ -91,13 +91,19 @@ const saveScore = () => {
 </script>
 
 <style scoped>
-/* === 评分区域内部布局样式 === */
+/* === 评分区域：适配父组件的卡片容器 === */
 .scoring-section {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 适配父组件的样式 */
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .score-group {
@@ -106,6 +112,7 @@ const saveScore = () => {
   justify-content: space-around;
   width: 100%;
   margin-bottom: 0;
+  padding: 0 16px; /* 内部留点边距 */
 }
 
 .score-item {
@@ -180,6 +187,31 @@ const saveScore = () => {
   align-items: center;
 }
 
+/* === 按钮样式适配 === */
+.scoring-section :deep(.el-button) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 8px 16px;
+}
+
+.scoring-section :deep(.el-button--primary) {
+  background: #007AFF;
+  border-color: #007AFF;
+  color: #FFFFFF;
+}
+
+.scoring-section :deep(.el-button--primary:hover:not(.is-disabled)) {
+  background: #0056B3;
+  border-color: #0056B3;
+  transform: translateY(-1px);
+}
+
+.scoring-section :deep(.el-button:disabled) {
+  opacity: 0.4;
+  transform: none !important;
+}
+
 /* === 分割线样式 === */
 .scoring-section :deep(.el-divider--vertical) {
   border-color: #E5E5E5;
@@ -192,6 +224,7 @@ const saveScore = () => {
   .score-group {
     flex-direction: column;
     gap: 12px;
+    padding: 8px 12px;
   }
   
   .scoring-section :deep(.el-divider--vertical) {
@@ -214,4 +247,4 @@ const saveScore = () => {
     width: 120px;
   }
 }
-</style> 
+</style>
