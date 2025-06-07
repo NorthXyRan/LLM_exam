@@ -15,6 +15,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(180deg, #F6736B, #934F91);
+  /*  background: linear-gradient(180deg, #d9afd9,#97d9e1); */
 }
 
 /* 全局链接样式 */

@@ -3,7 +3,7 @@
     <el-container class="container">
       <!-- 头部 -->
       <el-header class="header">
-        <span>Human-AI Collaborative Intelligent Grading System with Visual Interaction</span>
+        <span>🎓 AI Grading</span>
         <!-- 在头部添加折叠按钮 -->
         <el-button
           class="collapse-button"
@@ -27,7 +27,7 @@
             class="sidebar-menu"
             :collapse="isCollapse"
             background-color="transparent"
-            text-color="#ffffff"
+            text-color="#000000"
             @open="handleOpen"
             @close="handleClose"
             @select="handleSelect"
@@ -177,11 +177,11 @@ const handleSelect = (index: string) => {
 .header {
   background: transparent;
   backdrop-filter: blur(10px);
-  color: white;
+  color: rgb(0, 0, 0);
   display: flex;
   align-items: center;
   padding: 0 20px;
-  font-size: 23px;
+  font-size: 25px;
   font-weight: bold;
   height: 70px;
 }
@@ -196,7 +196,7 @@ const handleSelect = (index: string) => {
 .aside {
   background: transparent;
   backdrop-filter: blur(10px);
-  color: white;
+  color: rgb(0, 0, 0);
   height: 100%;
   overflow: hidden;
   transition: width 0.3s ease;
@@ -210,7 +210,7 @@ const handleSelect = (index: string) => {
 
 .sidebar-menu .el-menu-item,
 .sidebar-menu .el-sub-menu__title {
-  color: #ffffff !important;
+  color: #000000 !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
