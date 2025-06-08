@@ -1,7 +1,7 @@
 <template>
   <div class="uploading-container">
     <!-- Paper Upload Component -->
-    <PaperUpload 
+    <PaperUpload
       :exam-paper="examPaper"
       @paper-uploaded="handlePaperUploaded"
       @paper-removed="handlePaperRemoved"
@@ -10,7 +10,7 @@
     />
 
     <!-- Answer Upload Component -->
-    <AnswerUpload 
+    <AnswerUpload
       :reference-answer="referenceAnswer"
       :exam-paper="examPaper"
       :disabled="!examPaper.name"
@@ -21,7 +21,7 @@
     />
 
     <!-- Student Upload Component -->
-    <StudentUpload 
+    <StudentUpload
       :student-papers="studentPapers"
       :parsing="parsing"
       :disabled="!canUploadStudentPapers"
@@ -43,6 +43,8 @@ import { computed, ref } from 'vue'
 import AnswerUpload from './upload/AnswerUpload.vue'
 import PaperUpload from './upload/PaperUpload.vue'
 import StudentUpload from './upload/StudentUpload.vue'
+import { saveAs } from 'file-saver'
+
 
 // 试卷相关数据
 const examPaper = ref({
@@ -77,17 +79,74 @@ const canUploadStudentPapers = computed(() => {
 })
 
 // Paper 相关事件处理
-const handlePaperUploaded = (file: File) => {
-  ElMessage.info('开始解析试卷...')
-  setTimeout(() => {
+const readFileContent = (file:File):Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsText(file)
+  })
+}
+
+const parseQuestionCount = (content: string): number => {
+  // 在这里调用大模型并返回题目数量
+  ElMessage.info('debug:将文件传递给大模型')
+  return 5
+}
+
+const handlePaperUploaded = async(uploadFile: any) => {
+  //ElMessage.info('开始解析试卷...')
+  // setTimeout(() => {
+  //   examPaper.value = {
+  //     name: file.name,
+  //     status: 'ready',
+  //     questionCount: 5
+  //   }
+  //   resetAnswerAndStudents()
+  //   ElMessage.success('试卷解析完成！')
+  // }, 2000)
+  try{
+    ElMessage.info('开始解析试卷...')
+
+    // 从UploadFile对象中获取原生File对象
+    const file = uploadFile.raw || uploadFile
+
+    if (!file || !(file instanceof File)) {
+      throw new Error('无效的文件对象')
+    }
+
+    // 1. 先读取文件内容
+    const content = await readFileContent(file);
+
+    if ('showDirectoryPicker' in window) {
+      // 2-5. 目录操作和文件保存
+      const rootDirHandle = await (window as any).showDirectoryPicker({mode:'readwrite'});
+      const paperDirHandle = await rootDirHandle.getDirectoryHandle('paper', { create: true });
+      const sourceDirHandle = await paperDirHandle.getDirectoryHandle('source', { create: true });
+      const splitDirHandle = await paperDirHandle.getDirectoryHandle('split', { create: true });
+
+      const fileHandle = await sourceDirHandle.getFileHandle(`source_${file.name}`, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(content);
+      await writable.close();
+
+      ElMessage.success('目录结构创建成功!文件已保存到paper/source/');
+    } else {
+      saveAs(new Blob([content], { type: 'text/plain' }), `source_${file.name}`);
+      ElMessage.warning('浏览器不支持目录选择API,文件已下载');
+    }
+
+    // 6. 更新状态
     examPaper.value = {
       name: file.name,
       status: 'ready',
-      questionCount: 5
-    }
-    resetAnswerAndStudents()
-    ElMessage.success('试卷解析完成！')
-  }, 2000)
+      questionCount: parseQuestionCount(content)
+    };
+
+  }catch(error){
+    console.error(error)
+    ElMessage.error('试卷解析失败: ' + (error as Error).message)
+  }
 }
 
 const handlePaperRemoved = () => {
@@ -151,7 +210,7 @@ const handleEditAnswer = () => {
 const handleStudentPapersUploaded = (fileList: File[]) => {
   parsing.value = true
   ElMessage.info('开始解析学生答卷...')
-  
+
   setTimeout(() => {
     const newPapers = fileList.map((f: File, index: number) => ({
       id: Date.now() + index,
@@ -160,10 +219,10 @@ const handleStudentPapersUploaded = (fileList: File[]) => {
       questionCount: examPaper.value.questionCount,
       error: Math.random() > 0.2 ? '' : '缺少第2题'
     }))
-    
+
     studentPapers.value = newPapers
     parsing.value = false
-    
+
     const validCount = newPapers.filter((p: any) => p.valid).length
     ElMessage.success(`学生答卷解析完成！成功解析 ${validCount}/${newPapers.length} 份`)
   }, 3000)
@@ -242,7 +301,7 @@ const resetAll = () => {
     padding: 16px;
     gap: 20px;
   }
-  
+
   .reset-button-container {
     margin-top: 24px;
   }
@@ -253,7 +312,7 @@ const resetAll = () => {
     padding: 12px;
     gap: 16px;
   }
-  
+
   .reset-button-container {
     margin-top: 20px;
   }
