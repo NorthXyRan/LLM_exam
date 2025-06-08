@@ -1,7 +1,7 @@
 <template>
   <div class="header-container">
     <div class="header-card hover">
-      <span>🎓 AI Grading</span>
+      <span>Human-AI Collaborative Intelligent Grading with Visual Interaction</span>
       <el-button
         class="collapse-button"
         size="default"
