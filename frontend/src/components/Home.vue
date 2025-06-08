@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content">
+  <div class="home-content">
     <h2>Welcome to the Intelligent Grading System</h2>
     <p>Please select a function from the left menu to start using</p>
     <div class="feature-cards">
@@ -42,19 +42,19 @@ const handleCardClick = (path: string) => {
 </script>
 
 <style scoped>
-.main-content {
+.home-content {
   background: rgb(255, 255, 255);
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.main-content h2 {
+.home-content h2 {
   color: #409eff;
   margin-bottom: 15px;
 }
 
-.main-content p {
+.home-content p {
   color: #666;
   font-size: 16px;
   margin-bottom: 30px;
