@@ -278,21 +278,20 @@ const navigateToRoute = (routePath: string) => {
   color: #333;
 }
 
-/* 子菜单背景与侧边栏保持一致 */
+/* 移除子菜单的独立背景框，让它融入侧边栏 */
 .nav-menu :deep(.el-sub-menu .el-menu) {
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(10px) !important;
-  border-radius: 12px;
-  padding: 8px;
-  margin-top: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-/* 子菜单项特殊样式 */
+/* 子菜单项特殊样式 - 增加缩进体现层级 */
 .nav-menu :deep(.el-sub-menu .el-menu-item) {
   color: #666;
-  padding-left: 40px !important;
+  padding-left: 50px !important;
+  font-size: 14px;
 }
 
 /* 统一hover效果 */
