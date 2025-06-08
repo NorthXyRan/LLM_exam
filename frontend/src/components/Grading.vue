@@ -339,8 +339,7 @@ onMounted(async () => {
   background: transparent;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  gap: 20px;
 }
 
 .grading-row {
