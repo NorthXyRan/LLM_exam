@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "element-plus": "^2.9.11",
+    "mammoth": "^1.9.1",
+    "pdfjs-dist": "^5.3.31",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },

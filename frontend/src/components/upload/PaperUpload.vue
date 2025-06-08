@@ -8,18 +8,18 @@
           </div>
           <h3>Paper Management</h3>
         </div>
-        <el-tag 
-          v-if="examPaper.status === 'ready'" 
-          type="success" 
+        <el-tag
+          v-if="examPaper.status === 'ready'"
+          type="success"
           effect="dark"
           class="status-tag"
         >
           <el-icon><check /></el-icon>
           Ready
         </el-tag>
-        <el-tag 
-          v-else 
-          type="info" 
+        <el-tag
+          v-else
+          type="info"
           effect="plain"
           class="status-tag waiting-tag"
         >
@@ -28,7 +28,7 @@
         </el-tag>
       </div>
     </template>
-    
+
     <div class="paper-content">
       <!-- 上传新试卷 -->
       <div class="upload-section">
@@ -57,7 +57,7 @@
           </div>
         </el-upload>
       </div>
-      
+
       <!-- 当前试卷状态 -->
       <div v-if="examPaper.name" class="current-status">
         <div class="status-card">
@@ -67,18 +67,18 @@
               <span class="status-text">当前试卷：{{ examPaper.name }}。解析完成，共{{ examPaper.questionCount }}道题目</span>
             </div>
             <div class="action-buttons">
-              <el-button 
-                type="primary" 
-                link 
+              <el-button
+                type="primary"
+                link
                 @click="$emit('preview-paper')"
                 class="action-btn"
               >
                 <el-icon><view /></el-icon>
                 预览
               </el-button>
-              <el-button 
-                type="warning" 
-                link 
+              <el-button
+                type="warning"
+                link
                 @click="$emit('reparse-paper')"
                 class="action-btn"
               >
@@ -116,7 +116,7 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits([
-  'paper-uploaded', 
+  'paper-uploaded',
   'paper-removed',
   'preview-paper',
   'reparse-paper'
@@ -382,9 +382,9 @@ const handlePaperExceed = () => {
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .action-buttons {
     align-self: flex-start;
   }
 }
-</style> 
+</style>
