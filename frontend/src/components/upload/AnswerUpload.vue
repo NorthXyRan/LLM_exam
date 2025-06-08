@@ -207,9 +207,9 @@ const handleAnswerExceed = (files, fileList) => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px 16px;
-  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  background: #C8E6F4;
   margin: -20px -20px 0;
-  color: white;
+
 }
 
 .header-left {
@@ -231,14 +231,14 @@ const handleAnswerExceed = (files, fileList) => {
 
 .card-icon {
   font-size: 20px;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .card-header h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .status-tag {

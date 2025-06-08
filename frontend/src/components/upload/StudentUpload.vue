@@ -226,9 +226,8 @@ const handleStudentPapersUpload = (file, fileList) => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px 16px;
-  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  background: #FFD48E;
   margin: -20px -20px 0;
-  color: white;
 }
 
 .header-left {
@@ -250,14 +249,14 @@ const handleStudentPapersUpload = (file, fileList) => {
 
 .card-icon {
   font-size: 20px;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .card-header h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .status-tag {

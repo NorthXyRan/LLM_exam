@@ -175,9 +175,8 @@ const handlePaperExceed = () => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px 16px;  /* 试卷上传卡片头部的间距 */
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  background: #e6d8c9;
   margin: -20px -20px 0;
-  color: white;
 }
 
 .header-left {
@@ -199,14 +198,14 @@ const handlePaperExceed = () => {
 
 .card-icon {
   font-size: 20px;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .card-header h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .status-tag {
