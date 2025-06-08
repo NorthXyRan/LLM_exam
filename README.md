@@ -10,6 +10,16 @@ npm install
 cd frontend && npm run dev
 ```
 
+## 布局组件
+
+```
+layout/
+├── MainLayout.vue          # 主布局（只管布局和状态）
+├── AppHeader.vue           # 头部组件
+├── AppSidebar.vue          # 侧边栏组件  
+└── menuConfig.ts           # 菜单配置文件
+```
+
 ## 上传组件
 
 ```
