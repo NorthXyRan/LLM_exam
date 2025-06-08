@@ -372,7 +372,7 @@ onMounted(async () => {
 .grading-card {
   background: #FFFFFF;
   border: 1px solid #E5E5E5;
-  border-radius: 12px;
+  border-radius: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
