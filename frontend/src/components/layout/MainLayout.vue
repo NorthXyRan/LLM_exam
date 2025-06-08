@@ -1,7 +1,6 @@
 <template>
   <div class="main-layout">
     <div class="container">
-
       <!-- 头部 -->
       <div class="header">
         <span>🎓 AI Grading</span>
@@ -12,7 +11,7 @@
           :icon="isCollapse ? Expand : Fold"
         />
       </div>
-
+      
       <div class="body-container">
         <div class="sidebar" :class="{ collapsed: isCollapse }">
           <div class="sidebar-card">
@@ -26,13 +25,14 @@
               <template v-for="item in menuItems" :key="item.index">
                 <!-- 普通菜单项 -->
                 <el-menu-item
-                  v-if="item.type !== 'submenu'"
+                  v-if="!item.children"
                   :index="item.index"
                   :route="item.route"
                 >
                   <el-icon><component :is="item.icon" /></el-icon>
                   <span>{{ item.title }}</span>
                 </el-menu-item>
+                
                 <!-- 带子菜单的项目 -->
                 <el-sub-menu v-else :index="item.index">
                   <template #title>
@@ -50,19 +50,21 @@
                 </el-sub-menu>
               </template>
             </el-menu>
+            
             <!-- 折叠状态的自定义菜单 -->
             <div v-else class="nav-menu collapsed-menu">
               <template v-for="item in menuItems" :key="item.index">
                 <!-- 普通菜单项 -->
-                <el-tooltip v-if="item.type !== 'submenu'" :content="item.title" placement="right">
+                <el-tooltip v-if="!item.children" :content="item.title" placement="right">
                   <div
                     class="menu-item"
                     :class="{ active: isMenuActive(item) }"
-                    @click="handleMenuClick(item.index)"
+                    @click="navigateToRoute(item.route!)"
                   >
                     <el-icon><component :is="item.icon" /></el-icon>
                   </div>
                 </el-tooltip>
+                
                 <!-- 带子菜单的项目 -->
                 <el-popover
                   v-else
@@ -83,7 +85,7 @@
                       :key="child.index"
                       class="popover-menu-item"
                       :class="{ active: activeMenu === child.index }"
-                      @click="handleMenuClick(child.index)"
+                      @click="navigateToRoute(child.route)"
                     >
                       {{ child.title }}
                     </div>
@@ -93,12 +95,12 @@
             </div>
           </div>
         </div>
+        
         <!-- 主内容区域 -->
         <div class="main-content">
           <router-view></router-view>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -116,12 +118,27 @@ import {
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+// 类型定义
+interface MenuChild {
+  index: string
+  title: string
+  route: string
+}
+
+interface MenuItem {
+  index: string
+  title: string
+  icon: any
+  route?: string
+  children?: MenuChild[]
+}
+
 const router = useRouter()
 const route = useRoute()
 const isCollapse = ref(false)
 
-// 菜单项配置
-const menuItems = [
+// 统一的菜单配置
+const menuItems: MenuItem[] = [
   { index: '0', title: 'Home', icon: House, route: '/' },
   { index: '1', title: 'File Upload', icon: Upload, route: '/uploading' },
   { index: '2', title: 'Intelligent Grading', icon: Document, route: '/grading' },
@@ -129,7 +146,6 @@ const menuItems = [
     index: '3',
     title: 'Result View',
     icon: DataAnalysis,
-    type: 'submenu',
     children: [
       { index: '3-1', title: 'Score Report', route: '/result/report' },
       { index: '3-2', title: 'Detailed Analysis', route: '/result/analysis' },
@@ -137,44 +153,48 @@ const menuItems = [
   },
   { index: '4', title: 'Prompt Setting', icon: Setting, route: '/prompt-setting' },
 ]
+
+// 创建路由到菜单索引的映射
+const createRouteToIndexMap = () => {
+  const map: Record<string, string> = {}
+  
+  menuItems.forEach(item => {
+    if (item.route) {
+      map[item.route] = item.index
+    }
+    if (item.children) {
+      item.children.forEach(child => {
+        map[child.route] = child.index
+      })
+    }
+  })
+  
+  return map
+}
+
+const routeToIndexMap = createRouteToIndexMap()
+
 // 根据当前路由计算激活的菜单项
 const activeMenu = computed(() => {
-  const path = route.path
-  const menuMap: Record<string, string> = {
-    '/': '0',
-    '/uploading': '1',
-    '/grading': '2',
-    '/result/report': '3-1',
-    '/result/analysis': '3-2',
-    '/prompt-setting': '4',
-  }
-  return menuMap[path] || '0'
+  return routeToIndexMap[route.path] || '0'
 })
 
+// 切换侧边栏折叠状态
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 
-const isMenuActive = (item: any) => {
-  if (item.type === 'submenu') {
+// 判断菜单项是否激活
+const isMenuActive = (item: MenuItem): boolean => {
+  if (item.children) {
     return activeMenu.value.startsWith(item.index)
   }
   return activeMenu.value === item.index
 }
 
-// 统一的菜单点击处理
-const handleMenuClick = (index: string) => {
-  const routeMap: Record<string, string> = {
-    '0': '/',
-    '1': '/uploading',
-    '2': '/grading',
-    '3-1': '/result/report',
-    '3-2': '/result/analysis',
-    '4': '/prompt-setting',
-  }
-  if (routeMap[index]) {
-    router.push(routeMap[index])
-  }
+// 统一的路由导航处理
+const navigateToRoute = (routePath: string) => {
+  router.push(routePath)
 }
 </script>
 
@@ -246,26 +266,49 @@ const handleMenuClick = (index: string) => {
   padding: 0 20px;
 }
 
+/* 统一菜单项基础样式 */
 .nav-menu :deep(.el-menu-item),
-.nav-menu :deep(.el-sub-menu__title) {
-  height: 48px;
-  line-height: 48px;
-  margin: 8px 0;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+.nav-menu :deep(.el-sub-menu__title),
+.nav-menu :deep(.el-sub-menu .el-menu-item) {
+  height: 44px;
+  line-height: 44px;
+  margin: 6px 0;
+  border-radius: 10px;
+  transition: background-color 0.2s ease, color 0.2s ease;
   color: #333;
 }
 
+/* 子菜单背景与侧边栏保持一致 */
+.nav-menu :deep(.el-sub-menu .el-menu) {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 12px;
+  padding: 8px;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 子菜单项特殊样式 */
+.nav-menu :deep(.el-sub-menu .el-menu-item) {
+  color: #666;
+  padding-left: 40px !important;
+}
+
+/* 统一hover效果 */
 .nav-menu :deep(.el-menu-item:hover),
-.nav-menu :deep(.el-sub-menu__title:hover) {
+.nav-menu :deep(.el-sub-menu__title:hover),
+.nav-menu :deep(.el-sub-menu .el-menu-item:hover) {
   background: rgba(56, 112, 168, 0.1) !important;
   color: #3870a8 !important;
 }
 
-.nav-menu :deep(.el-menu-item.is-active) {
+/* 统一激活状态 */
+.nav-menu :deep(.el-menu-item.is-active),
+.nav-menu :deep(.el-sub-menu .el-menu-item.is-active) {
   background: #ffd04b !important;
   color: #3870a8 !important;
-  font-weight: bold;
+  font-weight: 600;
   box-shadow: 0 4px 12px rgba(255, 208, 75, 0.3);
 }
 
@@ -273,10 +316,17 @@ const handleMenuClick = (index: string) => {
   color: #3870a8 !important;
 }
 
+/* 统一图标样式 */
 .nav-menu :deep(.el-menu-item i),
 .nav-menu :deep(.el-sub-menu__title i) {
   margin-right: 12px;
   font-size: 18px;
+}
+
+/* 禁用子菜单展开动画避免跳动 */
+.nav-menu :deep(.el-sub-menu),
+.nav-menu :deep(.el-sub-menu .el-menu) {
+  transition: none !important;
 }
 
 /* 折叠状态的菜单样式 */
@@ -347,9 +397,8 @@ const handleMenuClick = (index: string) => {
 }
 </style>
 
-
 <style>
-/* 全局样式 - Popover */
+/* 全局样式 - Popover 确保在折叠状态下也能正常显示毛玻璃效果 */
 .submenu-popover {
   padding: 0 !important;
   background: rgba(255, 255, 255, 0.8) !important; /* 与 sidebar-card 相同的背景色 */
@@ -358,6 +407,7 @@ const handleMenuClick = (index: string) => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; /* 与 sidebar-card 相同的阴影 */
   border: 1px solid rgba(255, 255, 255, 0.2) !important; /* 与 sidebar-card 相同的边框 */
 }
+
 .submenu-popover .el-popper__arrow {
   display: none;
 }
