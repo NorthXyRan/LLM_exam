@@ -195,7 +195,7 @@ ${content}
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer <你的API密钥>`
+        'Authorization': `Bearer sk-kQNsaC7f0VrwxsrM53841bAeFe3f4e8dAe7f05109aA6F655`
       },
       body: JSON.stringify({
         model: "gpt-4o-all",  // 使用支持文件分析的模型
