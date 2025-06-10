@@ -14,8 +14,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(180deg, #F6736B, #934F91);
-  /*  background: linear-gradient(180deg, #d9afd9,#97d9e1); */
+  /* background: linear-gradient(180deg, #F6736B, #934F91); */
+  /* background: linear-gradient(180deg, #d9afd9,#97d9e1); */
+  background-image: url('../assets/background_image/os18.png');
+  background-size: cover;
+
 }
 
 /* 全局链接样式 */
