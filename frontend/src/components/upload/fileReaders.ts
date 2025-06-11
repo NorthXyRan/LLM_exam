@@ -1,10 +1,7 @@
 import { ElMessage } from 'element-plus'
 import mammoth from 'mammoth'
-import * as pdfjsLib from 'pdfjs-dist'
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 
-// 配置PDF.js工作线程
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+
 
 // 数据类型定义
 interface PaperData {
@@ -67,42 +64,6 @@ export const fileReaders = {
     })
   },
 
-  // 读取PDF文件
-  async readPdf(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = async () => {
-        try {
-          const uint8Array = new Uint8Array(reader.result as ArrayBuffer)
-          const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise
-          let fullText = ''
-
-          ElMessage.info(`开始解析PDF文件，共${pdf.numPages}页...`)
-
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i)
-            const textContent = await page.getTextContent()
-            const pageText = textContent.items.map((item: any) => item.str || '').join(' ')
-            fullText += `\n=== 第${i}页 ===\n${pageText}\n`
-
-            if (pdf.numPages > 5 && i % 3 === 0) {
-              ElMessage.info(`已处理 ${i}/${pdf.numPages} 页`)
-            }
-          }
-
-          if (!fullText.trim()) {
-            throw new Error('PDF文件中没有找到可提取的文本内容')
-          }
-
-          resolve(fullText)
-        } catch (error) {
-          reject(new Error('Failed to parse PDF file: ' + (error as Error).message))
-        }
-      }
-      reader.onerror = () => reject(new Error('Failed to read PDF file'))
-      reader.readAsArrayBuffer(file)
-    })
-  },
 }
 
 /**
@@ -117,8 +78,6 @@ export async function readFileContent(file: File): Promise<string> {
     return await fileReaders.readText(file)
   } else if (fileName.endsWith('.docx')) {
     return await fileReaders.readDocx(file)
-  } else if (fileName.endsWith('.pdf')) {
-    return await fileReaders.readPdf(file)
   } else {
     throw new Error('不支持的文件格式')
   }

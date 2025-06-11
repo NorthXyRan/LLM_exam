@@ -72,26 +72,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     () => isPaperUploaded.value && isStudentAnswersUploaded.value,
   )
 
-  // 上传进度计算（试卷和学生答案为必需，参考答案为可选加分项）
-  const uploadProgress = computed(() => {
-    let completed = 0
-    let total = 2 // 试卷 + 学生答案为必需
 
-    if (isPaperUploaded.value) completed++
-    if (isStudentAnswersUploaded.value) completed++
-
-    // 参考答案为可选，如果上传了则增加进度
-    if (isReferenceAnswerUploaded.value) {
-      completed += 0.5 // 加分项，不算完整的一步
-    }
-
-    return {
-      completed: Math.floor(completed),
-      total,
-      percentage: Math.min((completed / total) * 100, 100),
-      hasOptionalReference: isReferenceAnswerUploaded.value,
-    }
-  })
+  
 
   // ===== 试卷状态管理 =====
   const setPaperStatus = (paperData: ExamPaper) => {
@@ -255,7 +237,6 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     isStudentAnswersUploaded,
     canUploadStudentPapers,
     canProceedToGrading,
-    uploadProgress,
 
     // 方法
     setPaperStatus,
