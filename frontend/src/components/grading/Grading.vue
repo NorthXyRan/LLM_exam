@@ -1,14 +1,13 @@
 <template>
   <div class="grading-page">
-    
     <!-- 头部 -->
     <grading-header
       class="hover"
       :current-question="currentQuestionId"
       :current-student-id="currentStudentId"
-      :questions="questions"
-      :student-list="studentList"
-      :highlight-data-list="highlightDataList"
+      :questions="examDataStore.questions"
+      :student-list="examDataStore.studentList"
+      :highlight-data-list="examDataStore.highlightDataList"
       @question-change="handleQuestionChange"
       @student-change="handleStudentChange"
       @show-current-question="showCurrentQuestion"
@@ -19,10 +18,12 @@
       <scoring-section
         class="grading-card scoring-card hover"
         :llm-score="currentLLMScore"
+        :max-score="currentMaxScore"
         @score-change="handleScoreChange"
       />
       <action-section
         class="grading-card action-card hover"
+        :disabled="!examDataStore.isDataComplete"
         @start-grading="startGrading"
         @batch-grading="handleBatchGrading"
       />
@@ -51,10 +52,7 @@
         <div class="card-header">
           <h3>Reference Answer</h3>
         </div>
-        <reference-answer 
-          class="card-content"
-          :reference-answer="currentReferenceAnswer" 
-        />
+        <reference-answer class="card-content" :reference-answer="currentReferenceAnswer" />
       </div>
 
       <!-- 反馈区域 -->
@@ -65,6 +63,7 @@
         <feedback-panel
           class="card-content"
           ref="feedbackPanelRef"
+          :current-highlight-data="currentHighlightData"
           @modify-reason="handleModifyReason"
           @save-reason="handleSaveReason"
           @submit-reason="handleSubmitReason"
@@ -85,66 +84,91 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
-import GradingHeader from './grading/GradingHeader.vue'
-import ScoringSection from './grading/ScoringSection.vue'
-import ActionSection from './grading/ActionSection.vue'
-import HighlightToolbar from './grading/HighlightToolbar.vue'
-import PaperPreview from './grading/PaperPreview.vue'
-import ReferenceAnswer from './grading/ReferenceAnswer.vue'
-import FeedbackPanel from './grading/FeedbackPanel.vue'
+import ActionSection from './ActionSection.vue'
+import FeedbackPanel from './FeedbackPanel.vue'
+import GradingHeader from './GradingHeader.vue'
+import HighlightToolbar from './HighlightToolbar.vue'
+import PaperPreview from './PaperPreview.vue'
+import ReferenceAnswer from './ReferenceAnswer.vue'
+import ScoringSection from './ScoringSection.vue'
+
+// 导入分离式 Store
+import { useExamDataStore } from '../../stores/useExamDataStore'
+import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
+
+// 使用分离的 Store
+const examDataStore = useExamDataStore()
+const uploadStatusStore = useUploadStatusStore()
 
 /**
- * ===== 数据类型 =====
- */
-interface Question {
-  question_id: number
-  question: string
-  score: number
-  referenceAnswer: string
-}
-
-interface StudentAnswer {
-  student_id: number
-  question_id: number
-  answer: string
-}
-
-interface HighlightItem {
-  'Student answer': string
-  'Scoring point': number
-  reason: string
-}
-
-interface HighlightData {
-  student_id: number
-  question_id: number
-  answer: {
-    correct: HighlightItem[]
-    wrong: HighlightItem[]
-    unclear: HighlightItem[]
-    redundant: HighlightItem[]
-  }
-  total_score: number
-}
-
-interface StudentInfo {
-  id: number
-}
-
-/**
- * ===== 核心状态 =====
+ * ===== UI 状态管理 =====
  */
 const currentStudentId = ref<number>(1)
 const currentQuestionId = ref<number>(1)
 const currentQuestionVisible = ref(false)
 
 /**
- * ===== 数据存储 =====
+ * ===== 计算属性 =====
  */
-const studentAnswers = ref<StudentAnswer[]>([])         
-const studentList = ref<StudentInfo[]>([])              
-const questions = ref<Question[]>([])                   
-const highlightDataList = ref<HighlightData[]>([])      
+// 当前题目信息
+const currentQuestion = computed(() => {
+  return examDataStore.getQuestionById(currentQuestionId.value)
+})
+
+// 当前题目文本
+const currentQuestionText = computed(() => {
+  const question = currentQuestion.value
+  if (!question) return '请先上传试卷文件'
+  return question.question || '暂无题目内容'
+})
+
+// 当前参考答案
+const currentReferenceAnswer = computed(() => {
+  if (!currentQuestionId.value) return '请先选择题目'
+
+  const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
+
+  if (!referenceAnswer) {
+    return '参考答案为可选项，可以直接批改学生答案'
+  }
+
+  return referenceAnswer.answer
+})
+
+// 当前学生答案
+const currentStudentAnswer = computed(() => {
+  if (!currentStudentId.value || !currentQuestionId.value) {
+    return '请先选择学生和题目'
+  }
+
+  const answer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
+
+  if (!answer) {
+    // 检查是否有任何学生数据
+    if (examDataStore.studentCount === 0) {
+      return '请先上传学生答案文件'
+    }
+    return '该学生未回答此题目'
+  }
+
+  return answer.answer || '该学生未回答此题目'
+})
+
+// 当前高亮数据
+const currentHighlightData = computed(() => {
+  if (!currentStudentId.value || !currentQuestionId.value) return null
+  return examDataStore.getHighlightData(currentStudentId.value, currentQuestionId.value)
+})
+
+// 当前AI评分
+const currentLLMScore = computed(() => {
+  return currentHighlightData.value?.total_score || 0
+})
+
+// 当前题目满分
+const currentMaxScore = computed(() => {
+  return currentQuestion.value?.score || 0
+})
 
 /**
  * ===== 组件引用 =====
@@ -154,133 +178,36 @@ const paperPreviewRef = ref()
 const highlightToolbarRef = ref()
 
 /**
- * ===== 计算属性 =====
- */
-const currentReferenceAnswer = computed(() => {
-  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
-  return current?.referenceAnswer || '暂无参考答案'
-})
-
-const currentQuestionText = computed(() => {
-  const current = questions.value.find(q => q.question_id === currentQuestionId.value)
-  return current?.question || '暂无题目内容'
-})
-
-const currentStudentAnswer = computed(() => {
-  if (!currentStudentId.value || !currentQuestionId.value) {
-    return '请先选择学生和题目'
-  }
-
-  const answer = studentAnswers.value.find(
-    ans => ans.student_id === currentStudentId.value && 
-           ans.question_id === currentQuestionId.value
-  )
-  
-  return answer?.answer || '该学生未回答此题目'
-})
-
-const currentHighlightData = computed(() => {
-  if (!currentStudentId.value || !currentQuestionId.value) return null
-
-  return highlightDataList.value.find(
-    data => data.student_id === currentStudentId.value && 
-            data.question_id === currentQuestionId.value
-  ) || null
-})
-
-const currentLLMScore = computed(() => {
-  return currentHighlightData.value?.total_score || 0
-})
-
-/**
- * ===== 数据加载 =====
- */
-const loadQuestions = async () => {
-  try {
-    const [paperResponse, answerResponse] = await Promise.all([
-      fetch('/paper/example1/paper.json'),
-      fetch('/paper/example1/answer.json')
-    ])
-
-    if (!paperResponse.ok || !answerResponse.ok) {
-      throw new Error('无法加载题目文件')
-    }
-
-    const [paperData, answerData] = await Promise.all([
-      paperResponse.json(),
-      answerResponse.json()
-    ])
-
-    questions.value = paperData.map((question: any, index: number) => ({
-      question_id: question.question_id,
-      question: question.question,
-      score: question.score || 0,
-      referenceAnswer: answerData[index]?.answer || '暂无参考答案'
-    }))
-
-    console.log(`✅ 加载题目: ${questions.value.length} 道`)
-  } catch (error) {
-    console.error('❌ 加载题目失败:', error)
-    ElMessage.error('无法读取题目文件')
-    throw error
-  }
-}
-
-const loadStudentAnswers = async () => {
-  try {
-    const response = await fetch('/paper/example1/student_answer.json')
-    if (!response.ok) throw new Error('无法加载学生答案文件')
-
-    const data: StudentAnswer[] = await response.json()
-    if (!Array.isArray(data) || data.length === 0) {
-      throw new Error('学生答案数据格式无效')
-    }
-
-    studentAnswers.value = data
-    
-    const uniqueStudentIds = [...new Set(data.map(item => item.student_id))]
-    studentList.value = uniqueStudentIds.map(id => ({ id }))
-
-    console.log(`✅ 加载学生答案: ${studentList.value.length} 个学生`)
-  } catch (error) {
-    console.error('❌ 加载学生答案失败:', error)
-    ElMessage.error('无法读取学生答案文件')
-    throw error
-  }
-}
-
-const loadHighlightData = async () => {
-  try {
-    const response = await fetch('/paper/example1/student_answer_marked.json')
-    if (!response.ok) {
-      console.warn('⚠️ 未找到高亮数据文件，使用普通模式')
-      return
-    }
-
-    const data: HighlightData[] = await response.json()
-    if (!Array.isArray(data)) throw new Error('高亮数据格式无效')
-
-    highlightDataList.value = data
-    console.log(`✅ 加载高亮数据: ${data.length} 条`)
-  } catch (error) {
-    console.error('❌ 加载高亮数据失败:', error)
-    ElMessage.warning('无法读取高亮数据文件，使用普通模式')
-  }
-}
-
-/**
  * ===== 事件处理 =====
  */
 const handleStudentChange = (studentId: number) => {
   if (studentId === currentStudentId.value) return
+
+  const studentExists = examDataStore.studentList.some((student) => student.id === studentId)
+
+  if (!studentExists) {
+    ElMessage.warning(`学生 ${studentId} 不存在`)
+    return
+  }
+
   currentStudentId.value = studentId
-  ElMessage.success(`切换到学生 ${studentId}，分数: ${currentLLMScore.value}`)
+  ElMessage.success(`切换到学生 ${studentId}`)
+  console.log('👤 切换学生:', studentId)
 }
 
-const handleQuestionChange = (question: { id: number, name: string, score: number }) => {
+const handleQuestionChange = (question: { id: number; name: string; score: number }) => {
   if (question.id === currentQuestionId.value) return
+
+  const questionExists = examDataStore.getQuestionById(question.id)
+
+  if (!questionExists) {
+    ElMessage.warning(`题目 ${question.id} 不存在`)
+    return
+  }
+
   currentQuestionId.value = question.id
-  ElMessage.success(`切换到${question.name}，满分${question.score}分`)
+  ElMessage.success(`切换到第${question.id}题，满分${questionExists.score}分`)
+  console.log('📝 切换题目:', question.id)
 }
 
 const showCurrentQuestion = () => {
@@ -300,34 +227,105 @@ const handleMarkAnswer = (data: any) => {
   feedbackPanelRef.value?.handleMarkAnswer(data)
 }
 
-// 简单事件
-const startGrading = () => ElMessage.success('开始AI评分...')
-const handleBatchGrading = () => ElMessage.success('开始批量评分')
-const handleScoreChange = (data: { teacherScore: number, llmScore: number }) => {
-  ElMessage.info(`教师评分: ${data.teacherScore}分 (LLM评分: ${data.llmScore}分)`)
+// 批改相关事件
+const startGrading = () => {
+  if (!examDataStore.isDataComplete) {
+    ElMessage.warning('请先完成所有数据上传')
+    return
+  }
+
+  ElMessage.success('开始AI评分...')
+  // TODO: 实现AI批改逻辑
 }
-const handleModifyReason = () => ElMessage.info('理由编辑模式')
-const handleSaveReason = () => ElMessage.success('理由已保存')
-const handleSubmitReason = () => ElMessage.success('理由已提交，重新评分中...')
+
+const handleBatchGrading = () => {
+  if (!examDataStore.isDataComplete) {
+    ElMessage.warning('请先完成所有数据上传')
+    return
+  }
+
+  ElMessage.success('开始批量评分')
+  // TODO: 实现批量批改逻辑
+}
+
+const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => {
+  ElMessage.info(`教师评分: ${data.teacherScore}分 (LLM评分: ${data.llmScore}分)`)
+  // TODO: 保存评分变更
+}
+
+const handleModifyReason = () => {
+  ElMessage.info('理由编辑模式')
+}
+
+const handleSaveReason = () => {
+  ElMessage.success('理由已保存')
+  // TODO: 保存评分理由
+}
+
+const handleSubmitReason = () => {
+  ElMessage.success('理由已提交，重新评分中...')
+  // TODO: 提交反馈并重新评分
+}
+
+/**
+ * ===== 初始化当前选择 =====
+ */
+const initializeCurrentIds = () => {
+  // 设置第一个可用的学生和题目
+  if (examDataStore.studentList.length > 0) {
+    currentStudentId.value = examDataStore.studentList[0].id
+  }
+
+  if (examDataStore.questions.length > 0) {
+    currentQuestionId.value = examDataStore.questions[0].question_id
+  }
+
+  console.log('🎯 初始化当前选择:', {
+    studentId: currentStudentId.value,
+    questionId: currentQuestionId.value,
+  })
+}
 
 /**
  * ===== 初始化 =====
  */
 onMounted(async () => {
   try {
-    await Promise.all([
-      loadQuestions(),
-      loadStudentAnswers(),
-      loadHighlightData()
-    ])
+    console.log('🚀 Grading页面初始化开始')
 
-    if (questions.value.length > 0) currentQuestionId.value = 1
-    if (studentList.value.length > 0) currentStudentId.value = studentList.value[0].id
+    // 从本地恢复所有状态
+    examDataStore.loadFromLocal()
+    uploadStatusStore.loadFromLocal()
 
-    console.log('🎉 初始化完成')
+    console.log('📊 数据状态检查:')
+    console.log('- 题目数量:', examDataStore.questionCount)
+    console.log('- 学生数量:', examDataStore.studentCount)
+    console.log('- 答案数量:', examDataStore.totalAnswerCount)
+    console.log('- 数据完整性:', examDataStore.isDataComplete)
+
+    // 检查是否有任何数据
+    const hasAnyData =
+      examDataStore.questionCount > 0 ||
+      examDataStore.studentCount > 0 ||
+      uploadStatusStore.isPaperUploaded
+
+    if (hasAnyData) {
+      console.log('✅ 检测到已有数据，直接使用')
+
+      // 初始化UI状态
+      if (examDataStore.questionCount > 0 || examDataStore.studentCount > 0) {
+        initializeCurrentIds()
+      }
+    } else {
+      console.log('📝 没有检测到数据，加载示例数据...')
+      examDataStore.loadExampleData()
+      initializeCurrentIds()
+    }
+
+    console.log('🎉 Grading页面初始化完成')
   } catch (error) {
     console.error('💥 初始化失败:', error)
-    ElMessage.error('初始化失败，请刷新重试')
+    ElMessage.error('初始化失败: ' + (error instanceof Error ? error.message : '未知错误'))
   }
 })
 </script>
@@ -357,6 +355,37 @@ onMounted(async () => {
   min-height: 500px;
 }
 
+/* ===== 导航控制 ===== */
+.navigation-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  gap: 20px;
+}
+
+.nav-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-section label {
+  font-weight: 500;
+  color: #475569;
+  min-width: 80px;
+}
+
+.nav-info {
+  font-size: 14px;
+  color: #64748b;
+  min-width: 50px;
+  text-align: center;
+}
+
 /* ===== 卡片悬停效果 ===== */
 .hover {
   transition: all 0.3s ease;
@@ -367,11 +396,10 @@ onMounted(async () => {
   transform: translateY(-4px) scale(1.01);
 }
 
-
 /* ===== 卡片样式 ===== */
 .grading-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E5E5;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
   border-radius: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -380,19 +408,32 @@ onMounted(async () => {
   transition: all 0.2s ease;
 }
 
-
 /* ===== 卡片比例 ===== */
-.scoring-card { flex: 7; }
-.action-card { flex: 3; }
-.preview-card { flex: 4; }
-.reference-card { flex: 3; }
-.feedback-card { flex: 3; }
+.scoring-card {
+  flex: 7;
+}
+
+.action-card {
+  flex: 3;
+}
+
+.preview-card {
+  flex: 4;
+}
+
+.reference-card {
+  flex: 3;
+}
+
+.feedback-card {
+  flex: 3;
+}
 
 /* ===== 卡片头部 ===== */
 .card-header {
   padding: 16px 20px;
-  background: #F5F5F5;
-  border-bottom: 1px solid #E5E5E5;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e5e5e5;
   height: 56px;
   box-sizing: border-box;
   display: flex;
@@ -446,7 +487,7 @@ onMounted(async () => {
   color: rgba(0, 0, 0, 0.6);
   padding: 15px;
   border-radius: 8px;
-  background: #FFFFFF;
+  background: #ffffff;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -456,8 +497,8 @@ onMounted(async () => {
 }
 
 .grading-page :deep(.el-dialog__header) {
-  background: #F5F5F5;
-  border-bottom: 1px solid #E5E5E5;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 /* ===== 响应式 ===== */
@@ -466,19 +507,19 @@ onMounted(async () => {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .grading-row-top {
     height: auto;
   }
-  
+
   .grading-row-top .grading-card {
     height: 80px;
   }
-  
+
   .grading-row-main {
     height: auto;
   }
-  
+
   .grading-row-main .grading-card {
     min-height: 300px;
   }
@@ -489,15 +530,15 @@ onMounted(async () => {
     gap: 12px;
     padding: 12px;
   }
-  
+
   .grading-row {
     gap: 8px;
   }
-  
+
   .grading-row-top .grading-card {
     height: 70px;
   }
-  
+
   .grading-row-main .grading-card {
     min-height: 250px;
   }
