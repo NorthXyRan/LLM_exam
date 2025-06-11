@@ -1,10 +1,10 @@
 import AnalysisPage from '../components/result/AnalysisPage.vue'
 import ReportPage from '../components/result/ReportPage.vue'
-import Grading from '../components/Grading.vue'
+import Grading from '../components/grading/Grading.vue'
 import Home from '../components/Home.vue'
 import MainLayout from '../components/layout/MainLayout.vue'
 import PromptSetting from '../components/PromptSetting.vue'
-import Uploading from '../components/Uploading.vue'
+import Uploading from '../components/upload/Uploading.vue'
 
 import { createRouter, createWebHistory} from 'vue-router'
 const router = createRouter({
