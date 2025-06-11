@@ -1,186 +1,234 @@
 <template>
-  <el-card class="answer-upload-card" :class="{ disabled: disabled }">
-    <template #header>
-      <div class="card-header">
-        <div class="header-left">
-          <div class="icon-wrapper">
-            <el-icon class="card-icon"><document-checked /></el-icon>
-          </div>
-          <h3>Reference Answer</h3>
-        </div>
-        <el-tag 
-          v-if="referenceAnswer.status === 'ready'" 
-          type="success" 
-          effect="dark"
-          class="status-tag"
-        >
-          <el-icon><check /></el-icon>
-          Ready
-        </el-tag>
-        <el-tag 
-          v-else-if="disabled" 
-          type="info" 
-          effect="plain"
-          class="status-tag waiting-tag"
-        >
-          <el-icon><clock /></el-icon>
-          Waiting for Paper
-        </el-tag>
-        <el-tag 
-          v-else 
-          type="warning" 
-          effect="plain"
-          class="status-tag waiting-tag"
-        >
-          <el-icon><clock /></el-icon>
-          Waiting for Setting
-        </el-tag>
-      </div>
-    </template>
-    
-    <div class="answer-content">
-      <el-alert 
-        v-if="disabled" 
-        title="Please complete the paper setting first" 
-        type="warning" 
-        :closable="false"
-        show-icon
-        class="disabled-alert"
-      />
-      
-      <template v-else>
-        <!-- 上传新答案 -->
-        <div class="upload-section">
-          <div class="section-header">
-            <el-icon class="section-icon"><upload /></el-icon>
-            <h4>Upload Answer File</h4>
-          </div>
-          <el-upload
-            v-model:file-list="answerFileList"
-            class="answer-upload"
-            :auto-upload="false"
-            :on-change="handleAnswerUpload"
-            :on-remove="handleAnswerRemove"
-            :before-remove="beforeAnswerRemove"
-            accept=".txt,.doc,.docx"
-            :limit="1"
-            :on-exceed="handleAnswerExceed"
-            drag
-          >
-            <div class="upload-content">
-              <el-icon class="upload-icon"><upload-filled /></el-icon>
-              <div class="upload-text">
-                <p class="upload-main">Click or drag the file here</p>
-                <p class="upload-hint">Support TXT, DOC, DOCX format</p>
-              </div>
-            </div>
-          </el-upload>
-        </div>
-        
-        <!-- 当前答案状态 -->
-        <div v-if="referenceAnswer.name" class="current-status">
-          <div class="status-card" :class="{ 'status-error': !referenceAnswer.matched }">
-            <div class="status-content">
-              <div class="status-info">
-                <el-icon class="status-icon" :class="{ 'status-error-icon': !referenceAnswer.matched }">
-                  <circle-check-filled v-if="referenceAnswer.matched" />
-                  <circle-close-filled v-else />
-                </el-icon>
-                <span class="status-text">
-                  当前答案：{{ referenceAnswer.name }}。
-                  <span v-if="referenceAnswer.matched">匹配成功，共{{ referenceAnswer.answerCount }}道答案</span>
-                  <span v-else>与试卷不匹配，请检查题目编号</span>
-                </span>
-              </div>
-              <div class="action-buttons">
-                <el-button 
-                  type="primary" 
-                  link 
-                  @click="$emit('preview-answer')"
-                  class="action-btn"
-                >
-                  <el-icon><view /></el-icon>
-                  预览
-                </el-button>
-                <el-button 
-                  type="warning" 
-                  link 
-                  @click="$emit('edit-answer')"
-                  class="action-btn"
-                >
-                  <el-icon><edit /></el-icon>
-                  编辑
-                </el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </template>
-    </div>
-  </el-card>
+  <BaseUpload
+    title="Reference Answer"
+    upload-title="Upload Answer File"
+    :icon="DocumentChecked"
+    card-class="answer-upload-card"
+    upload-class="answer-upload"
+    accept=".txt,.doc,.docx,.pdf,.json"
+    upload-hint="Support TXT, DOC, DOCX, PDF, JSON format"
+    processing-hint="Parsing answer content..."
+    :current-file-name="uploadState.fileName || referenceAnswer.name"
+    :status-text="statusDisplay"
+    :is-ready="referenceAnswer.status === 'ready' && !uploadState.hasError"
+    :has-error="uploadState.hasError"
+    :error-message="uploadState.errorMessage"
+    :disabled="disabled"
+    :reset-trigger="resetTrigger"
+    @file-uploaded="handleFileUpload"
+    @file-removed="handleFileRemove"
+    @preview="handlePreview"
+    @remove="handleRemove"
+  />
 </template>
 
 <script setup>
-import {
-  Check,
-  CircleCheckFilled,
-  CircleCloseFilled,
-  Clock,
-  DocumentChecked,
-  Edit,
-  Upload,
-  UploadFilled
-} from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { ref } from 'vue'
+import { DocumentChecked } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { computed, ref } from 'vue'
+import { API_CONFIG, isAPIConfigValid } from '../../config/api.js'
+import BaseUpload from './BaseUpload.vue'
+import { isJsonFile, readFileContent, saveJsonResult, validateJsonData } from './fileReaders.ts'
 
-// Props
 const props = defineProps({
-  referenceAnswer: {
-    type: Object,
-    required: true
-  },
-  examPaper: {
-    type: Object,
-    required: true
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  }
+  referenceAnswer: { type: Object, required: true },
+  disabled: { type: Boolean, default: false },
+  resetTrigger: { type: Number, default: 0 },
 })
 
-// Emits
-const emit = defineEmits([
-  'answer-uploaded',
-  'answer-removed',
-  'preview-answer',
-  'edit-answer'
-])
+const emit = defineEmits(['answer-uploaded', 'answer-removed', 'preview-answer'])
 
-// Local state
-const answerFileList = ref([])
+const uploadState = ref({
+  fileName: '',
+  hasError: false,
+  errorMessage: '',
+  isSuccess: false,
+  rawContent: '', // 保存原始文件内容，用于预览
+})
 
-// Methods
-const handleAnswerUpload = (file, fileList) => {
-  emit('answer-uploaded', file)
+const statusDisplay = computed(() => {
+  if (!props.referenceAnswer.name && !uploadState.value.fileName) return ''
+  if (uploadState.value.hasError) return ''
+  return `当前参考答案：${props.referenceAnswer.name}（共${props.referenceAnswer.answerCount}道答案）`
+})
+
+const parseWithAI = async (content) => {
+  try {
+    ElMessage.info('正在调用大模型解析参考答案...')
+
+    if (!isAPIConfigValid()) {
+      console.warn('⚠️ API密钥未配置')
+      throw new Error('AI解析失败，请上传 JSON 格式的参考答案文件，或检查 API 配置')
+    }
+
+    const prompt = `
+请分析以下参考答案内容，并返回一个JSON格式的结果：
+
+参考答案内容：
+${content}
+
+请按照以下格式返回JSON:
+{
+  "answerCount": 答案总数,
+  "answers": [
+    {
+      "question_id": 题号,
+      "answer": "参考答案内容"
+    }
+  ]
 }
 
-const handleAnswerRemove = (file, fileList) => {
+重要：只返回JSON数据，不要任何额外的文字说明。请严格按照上传的文件的排版格式，在合适的地方添加换行符\n。
+`
+
+    const response = await fetch(API_CONFIG.OPENAI.API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_CONFIG.OPENAI.API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: API_CONFIG.OPENAI.MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: API_CONFIG.OPENAI.MAX_TOKENS,
+        temperature: API_CONFIG.OPENAI.TEMPERATURE,
+        stream: false,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`API调用失败: ${response.status} - ${errorText}`)
+    }
+
+    const result = await response.json()
+    let analysisResult = result.choices[0].message.content
+
+    let parsedResult
+    try {
+      parsedResult = JSON.parse(analysisResult)
+    } catch (e) {
+      const jsonMatch = analysisResult.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        parsedResult = JSON.parse(jsonMatch[0])
+      } else {
+        throw new Error('模型返回格式错误')
+      }
+    }
+
+    return parsedResult
+  } catch (error) {
+    console.error('模型解析失败:', error)
+    ElMessage.error('模型解析失败: ' + error.message)
+    throw error
+  }
+}
+
+const handleFileUpload = async (uploadFile, isProcessingRef) => {
+  try {
+    isProcessingRef.value = true
+    ElMessage.info('开始解析参考答案...')
+
+    const file = uploadFile.raw || uploadFile
+    if (!file || !(file instanceof File)) {
+      throw new Error('无效的文件对象')
+    }
+
+    const content = await readFileContent(file)
+
+    // 设置上传状态，保存原始内容
+    uploadState.value = {
+      fileName: file.name,
+      hasError: false,
+      errorMessage: '',
+      isSuccess: false,
+      rawContent: content, // 保存原始内容用于预览
+    }
+    if (!content || content.trim().length === 0) {
+      throw new Error('文件内容为空或解析失败')
+    }
+
+    let answerData
+
+    if (isJsonFile(file.name)) {
+      console.log('✅ 检测到JSON文件，直接解析')
+      const jsonData = JSON.parse(content)
+      validateJsonData(jsonData, 'answer')
+      answerData = {
+        name: file.name,
+        content: content,
+      }
+    } else {
+      console.log('✅ 检测到其他格式文件，调用AI解析')
+      const parseResult = await parseWithAI(content)
+
+      // 保存AI解析结果（仅非JSON文件）
+      await saveJsonResult(parseResult, file.name, 'answer')
+
+      answerData = {
+        name: file.name,
+        content: JSON.stringify(parseResult),
+      }
+    }
+
+    // 成功后清除临时状态
+    uploadState.value = {
+      fileName: '',
+      hasError: false,
+      errorMessage: '',
+      isSuccess: true,
+      rawContent: '',
+    }
+
+    emit('answer-uploaded', answerData)
+    ElMessage.success('参考答案解析完成！')
+  } catch (error) {
+    console.error('❌ 参考答案解析失败:', error)
+
+    // 设置错误状态，保持原始内容
+    uploadState.value = {
+      fileName: uploadState.value.fileName || '未知文件',
+      hasError: true,
+      errorMessage: error.message,
+      isSuccess: false,
+      rawContent: uploadState.value.rawContent, // 保持原始内容
+    }
+
+    ElMessage.error('参考答案解析失败: ' + error.message)
+  } finally {
+    isProcessingRef.value = false
+  }
+}
+
+const handleFileRemove = () => {
   emit('answer-removed')
+  ElMessage.info('已移除答案文件')
 }
 
-const beforeAnswerRemove = (file, fileList) => {
-  return ElMessageBox.confirm(
-    `确定要移除答案文件 ${file.name} 吗？`
-  ).then(
-    () => true,
-    () => false
-  )
+const handlePreview = () => {
+  if (uploadState.value.hasError && uploadState.value.rawContent) {
+    // 错误状态下，直接预览原始文件内容
+    emit('preview-answer', {
+      fileName: uploadState.value.fileName,
+      content: uploadState.value.rawContent,
+      isError: true,
+    })
+  } else {
+    // 正常状态，使用默认预览
+    emit('preview-answer')
+  }
 }
 
-const handleAnswerExceed = (files, fileList) => {
-  ElMessage.warning('只能上传1个答案文件')
+const handleRemove = () => {
+  // 清除所有状态
+  uploadState.value = {
+    fileName: '',
+    hasError: false,
+    errorMessage: '',
+    isSuccess: false,
+    rawContent: '',
+  }
+  emit('answer-removed')
 }
 </script>
 
@@ -191,6 +239,7 @@ const handleAnswerExceed = (files, fileList) => {
   transition: all 0.3s ease;
   overflow: hidden;
   border: 0px;
+  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
 }
 
 .answer-upload-card:hover {
@@ -198,113 +247,15 @@ const handleAnswerExceed = (files, fileList) => {
   transform: translateY(-2px);
 }
 
-.answer-upload-card :deep(.el-card__header) {
-  border-bottom: none;  /* 去掉卡片头部下划线 */
+.answer-upload-card :deep(.card-header) {
+  background: #c8e6f4;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px 16px;
-  background: #C8E6F4;
-  margin: -20px -20px 0;
-
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.icon-wrapper {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-}
-
-.card-icon {
-  font-size: 20px;
-  color: rgb(0, 0, 0);
-}
-
-.card-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: rgb(0, 0, 0);
-}
-
-.status-tag {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.waiting-tag {
-  background: rgba(255, 255, 255, 0.9);
-  color: #909399;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.answer-content {
-  /* 移除外部padding，由父组件统一管理 */
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.disabled-alert {
-  border-radius: 12px;
-}
-
-.upload-section {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f0f4f8;
-  transition: all 0.3s ease;
-}
-
-.upload-section:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.section-icon {
+.answer-upload-card :deep(.section-icon) {
   color: #0891b2;
-  font-size: 18px;
 }
 
-.section-header h4 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.answer-upload {
-  width: 100%;
-}
-
-.answer-upload :deep(.el-upload-dragger) {
+.answer-upload-card :deep(.answer-upload .el-upload-dragger) {
   border: 2px dashed #a5f3fc;
   border-radius: 12px;
   background: #f0fdfa;
@@ -316,123 +267,12 @@ const handleAnswerExceed = (files, fileList) => {
   justify-content: center;
 }
 
-.answer-upload :deep(.el-upload-dragger:hover) {
+.answer-upload-card :deep(.answer-upload .el-upload-dragger:hover) {
   border-color: #0891b2;
   background: #ecfdf5;
 }
 
-.upload-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.upload-icon {
-  font-size: 36px;
+.answer-upload-card :deep(.upload-icon) {
   color: #0891b2;
-  opacity: 0.8;
 }
-
-.upload-text {
-  text-align: center;
-}
-
-.upload-main {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 4px 0;
-}
-
-.upload-hint {
-  font-size: 14px;
-  color: #8590a6;
-  margin: 0;
-}
-
-.status-card {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border-radius: 12px;
-  padding: 16px 20px;
-  border: 1px solid #bbf7d0;
-  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.08);
-}
-
-.status-card.status-error {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  border-color: #fca5a5;
-  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.08);
-}
-
-.status-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-icon {
-  font-size: 20px;
-  color: #22c55e;
-}
-
-.status-error-icon {
-  color: #ef4444;
-}
-
-.status-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: #166534;
-}
-
-.status-error .status-text {
-  color: #991b1b;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.action-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.action-btn[type="primary"]:hover {
-  background: #3b82f6;
-  color: white;
-}
-
-.action-btn[type="warning"]:hover {
-  background: #f59e0b;
-  color: white;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .status-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .action-buttons {
-    align-self: flex-start;
-  }
-}
-</style> 
+</style>

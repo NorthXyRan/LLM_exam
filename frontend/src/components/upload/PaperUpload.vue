@@ -1,153 +1,276 @@
 <template>
-  <el-card class="paper-upload-card">
-    <template #header>
-      <div class="card-header">
-        <div class="header-left">
-          <div class="icon-wrapper">
-            <el-icon class="card-icon"><document /></el-icon>
-          </div>
-          <h3>Paper Management</h3>
-        </div>
-        <el-tag
-          v-if="examPaper.status === 'ready'"
-          type="success"
-          effect="dark"
-          class="status-tag"
-        >
-          <el-icon><check /></el-icon>
-          Ready
-        </el-tag>
-        <el-tag
-          v-else
-          type="info"
-          effect="plain"
-          class="status-tag waiting-tag"
-        >
-          <el-icon><clock /></el-icon>
-          Waiting for Setting
-        </el-tag>
-      </div>
-    </template>
-
-    <div class="paper-content">
-      <!-- 上传新试卷 -->
-      <div class="upload-section">
-        <div class="section-header">
-          <el-icon class="section-icon"><upload /></el-icon>
-          <h4>Upload Paper File</h4>
-        </div>
-        <el-upload
-          v-model:file-list="paperFileList"
-          class="paper-upload"
-          :auto-upload="false"
-          :on-change="handlePaperUpload"
-          :on-remove="handlePaperRemove"
-          :before-remove="beforePaperRemove"
-          accept=".txt,.doc,.docx,.pdf"
-          :limit="1"
-          :on-exceed="handlePaperExceed"
-          drag
-        >
-          <div class="upload-content">
-            <el-icon class="upload-icon"><upload-filled /></el-icon>
-            <div class="upload-text">
-              <p class="upload-main">Click or drag the file here</p>
-              <p class="upload-hint">Support TXT, DOC, DOCX, PDF format</p>
-            </div>
-          </div>
-        </el-upload>
-      </div>
-
-      <!-- 当前试卷状态 -->
-      <div v-if="examPaper.name" class="current-status">
-        <div class="status-card">
-          <div class="status-content">
-            <div class="status-info">
-              <el-icon class="status-icon"><circle-check-filled /></el-icon>
-              <span class="status-text">当前试卷：{{ examPaper.name }}。解析完成，共{{ examPaper.questionCount }}道题目</span>
-            </div>
-            <div class="action-buttons">
-              <el-button
-                type="primary"
-                link
-                @click="$emit('preview-paper')"
-                class="action-btn"
-              >
-                <el-icon><view /></el-icon>
-                预览
-              </el-button>
-              <el-button
-                type="warning"
-                link
-                @click="$emit('reparse-paper')"
-                class="action-btn"
-              >
-                <el-icon><refresh /></el-icon>
-                重新解析
-              </el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </el-card>
+  <BaseUpload
+    title="Paper Management"
+    upload-title="Upload Paper File"
+    :icon="Document"
+    card-class="paper-upload-card"
+    upload-class="paper-upload"
+    accept=".txt,.doc,.docx,.pdf,.json"
+    upload-hint="Support TXT, DOC, DOCX, PDF, JSON format"
+    processing-hint="Parsing paper content with AI..."
+    :current-file-name="uploadState.fileName || examPaper.name"
+    :status-text="statusDisplay"
+    :is-ready="examPaper.status === 'ready' && !uploadState.hasError"
+    :has-error="uploadState.hasError"
+    :error-message="uploadState.errorMessage"
+    :disabled="false"
+    :reset-trigger="resetTrigger"
+    @file-uploaded="handleFileUpload"
+    @file-removed="handleFileRemove"
+    @preview="handlePreview"
+    @remove="handleRemove"
+  />
 </template>
 
 <script setup>
-import {
-  Check,
-  CircleCheckFilled,
-  Clock,
-  Document,
-  Refresh,
-  Upload,
-  UploadFilled
-} from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { ref } from 'vue'
+import { Document } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { computed, ref, watch } from 'vue'
+import { API_CONFIG, isAPIConfigValid } from '../../config/api.js'
+import BaseUpload from './BaseUpload.vue'
+import { isJsonFile, readFileContent, saveJsonResult } from './fileReaders.ts'
 
-// Props
+// =============================================================================
+// Props & Emits
+// =============================================================================
 const props = defineProps({
-  examPaper: {
-    type: Object,
-    required: true
-  }
+  examPaper: { type: Object, required: true },
+  resetTrigger: { type: Number, default: 0 },
+})
+const emit = defineEmits(['paper-uploaded', 'paper-removed', 'preview-paper'])
+
+// =============================================================================
+// 响应式状态
+// =============================================================================
+const paperFileList = ref([])
+const uploadState = ref({
+  fileName: '',
+  hasError: false,
+  errorMessage: '',
+  isSuccess: false,
+  rawContent: '', // 保存原始文件内容，用于预览
 })
 
-// Emits
-const emit = defineEmits([
-  'paper-uploaded',
-  'paper-removed',
-  'preview-paper',
-  'reparse-paper'
-])
+// 计算状态显示信息
+const statusDisplay = computed(() => {
+  if (!props.examPaper.name && !uploadState.value.fileName) return ''
+  if (uploadState.value.hasError) return ''
+  return `当前试卷：${props.examPaper.name}（共${props.examPaper.questionCount}道题目）`
+})
 
-// Local state
-const paperFileList = ref([])
-
-// Methods
-const handlePaperUpload = (file, fileList) => {
-  emit('paper-uploaded', file)
-}
-
-const handlePaperRemove = () => {
-  emit('paper-removed')
-}
-
-const beforePaperRemove = (file) => {
-  return ElMessageBox.confirm(
-    `确定要移除试卷文件 ${file.name} 吗？`,
-    '确认删除',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
+// 监听重置触发器
+watch(
+  () => props.resetTrigger,
+  () => {
+    if (props.resetTrigger > 0) {
+      paperFileList.value = []
+      uploadState.value = {
+        fileName: '',
+        hasError: false,
+        errorMessage: '',
+        isSuccess: false,
+        rawContent: '',
+      }
+      console.log('📄 PaperUpload 文件列表已清空')
     }
-  ).then(() => true, () => false)
+  },
+)
+
+// =============================================================================
+// AI解析相关函数
+// =============================================================================
+/**
+ * 使用AI解析试卷内容
+ */
+async function parseWithAI(content) {
+  try {
+    ElMessage.info('正在调用大模型分析试卷...')
+
+    if (!isAPIConfigValid()) {
+      console.warn('⚠️ API密钥未配置')
+      throw new Error('AI解析失败，请上传 JSON 格式的试卷文件，或检查 API 配置')
+    }
+
+    const prompt = `
+请分析以下试卷内容，并返回一个JSON格式的结果，包含题目数量和题目内容：
+
+试卷内容：
+${content}
+
+请按照以下格式返回JSON:
+{
+  "questionCount": 题目总数,
+  "questions": [
+    {
+      "question_id": 题号,
+      "question": "题目内容",
+      "score": 分值
+    }
+  ]
 }
 
-const handlePaperExceed = () => {
-  ElMessage.warning('只能上传1个试卷文件')
+重要：只返回JSON数据，不要任何额外的文字说明。请严格按照上传的文件的排版格式，在合适的地方添加换行符\n。
+`
+
+    const response = await fetch(API_CONFIG.OPENAI.API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_CONFIG.OPENAI.API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: API_CONFIG.OPENAI.MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: API_CONFIG.OPENAI.MAX_TOKENS,
+        temperature: API_CONFIG.OPENAI.TEMPERATURE,
+        stream: false,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`API调用失败: ${response.status} - ${errorText}`)
+    }
+
+    const result = await response.json()
+    let analysisResult = result.choices[0].message.content
+
+    // 解析JSON结果
+    let parsedResult
+    try {
+      parsedResult = JSON.parse(analysisResult)
+    } catch (e) {
+      // 尝试提取JSON部分
+      const jsonMatch = analysisResult.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        parsedResult = JSON.parse(jsonMatch[0])
+      } else {
+        throw new Error('模型返回格式错误')
+      }
+    }
+
+    return parsedResult
+  } catch (error) {
+    console.error('模型解析失败:', error)
+    ElMessage.error('模型解析失败: ' + error.message)
+    throw error
+  }
+}
+
+async function processPaperData(file, content) {
+  if (isJsonFile(file.name)) {
+    console.log('✅ 检测到JSON文件，直接解析')
+    const jsonData = JSON.parse(content)
+    return {
+      name: file.name,
+      content: content,
+    }
+  } else {
+    console.log('✅ 检测到其他格式文件，调用AI解析')
+    const parseResult = await parseWithAI(content)
+
+    // 保存AI解析结果（仅非JSON文件）
+    await saveJsonResult(parseResult, file.name, 'paper')
+
+    return {
+      name: file.name,
+      content: JSON.stringify(parseResult),
+    }
+  }
+}
+
+// =============================================================================
+// 事件处理函数
+// =============================================================================
+async function handleFileUpload(uploadFile, isProcessingRef) {
+  try {
+    isProcessingRef.value = true
+    ElMessage.info('开始解析试卷...')
+
+    const file = uploadFile.raw || uploadFile
+    if (!file || !(file instanceof File)) {
+      throw new Error('无效的文件对象')
+    }
+
+    console.log('✅ 开始处理试卷文件:', file.name)
+
+    const content = await readFileContent(file)
+
+    // 设置上传状态，保存原始内容
+    uploadState.value = {
+      fileName: file.name,
+      hasError: false,
+      errorMessage: '',
+      isSuccess: false,
+      rawContent: content, // 保存原始内容用于预览
+    }
+    if (!content || content.trim().length === 0) {
+      throw new Error('文件内容为空或解析失败')
+    }
+
+    const paperData = await processPaperData(file, content)
+    console.log('✅ 最终试卷数据:', paperData)
+
+    // 成功后清除临时状态
+    uploadState.value = {
+      fileName: '',
+      hasError: false,
+      errorMessage: '',
+      isSuccess: true,
+      rawContent: '',
+    }
+
+    emit('paper-uploaded', paperData)
+    ElMessage.success(`试卷解析完成！`)
+  } catch (error) {
+    console.error('❌ 试卷解析失败:', error)
+
+    // 设置错误状态，保持原始内容
+    uploadState.value = {
+      fileName: uploadState.value.fileName || '未知文件',
+      hasError: true,
+      errorMessage: error.message,
+      isSuccess: false,
+      rawContent: uploadState.value.rawContent, // 保持原始内容
+    }
+
+    ElMessage.error('试卷解析失败: ' + error.message)
+    paperFileList.value = []
+  } finally {
+    isProcessingRef.value = false
+  }
+}
+
+function handleFileRemove() {
+  emit('paper-removed')
+  ElMessage.info('已移除试卷文件')
+}
+
+function handlePreview() {
+  if (uploadState.value.hasError && uploadState.value.rawContent) {
+    // 错误状态下，直接预览原始文件内容
+    emit('preview-paper', {
+      fileName: uploadState.value.fileName,
+      content: uploadState.value.rawContent,
+      isError: true,
+    })
+  } else {
+    // 正常状态，使用默认预览
+    emit('preview-paper')
+  }
+}
+
+async function handleRemove() {
+  // 清除所有状态
+  uploadState.value = {
+    fileName: '',
+    hasError: false,
+    errorMessage: '',
+    isSuccess: false,
+    rawContent: '',
+  }
+  paperFileList.value = []
+  emit('paper-removed')
 }
 </script>
 
@@ -166,225 +289,32 @@ const handlePaperExceed = () => {
   transform: translateY(-2px);
 }
 
-.paper-upload-card :deep(.el-card__header) {
-  border-bottom: none;  /* 去掉卡片头部下划线 */
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px 16px;  /* 试卷上传卡片头部的间距 */
+.paper-upload-card :deep(.card-header) {
   background: #e6d8c9;
-  margin: -20px -20px 0;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.icon-wrapper {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-}
-
-.card-icon {
-  font-size: 20px;
-  color: rgb(0, 0, 0);
-}
-
-.card-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: rgb(0, 0, 0);
-}
-
-.status-tag {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.waiting-tag {
-  background: rgba(255, 255, 255, 0.9);
-  color: #909399;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.paper-content {
-  /* 移除外部padding，由父组件统一管理 */
-  display: flex;
-  flex-direction: column;
-}
-
-.upload-section {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f0f4f8;
-  transition: all 0.3s ease;
-}
-
-.upload-section:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.section-icon {
+.paper-upload-card :deep(.section-icon) {
   color: #4f46e5;
-  font-size: 18px;
 }
 
-.section-header h4 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.paper-upload {
-  width: 100%;
-}
-
-.paper-upload :deep(.el-upload-dragger) {
+.paper-upload-card :deep(.paper-upload .el-upload-dragger) {
   border: 2px dashed #c7d2fe;
   border-radius: 12px;
   background: #f8fafc;
   transition: all 0.3s ease;
-  min-height: 100px;
   padding: 4px;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.paper-upload :deep(.el-upload-dragger:hover) {
+.paper-upload-card :deep(.paper-upload .el-upload-dragger:hover) {
   border-color: #4f46e5;
-  background: #f8fafc;
+  background: #f3f4f6;
 }
 
-.upload-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.upload-icon {
-  font-size: 36px;
+.paper-upload-card :deep(.upload-icon) {
   color: #4f46e5;
-  opacity: 0.8;
-}
-
-.upload-text {
-  text-align: center;
-}
-
-.upload-main {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 4px 0;
-}
-
-.upload-hint {
-  font-size: 14px;
-  color: #8590a6;
-  margin: 0;
-}
-
-.current-status {
-  margin-top: 20px;
-}
-
-.status-card {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-radius: 12px;
-  padding: 16px 20px;
-  border: 1px solid #bae6fd;
-  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.08);
-}
-
-.status-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-icon {
-  font-size: 20px;
-  color: #0ea5e9;
-}
-
-.status-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0c4a6e;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.action-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.action-btn[type="primary"]:hover {
-  background: #3b82f6;
-  color: white;
-}
-
-.action-btn[type="warning"]:hover {
-  background: #f59e0b;
-  color: white;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .status-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .action-buttons {
-    align-self: flex-start;
-  }
 }
 </style>
