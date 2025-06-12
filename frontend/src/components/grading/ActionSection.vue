@@ -3,26 +3,25 @@
     <div class="action-group">
       <div class="action-item">
         <div class="action-buttons">
-          <el-button type="primary" size="default" @click="handleStartGrading">
-            <el-icon><VideoPlay /></el-icon>
-            Start Grading
+          <el-button
+            type="primary"
+            size="default"
+            @click="handleStartGrading"
+            :loading="isGrading"
+            :disabled="isGrading"
+          >
+            <el-icon v-if="!isGrading"><VideoPlay /></el-icon>
+            {{ isGrading ? 'Grading...' : 'Start Grading' }}
           </el-button>
 
-          <!-- 批改按钮改为下拉菜单 -->
-          <el-dropdown @command="handleBatchGrading" trigger="click">
-            <el-button type="success" size="default">
-              <el-icon><Document /></el-icon>
-              Batch Grading
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="5">5</el-dropdown-item>
-                <el-dropdown-item command="10">10</el-dropdown-item>
-                <el-dropdown-item command="20">20</el-dropdown-item>
-                <el-dropdown-item command="all" divided>All</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <!-- TODO: 后续可以在这里添加其他评分相关功能按钮 -->
+          <!-- 建议的功能按钮：
+               1. 重新评分按钮 - 重新运行AI评分
+               2. 导出结果按钮 - 导出当前评分结果
+               3. 查看统计按钮 - 显示评分统计信息
+               4. 批量操作按钮 - 批量确认/修改评分
+               5. 设置按钮 - AI评分参数配置
+          -->
         </div>
       </div>
     </div>
@@ -30,21 +29,36 @@
 </template>
 
 <script setup lang="ts">
-import { Document, VideoPlay } from '@element-plus/icons-vue'
+import { VideoPlay } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+
+// 添加 loading 状态
+const isGrading = ref(false)
 
 const emits = defineEmits<{
   (e: 'startGrading'): void
-  (e: 'batchGrading', count: string | number): void
+  // TODO: 后续可能需要的事件
+  // (e: 'reGrading'): void              // 重新评分
+  // (e: 'exportResults'): void          // 导出结果
+  // (e: 'viewStatistics'): void         // 查看统计
+  // (e: 'batchConfirm'): void           // 批量确认评分
+  // (e: 'openSettings'): void           // 打开评分设置
 }>()
 
 const handleStartGrading = () => {
+  isGrading.value = true
   emits('startGrading')
 }
 
-const handleBatchGrading = (command: string) => {
-  const count = command === 'all' ? 'all' : parseInt(command)
-  emits('batchGrading', count)
+// 重置评分状态的方法
+const resetGradingState = () => {
+  isGrading.value = false
 }
+
+// 暴露方法给父组件调用
+defineExpose({
+  resetGradingState,
+})
 </script>
 
 <style scoped>
