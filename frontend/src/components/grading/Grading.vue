@@ -22,10 +22,10 @@
         @score-change="handleScoreChange"
       />
       <action-section
+        ref="actionSectionRef"
         class="grading-card action-card hover"
         :disabled="!examDataStore.isDataComplete"
         @start-grading="startGrading"
-        @batch-grading="handleBatchGrading"
       />
     </div>
 
@@ -176,6 +176,7 @@ const currentMaxScore = computed(() => {
 const feedbackPanelRef = ref()
 const paperPreviewRef = ref()
 const highlightToolbarRef = ref()
+const actionSectionRef = ref()
 
 /**
  * ===== 事件处理 =====
@@ -228,29 +229,69 @@ const handleMarkAnswer = (data: any) => {
 }
 
 // 批改相关事件
-const startGrading = () => {
+const startGrading = async () => {
   if (!examDataStore.isDataComplete) {
     ElMessage.warning('请先完成所有数据上传')
     return
   }
 
-  ElMessage.success('开始AI评分...')
-  // TODO: 实现AI批改逻辑
-}
+  try {
+    ElMessage.info('开始AI评分...')
 
-const handleBatchGrading = () => {
-  if (!examDataStore.isDataComplete) {
-    ElMessage.warning('请先完成所有数据上传')
-    return
+    // TODO: 后续开发时替换为真实的AI API调用
+    // 当前使用本地JSON文件模拟AI评分结果
+    // 实际实现时应该：
+    // 1. 收集当前学生答案和参考答案
+    // 2. 调用AI评分API (例如: POST /api/grading/start)
+    // 3. 处理返回的评分结果
+    // 4. 支持批量评分和单个评分模式
+
+    // 读取模拟的AI评分数据
+    const response = await fetch('/paper/example1/student_answer_marked.json')
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const aiGradingData = await response.json()
+
+    // 将AI评分数据设置到store中
+    examDataStore.setHighlightData(aiGradingData)
+
+    // 保存到本地存储
+    examDataStore.saveToLocal()
+
+    // 如果当前显示的学生和题目有评分数据，立即刷新显示
+    const currentData = examDataStore.getHighlightData(
+      currentStudentId.value,
+      currentQuestionId.value,
+    )
+    if (currentData) {
+      ElMessage.info(`当前答案评分：${currentData.total_score}分`)
+    }
+
+    // 重置ActionSection的loading状态
+    if (actionSectionRef.value) {
+      actionSectionRef.value.resetGradingState()
+    }
+  } catch (error) {
+    console.error('❌ AI评分失败:', error)
+    ElMessage.error(`AI评分失败: ${error instanceof Error ? error.message : '未知错误'}`)
+
+    // 出错时也要重置loading状态
+    if (actionSectionRef.value) {
+      actionSectionRef.value.resetGradingState()
+    }
   }
-
-  ElMessage.success('开始批量评分')
-  // TODO: 实现批量批改逻辑
 }
 
 const handleScoreChange = (data: { teacherScore: number; llmScore: number }) => {
   ElMessage.info(`教师评分: ${data.teacherScore}分 (LLM评分: ${data.llmScore}分)`)
-  // TODO: 保存评分变更
+  // TODO: 保存教师评分变更到JSON文件
+  // 后续实现：
+  // 1. 更新teacher_scores.json文件中的评分数据
+  // 2. 保存评分历史到feedback_history.json
+  // 3. 实现自动保存和版本控制
+  // 4. 添加评分变更的撤销/重做功能
 }
 
 const handleModifyReason = () => {
@@ -259,12 +300,23 @@ const handleModifyReason = () => {
 
 const handleSaveReason = () => {
   ElMessage.success('理由已保存')
-  // TODO: 保存评分理由
+  // TODO: 保存评分理由到JSON文件
+  // 后续实现：
+  // 1. 获取当前编辑的理由内容
+  // 2. 保存到feedback_history.json文件
+  // 3. 关联到具体的学生、题目和评分项
+  // 4. 支持理由模板的使用和管理
 }
 
 const handleSubmitReason = () => {
   ElMessage.success('理由已提交，重新评分中...')
-  // TODO: 提交反馈并重新评分
+  // TODO: 提交教师反馈并触发AI重新评分
+  // 后续实现：
+  // 1. 收集教师的修改意见和反馈
+  // 2. 调用第三方AI API重新评分 (例如: OpenAI GPT-4)
+  // 3. 更新grading_results.json文件
+  // 4. 刷新界面的评分结果和高亮显示
+  // 5. 保存重新评分的历史到feedback_history.json
 }
 
 /**
