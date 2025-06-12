@@ -103,6 +103,11 @@ export const useExamDataStore = defineStore('examData', () => {
   // 设置高亮数据
   const setHighlightData = (highlightData: HighlightData[]) => {
     highlightDataList.value = highlightData
+    // TODO: 后续改进JSON文件存储
+    // 1. 验证数据格式和完整性
+    // 2. 保存到grading_results.json文件
+    // 3. 实现文件版本控制和备份
+    // 4. 添加数据变更的事件通知
   }
 
   // 添加单个题目
@@ -214,6 +219,13 @@ export const useExamDataStore = defineStore('examData', () => {
   }
 
   // ===== 本地存储 =====
+  // TODO: 升级为JSON文件持久化方案
+  // 当前使用localStorage作为临时存储
+  // 后续改进：
+  // 1. 实现JSON文件的读写操作
+  // 2. 添加数据导入导出功能
+  // 3. 实现自动备份和版本控制
+  // 4. 支持离线数据管理
   const saveToLocal = () => {
     try {
       localStorage.setItem('exam_questions', JSON.stringify(questions.value))
