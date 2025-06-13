@@ -26,9 +26,9 @@
 import { User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
+import { readFileContent, validateJsonData } from '../../services/file/fileReaders.ts'
 import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 import BaseUpload from './BaseUpload.vue'
-import { readFileContent, validateJsonData } from './fileReaders.ts'
 
 const uploadStatusStore = useUploadStatusStore()
 

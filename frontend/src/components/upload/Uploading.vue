@@ -46,8 +46,8 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, ref } from 'vue'
+import { validateJsonData } from '../../services/file/fileReaders.ts'
 import AnswerUpload from './AnswerUpload.vue'
-import { validateJsonData } from './fileReaders.ts'
 import PaperUpload from './PaperUpload.vue'
 import Preview from './preview.vue'
 import StudentUpload from './StudentUpload.vue'
