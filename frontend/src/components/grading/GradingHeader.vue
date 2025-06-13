@@ -111,7 +111,7 @@ interface HighlightData {
   total_score: number
 }
 
-// 组件Props接口（简化后）
+// 组件Props接口
 interface Props {
   currentQuestion: number // 当前选中的题目序号（1, 2, 3...）
   currentStudentId: number // 当前选中的学生ID
@@ -124,13 +124,13 @@ interface Props {
     // 学生列表
     id: number
   }>
-  highlightDataList: HighlightData[] // 高亮数据列表（新增）
+  highlightDataList: HighlightData[] // 高亮数据列表
 }
 
 const props = defineProps<Props>()
 
 /**
- * ===== 内部计算属性（从主组件移过来） =====
+ * ===== 内部计算属性 =====
  */
 
 // 学生总数
