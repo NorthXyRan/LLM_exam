@@ -7,203 +7,32 @@
     upload-class="answer-upload"
     accept=".txt,.doc,.docx,.json"
     upload-hint="Support TXT, DOC, DOCX, JSON format"
-    processing-hint="Parsing answer content..."
-    :current-file-name="uploadState.fileName || referenceAnswer.name"
-    :status-text="statusDisplay"
-    :is-ready="referenceAnswer.status === 'ready' && !uploadState.hasError"
-    :has-error="uploadState.hasError"
-    :error-message="uploadState.errorMessage"
+    :status="status"
+    :file-name="fileName"
+    :display-text="displayText"
+    :error="error"
     :disabled="disabled"
-    :reset-trigger="resetTrigger"
-    @file-uploaded="handleFileUpload"
-    @file-removed="handleFileRemove"
-    @preview="handlePreview"
-    @remove="handleRemove"
+    @file-selected="$emit('file-selected', $event)"
+    @remove="$emit('remove')"
+    @preview="$emit('preview')"
   />
 </template>
 
 <script setup>
 import { DocumentChecked } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import { computed, ref, watch, nextTick } from 'vue'
-import { askToSaveJsonResult, isJsonFile, readFileContent, validateJsonData } from '@/services/file/fileReaders'
-import { uploadLLMService } from '@/services/llm'
 import BaseUpload from './BaseUpload.vue'
 
-// Props & Emits
-const props = defineProps({
-  referenceAnswer: { type: Object, required: true },
+// Props - 完全来自父组件的状态
+defineProps({
+  status: { type: String, required: true },
+  fileName: { type: String, required: true },
+  displayText: { type: String, required: true },
+  error: { type: String, default: '' },
   disabled: { type: Boolean, default: false },
-  resetTrigger: { type: Number, default: 0 },
-})
-const emit = defineEmits(['answer-uploaded', 'answer-removed', 'preview-answer'])
-
-// 上传状态管理
-const uploadState = ref({
-  fileName: '',
-  hasError: false,
-  errorMessage: '',
-  isSuccess: false,
-  rawContent: '', // 保存原始文件内容，用于预览
 })
 
-// 重置上传状态的函数
-const resetUploadState = () => {
-  uploadState.value = {
-    fileName: '',
-    hasError: false,
-    errorMessage: '',
-    isSuccess: false,
-    rawContent: '',
-  }
-  console.log('📝 AnswerUpload: 上传状态已重置')
-}
-
-// 计算属性：显示当前状态
-const statusDisplay = computed(() => {
-  if (!props.referenceAnswer.name && !uploadState.value.fileName) return ''
-  if (uploadState.value.hasError) return ''
-  return `当前参考答案：${props.referenceAnswer.name}（共${props.referenceAnswer.answerCount}道答案）`
-})
-
-// 监听重置触发
-watch(
-  () => props.resetTrigger,
-  (newVal, oldVal) => {
-    console.log(`📝 AnswerUpload: resetTrigger 变化 ${oldVal} -> ${newVal}`)
-    if (newVal > 0 && newVal !== oldVal) {
-      nextTick(() => {
-        resetUploadState()
-      })
-    }
-  },
-  { immediate: false }
-)
-
-/**
- * 处理文件上传
- */
-const handleFileUpload = async (uploadFile, isProcessingRef) => {
-  try {
-    isProcessingRef.value = true
-    ElMessage.info('开始解析参考答案...')
-
-    const file = uploadFile.raw || uploadFile
-    if (!file || !(file instanceof File)) {
-      throw new Error('无效的文件对象')
-    }
-
-    // 读取文件内容
-    const content = await readFileContent(file)
-    if (!content || content.trim().length === 0) {
-      throw new Error('文件内容为空或解析失败')
-    }
-
-    // 设置上传状态，保存原始内容
-    uploadState.value = {
-      fileName: file.name,
-      hasError: false,
-      errorMessage: '',
-      isSuccess: false,
-      rawContent: content,
-    }
-
-    let answerData
-
-    if (isJsonFile(file.name)) {
-      // JSON文件直接解析
-      console.log('✅ 检测到JSON文件，直接解析')
-      const jsonData = JSON.parse(content)
-      validateJsonData(jsonData, 'answer')
-      answerData = {
-        name: file.name,
-        content: content,
-      }
-    } else {
-      // 其他格式调用AI解析
-      console.log('✅ 检测到其他格式文件，调用AI解析')
-      
-      // 检查AI服务是否可用
-      if (!uploadLLMService.isAvailable()) {
-        throw new Error('AI解析失败，请上传 JSON 格式的参考答案文件，或检查 API 配置')
-      }
-      
-      // 调用AI解析
-      const parseResult = await uploadLLMService.Parse(content, 'answer')
-
-      validateJsonData(parseResult, 'answer')
-      
-      // 保存AI解析结果
-      await askToSaveJsonResult(parseResult, file.name, 'answer')
-      
-      answerData = {
-        name: file.name,
-        content: JSON.stringify(parseResult),
-      }
-    }
-
-    // 解析成功，清除错误状态但保留成功标记
-    uploadState.value = {
-      fileName: '',
-      hasError: false,
-      errorMessage: '',
-      isSuccess: true,
-      rawContent: '',
-    }
-
-    // 通知父组件
-    emit('answer-uploaded', answerData)
-    ElMessage.success('参考答案解析完成！')
-  } catch (error) {
-    console.error('❌ 参考答案解析失败:', error)
-
-    // 设置错误状态
-    uploadState.value = {
-      ...uploadState.value,
-      hasError: true,
-      errorMessage: error.message,
-      isSuccess: false,
-    }
-
-    ElMessage.error('参考答案解析失败: ' + error.message)
-  } finally {
-    isProcessingRef.value = false
-  }
-}
-
-/**
- * 处理文件移除
- */
-const handleFileRemove = () => {
-  resetUploadState()
-  emit('answer-removed')
-  ElMessage.info('已移除答案文件')
-}
-
-/**
- * 处理预览
- */
-const handlePreview = () => {
-  if (uploadState.value.hasError && uploadState.value.rawContent) {
-    // 错误状态下，预览原始文件内容
-    emit('preview-answer', {
-      fileName: uploadState.value.fileName,
-      content: uploadState.value.rawContent,
-      isError: true,
-    })
-  } else {
-    // 正常状态预览
-    emit('preview-answer')
-  }
-}
-
-/**
- * 处理移除操作
- */
-const handleRemove = () => {
-  resetUploadState()
-  emit('answer-removed')
-}
+// Emits - 只负责事件转发
+defineEmits(['file-selected', 'remove', 'preview'])
 </script>
 
 <style scoped>

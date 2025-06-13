@@ -7,155 +7,36 @@
     upload-class="student-upload"
     accept=".json"
     upload-hint="Support JSON format with all student answers"
-    processing-hint="Parsing student answers..."
-    :current-file-name="uploadState.fileName || uploadStatusStore.studentAnswers.name"
-    :status-text="statusDisplay"
-    :is-ready="hasValidData && !uploadState.hasError"
-    :has-error="uploadState.hasError"
-    :error-message="uploadState.errorMessage"
+    :status="status"
+    :file-name="fileName"
+    :display-text="displayText"
+    :error="error"
     :disabled="disabled"
-    :reset-trigger="resetTrigger"
-    @file-uploaded="handleFileUpload"
-    @file-removed="handleFileRemove"
-    @preview="handlePreview"
-    @remove="handleRemove"
+    @file-selected="$emit('file-selected', $event)"
+    @remove="$emit('remove')"
+    @preview="$emit('preview')"
   />
 </template>
 
 <script setup>
 import { User } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import { computed, ref } from 'vue'
-import { readFileContent, validateJsonData } from '../../services/file/fileReaders.ts'
-import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 import BaseUpload from './BaseUpload.vue'
 
-const uploadStatusStore = useUploadStatusStore()
-
-const props = defineProps({
-  studentPapers: { type: Array, default: () => [] },
+// Props - 完全来自父组件的状态
+defineProps({
+  status: { type: String, required: true },
+  fileName: { type: String, required: true },
+  displayText: { type: String, required: true },
+  error: { type: String, default: '' },
   disabled: { type: Boolean, default: false },
-  resetTrigger: { type: Number, default: 0 },
 })
 
-const emit = defineEmits(['papers-uploaded', 'preview-papers'])
-
-const uploadState = ref({
-  fileName: '',
-  hasError: false,
-  errorMessage: '',
-  isSuccess: false,
-  rawContent: '', // 保存原始文件内容，用于预览
-})
-
-const hasValidData = computed(() => {
-  return props.studentPapers.length > 0 && props.studentPapers.some((paper) => paper.valid)
-})
-
-const statusDisplay = computed(() => {
-  if (!uploadStatusStore.studentAnswers.name && !uploadState.value.fileName) return ''
-  if (uploadState.value.hasError) return ''
-  return `当前学生答案：${uploadStatusStore.studentAnswers.name}（共${uploadStatusStore.studentAnswers.studentCount}名学生，${uploadStatusStore.studentAnswers.answerCount}个答案）`
-})
-
-const handleFileUpload = async (uploadFile, isProcessingRef) => {
-  try {
-    isProcessingRef.value = true
-    ElMessage.info('开始解析学生答案...')
-
-    const file = uploadFile.raw || uploadFile
-    if (!file || !(file instanceof File)) {
-      throw new Error('无效的文件对象')
-    }
-
-    if (!file.name.toLowerCase().endsWith('.json')) {
-      throw new Error('只支持JSON格式的学生答案文件')
-    }
-
-    const content = await readFileContent(file)
-
-    // 设置上传状态，保存原始内容
-    uploadState.value = {
-      fileName: file.name,
-      hasError: false,
-      errorMessage: '',
-      isSuccess: false,
-      rawContent: content, // 保存原始内容用于预览
-    }
-    if (!content || content.trim().length === 0) {
-      throw new Error('文件内容为空')
-    }
-
-    const jsonData = JSON.parse(content)
-    validateJsonData(jsonData, 'student')
-
-    const studentData = {
-      name: file.name,
-      content: content,
-    }
-
-    // 成功后清除临时状态
-    uploadState.value = {
-      fileName: '',
-      hasError: false,
-      errorMessage: '',
-      isSuccess: true,
-      rawContent: '',
-    }
-
-    emit('papers-uploaded', studentData)
-    ElMessage.success('学生答案解析完成！')
-  } catch (error) {
-    console.error('❌ 学生答案解析失败:', error)
-
-    // 设置错误状态，保持原始内容
-    uploadState.value = {
-      fileName: uploadState.value.fileName || '未知文件',
-      hasError: true,
-      errorMessage: error.message,
-      isSuccess: false,
-      rawContent: uploadState.value.rawContent, // 保持原始内容
-    }
-
-    ElMessage.error('学生答案解析失败: ' + error.message)
-  } finally {
-    isProcessingRef.value = false
-  }
-}
-
-const handleFileRemove = () => {
-  emit('papers-uploaded', { removed: true })
-  ElMessage.info('已移除学生答案文件')
-}
-
-const handlePreview = () => {
-  if (uploadState.value.hasError && uploadState.value.rawContent) {
-    // 错误状态下，直接预览原始文件内容
-    emit('preview-papers', {
-      fileName: uploadState.value.fileName,
-      content: uploadState.value.rawContent,
-      isError: true,
-    })
-  } else {
-    // 正常状态，使用默认预览
-    emit('preview-papers')
-  }
-}
-
-const handleRemove = () => {
-  // 清除所有状态
-  uploadState.value = {
-    fileName: '',
-    hasError: false,
-    errorMessage: '',
-    isSuccess: false,
-    rawContent: '',
-  }
-  emit('papers-uploaded', { removed: true })
-}
+// Emits - 只负责事件转发
+defineEmits(['file-selected', 'remove', 'preview'])
 </script>
 
 <style scoped>
+/* 学生答案上传卡片样式 */
 .student-upload-card {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -170,14 +51,17 @@ const handleRemove = () => {
   transform: translateY(-2px);
 }
 
+/* 卡片头部背景色 */
 .student-upload-card :deep(.card-header) {
   background: #ffd48e;
 }
 
+/* 图标颜色 */
 .student-upload-card :deep(.section-icon) {
   color: #7c3aed;
 }
 
+/* 上传区域样式 */
 .student-upload-card :deep(.student-upload .el-upload-dragger) {
   border: 2px dashed #c4b5fd;
   border-radius: 12px;

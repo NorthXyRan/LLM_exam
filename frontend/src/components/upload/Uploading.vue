@@ -1,370 +1,347 @@
 <template>
   <div class="uploading-container">
-    <!-- Paper Upload Component -->
+    <!-- 试卷上传组件 -->
     <PaperUpload
-      :exam-paper="uploadStatusStore.examPaper"
-      :reset-trigger="resetTrigger"
-      @paper-uploaded="handlePaperUploaded"
-      @paper-removed="handlePaperRemoved"
-      @preview-paper="handlePreviewPaper"
+      :status="uploadStore.examPaper.status"
+      :file-name="uploadStore.examPaper.name"
+      :display-text="paperDisplayText"
+      :error="uploadStore.examPaper.error"
+      @file-selected="handlePaperSelected"
+      @remove="handlePaperRemove"
+      @preview="handlePaperPreview"
     />
 
-    <!-- Answer Upload Component -->
+    <!-- 参考答案上传组件 -->
     <AnswerUpload
-      :reference-answer="uploadStatusStore.referenceAnswer"
-      :disabled="!uploadStatusStore.isPaperUploaded"
-      :reset-trigger="resetTrigger"
-      @answer-uploaded="handleAnswerUploaded"
-      @answer-removed="handleAnswerRemoved"
-      @preview-answer="handlePreviewAnswer"
+      :disabled="!uploadStore.canUploadAnswer"
+      :status="uploadStore.referenceAnswer.status"
+      :file-name="uploadStore.referenceAnswer.name"
+      :display-text="answerDisplayText"
+      :error="uploadStore.referenceAnswer.error"
+      @file-selected="handleAnswerSelected"
+      @remove="handleAnswerRemove"
+      @preview="handleAnswerPreview"
     />
 
-    <!-- Student Upload Component -->
+    <!-- 学生答案上传组件 -->
     <StudentUpload
-      :student-papers="uploadStatusStore.studentAnswers.papers"
-      :disabled="!uploadStatusStore.canUploadStudentPapers"
-      :reset-trigger="resetTrigger"
-      @papers-uploaded="handleStudentPapersUploaded"
-      @preview-papers="handlePreviewStudentPapers"
+      :disabled="!uploadStore.canUploadStudent"
+      :status="uploadStore.studentAnswers.status"
+      :file-name="uploadStore.studentAnswers.name"
+      :display-text="studentDisplayText"
+      :error="uploadStore.studentAnswers.error"
+      @file-selected="handleStudentSelected"
+      @remove="handleStudentRemove"
+      @preview="handleStudentPreview"
     />
 
-    <!-- 独立的重置按钮 -->
+    <!-- 重置按钮 -->
     <div class="reset-button-container">
-      <el-button type="danger" @click="resetAll">Reset</el-button>
+      <el-button type="danger" @click="resetAll">
+        <el-icon><RefreshLeft /></el-icon>
+        Reset All
+      </el-button>
     </div>
 
-    <!-- 预览弹窗 -->
+    <!-- 统一预览弹窗 -->
     <Preview
       v-model:visible="previewDialog.visible"
-      :file-name="previewDialog.fileName"
+      :title="previewDialog.title"
       :content="previewDialog.content"
-      :data-type="previewDialog.dataType"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { RefreshLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, ref } from 'vue'
-import { validateJsonData } from '../../services/file/fileReaders.ts'
+import { computed, onMounted, ref } from 'vue'
+import {
+  askToSaveJsonResult,
+  isJsonFile,
+  readFileContent,
+  validateJsonData,
+} from '../../services/file/fileReaders.ts'
+import { uploadLLMService } from '../../services/llm'
+import { useExamDataStore } from '../../stores/useExamDataStore'
+import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
 import AnswerUpload from './AnswerUpload.vue'
 import PaperUpload from './PaperUpload.vue'
 import Preview from './preview.vue'
 import StudentUpload from './StudentUpload.vue'
 
-import { useExamDataStore } from '../../stores/useExamDataStore'
-import { useUploadStatusStore } from '../../stores/useUploadStatusStore'
-
-// 使用分离的 Store
-const examDataStore = useExamDataStore()
-const uploadStatusStore = useUploadStatusStore()
-
-// 重置标志，用于通知子组件清空文件列表
-const resetTrigger = ref(0)
+// 使用 Store
+const uploadStore = useUploadStatusStore()
+const examStore = useExamDataStore()
 
 // 预览弹窗状态
 const previewDialog = ref({
   visible: false,
-  fileName: '',
+  title: '',
   content: '',
-  dataType: '', // 'paper', 'answer', 'student'
 })
 
-// ===== 数据验证和处理函数 =====
-const processPaperData = (content: string, fileName: string) => {
-  const paperJsonData = JSON.parse(content)
-  validateJsonData(paperJsonData, 'paper')
-
-  const mappedQuestions = paperJsonData.questions.map((question: any) => ({
-    question_id: question.question_id,
-    question: question.question,
-    score: question.score,
-  }))
-
-  return {
-    fileName,
-    questionCount: paperJsonData.questions.length,
-    questions: mappedQuestions,
-    content: content,
+// ===== 计算属性：显示文本 =====
+const paperDisplayText = computed(() => {
+  const paper = uploadStore.examPaper
+  if (paper.status === 'error') return paper.error || '解析失败'
+  if (paper.status === 'ready') {
+    const questionCount = paper.meta?.questionCount || 0
+    return `当前试卷：${paper.name}（共${questionCount}道题目）`
   }
-}
+  return ''
+})
 
-const processAnswerData = (content: string, fileName: string) => {
-  const answerJsonData = JSON.parse(content)
-  validateJsonData(answerJsonData, 'answer')
-
-  return {
-    fileName,
-    answerCount: answerJsonData.answers.length,
-    answers: answerJsonData.answers,
+const answerDisplayText = computed(() => {
+  const answer = uploadStore.referenceAnswer
+  if (answer.status === 'error') return answer.error || '解析失败'
+  if (answer.status === 'ready') {
+    const answerCount = answer.meta?.answerCount || 0
+    return `当前答案：${answer.name}（共${answerCount}道答案）`
   }
-}
+  return ''
+})
 
-const processStudentData = (content: string, fileName: string) => {
-  const studentJsonData = JSON.parse(content)
-  validateJsonData(studentJsonData, 'student')
-
-  const uniqueStudentIds = [...new Set(studentJsonData.map((item: any) => item.student_id))]
-
-  return {
-    fileName,
-    studentCount: uniqueStudentIds.length,
-    answerCount: studentJsonData.length,
-    answers: studentJsonData,
-    students: uniqueStudentIds.map((id) => ({ id })),
+const studentDisplayText = computed(() => {
+  const student = uploadStore.studentAnswers
+  if (student.status === 'error') return student.error || '解析失败'
+  if (student.status === 'ready') {
+    const studentCount = student.meta?.studentCount || 0
+    const answerCount = student.meta?.answerCount || 0
+    return `学生答案：${student.name}（${studentCount}名学生，${answerCount}个答案）`
   }
-}
+  return ''
+})
 
-// ===== 试卷相关事件处理 =====
-const handlePaperUploaded = async (paperData: any) => {
+// ===== 核心处理函数：统一的文件处理流程 =====
+const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => {
   try {
-    console.log('✅ 收到试卷数据:', paperData)
+    console.log(`📁 开始处理${type}文件:`, file.name)
 
-    if (!paperData.content) {
-      throw new Error('试卷数据内容为空')
+    // 1. 读取文件内容
+    const content = await readFileContent(file)
+    if (!content?.trim()) {
+      throw new Error('文件内容为空或解析失败')
     }
 
-    const result = processPaperData(paperData.content, paperData.name)
+    console.log(`📄 文件内容读取成功，长度: ${content.length}`)
 
-    // 设置题目数据
-    examDataStore.setQuestions(result.questions)
+    // 2. 根据类型设置上传状态
+    if (type === 'paper') {
+      uploadStore.setPaperUploading(file.name, content)
+    } else if (type === 'answer') {
+      uploadStore.setAnswerUploading(file.name, content)
+    } else if (type === 'student') {
+      uploadStore.setStudentUploading(file.name, content)
+    }
 
-    // 更新上传状态
-    uploadStatusStore.setPaperStatus({
-      name: result.fileName,
-      status: 'ready',
-      questionCount: result.questionCount,
-      content: result.content,
-    })
+    let parsedData
 
-    // 保存到本地
-    examDataStore.saveToLocal()
-    uploadStatusStore.saveToLocal()
+    // 3. 解析数据
+    if (isJsonFile(file.name)) {
+      // JSON 文件直接解析
+      console.log(`🔍 检测到JSON文件，直接解析`)
+      parsedData = JSON.parse(content)
+      validateJsonData(parsedData, type as 'paper' | 'answer' | 'student')
+    } else {
+      // 非JSON文件使用AI解析
+      console.log(`🤖 检测到非JSON文件，使用AI解析`)
 
-    ElMessage.success(`试卷数据验证成功！共解析出 ${result.questionCount} 道题目`)
-    console.log('✅ 试卷数据已保存到store')
-  } catch (error) {
-    console.error('❌ 处理试卷上传失败:', error)
-    ElMessage.error(`试卷上传失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      if (!uploadLLMService.isAvailable()) {
+        throw new Error('AI解析服务不可用，请上传JSON格式文件或检查API配置')
+      }
+
+      // 学生答案文件通常应该是JSON格式，不支持AI解析
+      if (type === 'student') {
+        throw new Error('学生答案文件必须为JSON格式')
+      }
+
+      parsedData = await uploadLLMService.Parse(content, type)
+      validateJsonData(parsedData, type as 'paper' | 'answer' | 'student')
+
+      // 保存AI解析结果
+      await askToSaveJsonResult(parsedData, file.name, type)
+    }
+
+    console.log(`✅ 数据解析成功:`, parsedData)
+
+    // 4. 更新数据和状态
+    if (type === 'paper') {
+      examStore.setQuestions(parsedData.questions)
+      uploadStore.setPaperReady(parsedData, {
+        questionCount: parsedData.questions.length,
+      })
+      ElMessage.success(`试卷上传成功！共解析出 ${parsedData.questions.length} 道题目`)
+    } else if (type === 'answer') {
+      // 修复：使用正确的方法更新参考答案
+      examStore.setReferenceAnswers(parsedData.answers)
+      uploadStore.setAnswerReady(parsedData, {
+        answerCount: parsedData.answers.length,
+      })
+      ElMessage.success(`参考答案上传成功！共 ${parsedData.answers.length} 道答案`)
+      console.log('🔍 参考答案数据已设置:', parsedData.answers)
+    } else if (type === 'student') {
+      examStore.setStudentAnswers(parsedData)
+      const uniqueStudentIds = [...new Set(parsedData.map((item: any) => item.student_id))]
+      uploadStore.setStudentReady(parsedData, {
+        studentCount: uniqueStudentIds.length,
+        answerCount: parsedData.length,
+      })
+      ElMessage.success(
+        `学生答案上传成功！共 ${uniqueStudentIds.length} 名学生，${parsedData.length} 个答案`,
+      )
+    }
+
+    // 5. 保存到本地存储
+    examStore.saveToLocal()
+    uploadStore.saveToLocal()
+
+    console.log(`💾 ${type} 数据已保存`)
+  } catch (error: any) {
+    console.error(`❌ ${type} 处理失败:`, error)
+
+    // 设置错误状态
+    const errorMessage = error.message || '未知错误'
+    if (type === 'paper') {
+      uploadStore.setPaperError(errorMessage)
+    } else if (type === 'answer') {
+      uploadStore.setAnswerError(errorMessage)
+    } else if (type === 'student') {
+      uploadStore.setStudentError(errorMessage)
+    }
+
+    const typeMap = {
+      paper: '试卷',
+      answer: '参考答案',
+      student: '学生答案',
+    }
+
+    ElMessage.error(`${typeMap[type]}处理失败: ${errorMessage}`)
+
+    // 保存错误状态到本地
+    uploadStore.saveToLocal()
   }
 }
 
-const handlePaperRemoved = () => {
-  // 重置所有相关数据
-  examDataStore.resetAllData()
-  uploadStatusStore.resetAllStatus()
+// ===== 事件处理：超级简单 =====
+const handlePaperSelected = (file: File) => {
+  console.log('📝 选择试卷文件:', file.name)
+  processFile(file, 'paper')
+}
+
+const handleAnswerSelected = (file: File) => {
+  console.log('📝 选择参考答案文件:', file.name)
+  processFile(file, 'answer')
+}
+
+const handleStudentSelected = (file: File) => {
+  console.log('📝 选择学生答案文件:', file.name)
+  processFile(file, 'student')
+}
+
+// ===== 移除操作 =====
+const handlePaperRemove = () => {
+  console.log('🗑️ 移除试卷')
+  uploadStore.resetPaper()
+  examStore.resetQuestions()
 
   // 保存状态
-  examDataStore.saveToLocal()
-  uploadStatusStore.saveToLocal()
+  examStore.saveToLocal()
+  uploadStore.saveToLocal()
 
   ElMessage.success('试卷已移除')
 }
 
-const handlePreviewPaper = (errorData?: any) => {
-  if (errorData?.isError) {
-    // 错误状态预览原始文件内容
-    previewDialog.value = {
-      visible: true,
-      fileName: errorData.fileName,
-      content: errorData.content,
-      dataType: 'paper',
-    }
-  } else {
-    // 正常状态预览
-    previewDialog.value = {
-      visible: true,
-      fileName: uploadStatusStore.examPaper.name,
-      content: uploadStatusStore.examPaper.content || '',
-      dataType: 'paper',
-    }
-  }
-}
-
-// ===== 参考答案相关事件处理 =====
-const handleAnswerUploaded = async (answerData: any) => {
-  try {
-    console.log('✅ 收到参考答案数据:', answerData)
-
-    if (!answerData.content) {
-      throw new Error('参考答案数据内容为空')
-    }
-
-    const result = processAnswerData(answerData.content, answerData.name)
-
-    // 更新参考答案
-    examDataStore.updateReferenceAnswers(result.answers)
-
-    // 更新上传状态
-    uploadStatusStore.setReferenceAnswerStatus({
-      name: result.fileName,
-      status: 'ready',
-      matched: true,
-      answerCount: result.answerCount,
-    })
-
-    // 保存到本地
-    examDataStore.saveToLocal()
-    uploadStatusStore.saveToLocal()
-
-    ElMessage.success(`参考答案验证成功！共 ${result.answerCount} 道题目的答案`)
-    console.log('✅ 参考答案数据已保存到store')
-  } catch (error) {
-    console.error('❌ 处理参考答案上传失败:', error)
-    ElMessage.error(`参考答案上传失败: ${error instanceof Error ? error.message : '未知错误'}`)
-  }
-}
-
-const handleAnswerRemoved = () => {
-  // 只清除参考答案数据，不动学生数据
-  examDataStore.clearReferenceAnswers()
-
-  // 重置参考答案上传状态
-  uploadStatusStore.resetReferenceAnswerStatus()
+const handleAnswerRemove = () => {
+  console.log('🗑️ 移除参考答案')
+  uploadStore.resetAnswer()
+  examStore.clearReferenceAnswers()
 
   // 保存状态
-  examDataStore.saveToLocal()
-  uploadStatusStore.saveToLocal()
+  examStore.saveToLocal()
+  uploadStore.saveToLocal()
 
   ElMessage.success('参考答案已移除')
 }
 
-const handlePreviewAnswer = (errorData?: any) => {
-  if (errorData?.isError) {
-    // 错误状态预览原始文件内容
-    previewDialog.value = {
-      visible: true,
-      fileName: errorData.fileName,
-      content: errorData.content,
-      dataType: 'answer',
-    }
-  } else {
-    // 正常状态预览
-    previewDialog.value = {
-      visible: true,
-      fileName: uploadStatusStore.referenceAnswer.name,
-      content: JSON.stringify(
-        {
-          answerCount: uploadStatusStore.referenceAnswer.answerCount,
-          answers: examDataStore.referenceAnswers,
-        },
-        null,
-        2,
-      ),
-      dataType: 'answer',
-    }
+const handleStudentRemove = () => {
+  console.log('🗑️ 移除学生答案')
+  uploadStore.resetStudent()
+  examStore.resetStudentData()
+
+  // 保存状态
+  examStore.saveToLocal()
+  uploadStore.saveToLocal()
+
+  ElMessage.success('学生答案已移除')
+}
+
+// ===== 预览操作：极简版本 =====
+const handlePaperPreview = () => {
+  previewDialog.value = {
+    visible: true,
+    title: `试卷预览 - ${uploadStore.examPaper.name}`,
+    content: uploadStore.examPaper.rawContent || '暂无内容',
   }
 }
 
-// ===== 学生答案相关事件处理 =====
-const handleStudentPapersUploaded = async (paperData: any) => {
-  try {
-    console.log('✅ 收到学生答案数据:', paperData)
-
-    // 检查是否是移除操作
-    if (paperData.removed) {
-      // 重置学生数据
-      examDataStore.resetStudentData()
-      uploadStatusStore.resetStudentAnswersStatus()
-
-      // 保存状态
-      examDataStore.saveToLocal()
-      uploadStatusStore.saveToLocal()
-
-      ElMessage.success('学生答案已移除')
-      console.log('✅ 学生数据已重置')
-      return
-    }
-
-    if (!paperData.content) {
-      throw new Error('学生答案数据内容为空')
-    }
-
-    const result = processStudentData(paperData.content, paperData.name)
-
-    // 保存学生答案数据
-    examDataStore.setStudentAnswers(result.answers)
-
-    // 更新上传状态
-    uploadStatusStore.setStudentAnswersStatus({
-      name: result.fileName,
-      studentCount: result.studentCount,
-      answerCount: result.answerCount,
-      answers: result.answers,
-    })
-
-    // 保存到本地
-    examDataStore.saveToLocal()
-    uploadStatusStore.saveToLocal()
-
-    ElMessage.success(
-      `学生答案验证成功！共 ${result.studentCount} 名学生，${result.answerCount} 个答案`,
-    )
-    console.log('✅ 学生答案数据已保存到store')
-  } catch (error) {
-    console.error('❌ 处理学生答案上传失败:', error)
-    ElMessage.error(`学生答案上传失败: ${error instanceof Error ? error.message : '未知错误'}`)
+const handleAnswerPreview = () => {
+  previewDialog.value = {
+    visible: true,
+    title: `参考答案预览 - ${uploadStore.referenceAnswer.name}`,
+    content: uploadStore.referenceAnswer.rawContent || '暂无内容',
   }
 }
 
-const handlePreviewStudentPapers = (errorData?: any) => {
-  if (errorData?.isError) {
-    // 错误状态预览原始文件内容
-    previewDialog.value = {
-      visible: true,
-      fileName: errorData.fileName,
-      content: errorData.content,
-      dataType: 'student',
-    }
-  } else {
-    // 正常状态预览
-    const studentAnswers = examDataStore.studentAnswers
-    previewDialog.value = {
-      visible: true,
-      fileName: '学生答案数据',
-      content: JSON.stringify(studentAnswers, null, 2),
-      dataType: 'student',
-    }
+const handleStudentPreview = () => {
+  previewDialog.value = {
+    visible: true,
+    title: `学生答案预览 - ${uploadStore.studentAnswers.name}`,
+    content: uploadStore.studentAnswers.rawContent || '暂无内容',
   }
 }
 
-// ===== 重置所有数据 =====
+// ===== 重置操作：一键搞定 =====
 const resetAll = async () => {
   try {
     await ElMessageBox.confirm(
       '确定要重置所有数据吗？这将清除所有已上传的文件和数据。',
       '确认重置',
       {
-        confirmButtonText: '确定',
+        confirmButtonText: '重置',
         cancelButtonText: '取消',
         type: 'warning',
       },
     )
 
-    // 重置所有store
-    examDataStore.resetAllData()
-    uploadStatusStore.resetAllStatus()
+    console.log('🔄 开始重置所有数据')
 
-    // 触发子组件重置文件列表
-    resetTrigger.value++
+    // 重置所有Store数据
+    uploadStore.resetAll()
+    examStore.resetAllData()
 
     // 保存到本地存储
-    examDataStore.saveToLocal()
-    uploadStatusStore.saveToLocal()
+    examStore.saveToLocal()
+    uploadStore.saveToLocal()
 
     ElMessage.success('所有数据已重置')
-    console.log('✅ 所有数据已重置')
+    console.log('✅ 所有数据重置完成')
   } catch {
-    ElMessage.info('已取消重置操作')
+    // 用户取消操作
+    console.log('❌ 用户取消重置操作')
   }
 }
 
 // ===== 初始化 =====
 onMounted(() => {
-  examDataStore.loadFromLocal()
-  uploadStatusStore.loadFromLocal()
+  console.log('🚀 Uploading 组件初始化')
 
-  console.log('📂 Uploading页面初始化完成')
+  // 从本地存储恢复数据
+  examStore.loadFromLocal()
+  uploadStore.loadFromLocal()
+
+  console.log('📂 数据加载完成')
+  console.log('📊 当前状态:', uploadStore.getUploadSummary())
 })
 </script>
 
@@ -375,6 +352,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 20px;
 }
 
 /* 重置按钮容器 */
@@ -384,24 +362,29 @@ onMounted(() => {
   margin-top: 30px;
 }
 
-/* 自定义重置按钮样式 */
-.reset-button-container :deep(.el-button--danger) {
+/* 重置按钮样式 */
+.reset-button-container .el-button {
   background-color: #f97069;
+  border-color: #f97069;
   border-radius: 12px;
   padding: 14px 32px;
   font-size: 16px;
   font-weight: 600;
   min-height: 48px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.reset-button-container :deep(.el-button--danger:hover) {
+.reset-button-container .el-button:hover {
   background-color: #ff2d20;
+  border-color: #ff2d20;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
 }
 
-.reset-button-container :deep(.el-button--danger:active) {
+.reset-button-container .el-button:active {
   transform: translateY(0);
 }
 
@@ -416,6 +399,12 @@ onMounted(() => {
   .reset-button-container {
     margin-top: 24px;
   }
+
+  .reset-button-container .el-button {
+    padding: 12px 24px;
+    font-size: 14px;
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -426,6 +415,12 @@ onMounted(() => {
 
   .reset-button-container {
     margin-top: 20px;
+  }
+
+  .reset-button-container .el-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-height: 40px;
   }
 }
 </style>

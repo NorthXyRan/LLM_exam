@@ -1,182 +1,198 @@
-// 管理：examPaper, referenceAnswer 的状态信息
-// 职责：跟踪上传进度和状态
-
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 
-// ===== 状态数据类型 =====
-export interface ExamPaper {
+// ===== 统一的上传项状态结构 =====
+export interface UploadItem {
   name: string
-  status: string
-  questionCount: number
-  content?: string
-  rawFile?: File
+  status: 'idle' | 'uploading' | 'processing' | 'ready' | 'error'
+  rawContent: string  // 总是保存原始文件内容，用于预览
+  parsedData?: any    // 解析后的JSON数据
+  error?: string      // 错误信息
+  meta?: any          // 元数据（如题目数量、学生数量等）
 }
 
-export interface ReferenceAnswer {
-  name: string
-  status: string
-  matched: boolean
-  answerCount: number
-}
-
-export interface StudentPaper {
-  id: number
-  filename: string
-  valid: boolean
-  questionCount: number
-  error: string
-}
-
-export interface StudentAnswers {
-  name: string
-  status: string
-  studentCount: number
-  answerCount: number
-  papers: StudentPaper[]
-}
-
-// ===== 上传状态管理 =====
+// ===== 简化的上传状态管理 =====
 export const useUploadStatusStore = defineStore('uploadStatus', () => {
   // ===== 状态 =====
-  const examPaper = ref<ExamPaper>({
+  const examPaper: Ref<UploadItem> = ref({
     name: '',
-    status: '',
-    questionCount: 0,
+    status: 'idle',
+    rawContent: '',
   })
 
-  const referenceAnswer = ref<ReferenceAnswer>({
+  const referenceAnswer: Ref<UploadItem> = ref({
     name: '',
-    status: '',
-    matched: false,
-    answerCount: 0,
+    status: 'idle',
+    rawContent: '',
   })
 
-  const studentAnswers = ref<StudentAnswers>({
+  const studentAnswers: Ref<UploadItem> = ref({
     name: '',
-    status: '',
-    studentCount: 0,
-    answerCount: 0,
-    papers: [],
+    status: 'idle',
+    rawContent: '',
   })
 
   // ===== 计算属性 =====
-  const isPaperUploaded = computed(() => examPaper.value.status === 'ready')
-  const isReferenceAnswerUploaded = computed(() => referenceAnswer.value.status === 'ready')
-  const isStudentAnswersUploaded = computed(() => studentAnswers.value.status === 'ready')
-  // 只需要试卷上传就可以上传学生答案
-  const canUploadStudentPapers = computed(() => isPaperUploaded.value)
-
-  // 检查是否可以开始打分（试卷 + 学生答案为必需，参考答案可选）
-  const canProceedToGrading = computed(
-    () => isPaperUploaded.value && isStudentAnswersUploaded.value,
+  const canUploadAnswer = computed(() => examPaper.value.status === 'ready')
+  const canUploadStudent = computed(() => examPaper.value.status === 'ready')
+  const canProceedToGrading = computed(() => 
+    examPaper.value.status === 'ready' && studentAnswers.value.status === 'ready'
   )
 
-
-  
-
-  // ===== 试卷状态管理 =====
-  const setPaperStatus = (paperData: ExamPaper) => {
-    examPaper.value = { ...paperData }
-    console.log('📝 试卷状态已更新:', examPaper.value)
+  // ===== 核心方法：统一的状态更新函数 =====
+  const updateItemStatus = (
+    item: Ref<UploadItem>, 
+    updates: Partial<UploadItem>
+  ) => {
+    item.value = { ...item.value, ...updates }
+    saveToLocal()
   }
 
-  const resetPaperStatus = () => {
-    examPaper.value = {
-      name: '',
-      status: '',
-      questionCount: 0,
-    }
+  // ===== 试卷相关方法 =====
+  const setPaperUploading = (name: string, rawContent: string) => {
+    updateItemStatus(examPaper, {
+      name,
+      rawContent,
+      status: 'processing',
+      error: undefined,
+      parsedData: undefined,
+      meta: undefined
+    })
   }
 
-  // ===== 参考答案状态管理 =====
-  const setReferenceAnswerStatus = (answerData: ReferenceAnswer) => {
-    referenceAnswer.value = { ...answerData }
-    console.log('📝 参考答案状态已更新:', referenceAnswer.value)
-  }
-
-  const resetReferenceAnswerStatus = () => {
-    referenceAnswer.value = {
-      name: '',
-      status: '',
-      matched: false,
-      answerCount: 0,
-    }
-  }
-
-  // ===== 学生答案状态管理 =====
-  const setStudentAnswersStatus = (data: {
-    name: string
-    studentCount: number
-    answerCount: number
-    answers: any[]
-  }) => {
-    const uniqueStudentIds = [
-      ...new Set(data.answers.map((item: any) => item.student_id)),
-    ] as number[]
-    const papers: StudentPaper[] = uniqueStudentIds.map((id: number) => ({
-      id,
-      filename: `Student_${id}`,
-      valid: true,
-      questionCount: data.answers.filter((item: any) => item.student_id === id).length,
-      error: '',
-    }))
-
-    studentAnswers.value = {
-      name: data.name,
+  const setPaperReady = (parsedData: any, meta: any) => {
+    updateItemStatus(examPaper, {
       status: 'ready',
-      studentCount: data.studentCount,
-      answerCount: data.answerCount,
-      papers,
-    }
-    console.log('📝 学生答案状态已更新:', studentAnswers.value)
+      parsedData,
+      meta,
+      error: undefined
+    })
   }
 
-  const resetStudentAnswersStatus = () => {
-    studentAnswers.value = {
+  const setPaperError = (error: string) => {
+    updateItemStatus(examPaper, {
+      status: 'error',
+      error
+    })
+  }
+
+  const resetPaper = () => {
+    updateItemStatus(examPaper, {
       name: '',
-      status: '',
-      studentCount: 0,
-      answerCount: 0,
-      papers: [],
-    }
+      status: 'idle',
+      rawContent: '',
+      parsedData: undefined,
+      error: undefined,
+      meta: undefined
+    })
+  }
+
+  // ===== 参考答案相关方法 =====
+  const setAnswerUploading = (name: string, rawContent: string) => {
+    updateItemStatus(referenceAnswer, {
+      name,
+      rawContent,
+      status: 'processing',
+      error: undefined,
+      parsedData: undefined,
+      meta: undefined
+    })
+  }
+
+  const setAnswerReady = (parsedData: any, meta: any) => {
+    updateItemStatus(referenceAnswer, {
+      status: 'ready',
+      parsedData,
+      meta,
+      error: undefined
+    })
+  }
+
+  const setAnswerError = (error: string) => {
+    updateItemStatus(referenceAnswer, {
+      status: 'error',
+      error
+    })
+  }
+
+  const resetAnswer = () => {
+    updateItemStatus(referenceAnswer, {
+      name: '',
+      status: 'idle',
+      rawContent: '',
+      parsedData: undefined,
+      error: undefined,
+      meta: undefined
+    })
+  }
+
+  // ===== 学生答案相关方法 =====
+  const setStudentUploading = (name: string, rawContent: string) => {
+    updateItemStatus(studentAnswers, {
+      name,
+      rawContent,
+      status: 'processing',
+      error: undefined,
+      parsedData: undefined,
+      meta: undefined
+    })
+  }
+
+  const setStudentReady = (parsedData: any, meta: any) => {
+    updateItemStatus(studentAnswers, {
+      status: 'ready',
+      parsedData,
+      meta,
+      error: undefined
+    })
+  }
+
+  const setStudentError = (error: string) => {
+    updateItemStatus(studentAnswers, {
+      status: 'error',
+      error
+    })
+  }
+
+  const resetStudent = () => {
+    updateItemStatus(studentAnswers, {
+      name: '',
+      status: 'idle',
+      rawContent: '',
+      parsedData: undefined,
+      error: undefined,
+      meta: undefined
+    })
   }
 
   // ===== 批量操作 =====
-  const resetAnswerAndStudentStatus = () => {
-    resetReferenceAnswerStatus()
-    resetStudentAnswersStatus()
-    console.log('📝 已重置参考答案和学生答案状态')
+  const resetAll = () => {
+    resetPaper()
+    resetAnswer()
+    resetStudent()
+    console.log('📝 所有上传状态已重置')
   }
 
-  const resetAllStatus = () => {
-    resetPaperStatus()
-    resetReferenceAnswerStatus()
-    resetStudentAnswersStatus()
-    console.log('📝 已重置所有上传状态')
-  }
-
-  // ===== 状态检查 =====
+  // ===== 状态总览 =====
   const getUploadSummary = () => {
     return {
       paper: {
-        uploaded: isPaperUploaded.value,
+        uploaded: examPaper.value.status === 'ready',
         name: examPaper.value.name,
-        questionCount: examPaper.value.questionCount,
+        questionCount: examPaper.value.meta?.questionCount || 0,
       },
       referenceAnswer: {
-        uploaded: isReferenceAnswerUploaded.value,
+        uploaded: referenceAnswer.value.status === 'ready',
         name: referenceAnswer.value.name,
-        answerCount: referenceAnswer.value.answerCount,
-        matched: referenceAnswer.value.matched,
+        answerCount: referenceAnswer.value.meta?.answerCount || 0,
       },
       studentAnswers: {
-        uploaded: isStudentAnswersUploaded.value,
+        uploaded: studentAnswers.value.status === 'ready',
         name: studentAnswers.value.name,
-        studentCount: studentAnswers.value.studentCount,
-        answerCount: studentAnswers.value.answerCount,
+        studentCount: studentAnswers.value.meta?.studentCount || 0,
+        answerCount: studentAnswers.value.meta?.answerCount || 0,
       },
-      canProceed: canUploadStudentPapers.value,
+      canProceed: canProceedToGrading.value,
     }
   }
 
@@ -226,27 +242,38 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   }
 
   return {
-    // 状态
+    // 状态 - 直接暴露 ref
     examPaper,
     referenceAnswer,
     studentAnswers,
 
     // 计算属性
-    isPaperUploaded,
-    isReferenceAnswerUploaded,
-    isStudentAnswersUploaded,
-    canUploadStudentPapers,
+    canUploadAnswer,
+    canUploadStudent,
     canProceedToGrading,
 
-    // 方法
-    setPaperStatus,
-    resetPaperStatus,
-    setReferenceAnswerStatus,
-    resetReferenceAnswerStatus,
-    setStudentAnswersStatus,
-    resetStudentAnswersStatus,
-    resetAnswerAndStudentStatus,
-    resetAllStatus,
+    // 试卷方法
+    setPaperUploading,
+    setPaperReady,
+    setPaperError,
+    resetPaper,
+
+    // 参考答案方法
+    setAnswerUploading,
+    setAnswerReady,
+    setAnswerError,
+    resetAnswer,
+
+    // 学生答案方法
+    setStudentUploading,
+    setStudentReady,
+    setStudentError,
+    resetStudent,
+
+    // 批量操作
+    resetAll,
+
+    // 工具方法
     getUploadSummary,
     saveToLocal,
     loadFromLocal,

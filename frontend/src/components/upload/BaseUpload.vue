@@ -10,25 +10,21 @@
           </div>
           <h3>{{ title }}</h3>
         </div>
-        <el-tag v-if="isReady" type="success" effect="dark" class="status-tag">
-          <el-icon><check /></el-icon>
-          Ready
-        </el-tag>
-        <el-tag v-else-if="disabled" type="info" effect="plain" class="status-tag waiting-tag">
-          <el-icon><clock /></el-icon>
-          Waiting for Paper
-        </el-tag>
-        <el-tag v-else type="warning" effect="plain" class="status-tag waiting-tag">
-          <el-icon><clock /></el-icon>
-          Waiting for Upload
+        <!-- 状态标签直接基于 status -->
+        <el-tag :type="statusTagType" effect="dark" class="status-tag">
+          <el-icon class="status-icon-tag">
+            <component :is="statusIcon" />
+          </el-icon>
+          {{ statusText }}
         </el-tag>
       </div>
     </template>
 
     <div class="upload-content">
+      <!-- 禁用警告 -->
       <el-alert
         v-if="disabled"
-        title="Please upload the exam paper first"
+        title="请先上传试卷"
         type="warning"
         :closable="false"
         show-icon
@@ -36,60 +32,58 @@
       />
 
       <template v-else>
-        <!-- 文件上传区域 -->
+        <!-- 上传区域 -->
         <div class="upload-section">
           <div class="section-header">
-            <el-icon class="section-icon"><upload /></el-icon>
+            <el-icon class="section-icon"><Upload /></el-icon>
             <h4>{{ uploadTitle }}</h4>
           </div>
           <el-upload
+            ref="uploadRef"
             v-model:file-list="fileList"
             :class="uploadClass"
             :auto-upload="false"
-            :on-change="handleFileUpload"
-            :on-remove="handleFileRemove"
-            :before-remove="confirmFileRemove"
+            :on-change="handleFileChange"
             :show-file-list="false"
             :accept="accept"
             :limit="1"
-            :on-exceed="handleFileExceed"
             :disabled="isProcessing"
             drag
           >
             <div class="upload-content-inner">
-              <el-icon v-if="!isProcessing" class="upload-icon"><upload-filled /></el-icon>
-              <el-icon v-else class="upload-icon loading"><loading /></el-icon>
+              <el-icon v-if="!isProcessing" class="upload-icon">
+                <UploadFilled />
+              </el-icon>
+              <el-icon v-else class="upload-icon loading">
+                <Loading />
+              </el-icon>
               <div class="upload-text">
-                <p class="upload-main">
-                  {{ isProcessing ? 'Processing...' : 'Click or drag the file here' }}
-                </p>
-                <p class="upload-hint">
-                  {{ isProcessing ? processingHint : uploadHint }}
-                </p>
+                <p class="upload-main">{{ uploadMainText }}</p>
+                <p class="upload-hint">{{ uploadHintText }}</p>
               </div>
             </div>
           </el-upload>
         </div>
 
         <!-- 当前状态显示 -->
-        <div v-if="currentFileName" class="current-status">
-          <div class="status-card" :class="{ 'error-card': hasError }">
+        <div v-if="fileName" class="current-status">
+          <div class="status-card" :class="{ 'error-card': status === 'error' }">
             <div class="status-content">
               <div class="status-info">
-                <el-icon class="status-icon" :class="{ 'error-icon': hasError }">
-                  <circle-check-filled />
+                <el-icon class="status-icon" :class="{ 'error-icon': status === 'error' }">
+                  <component :is="currentStatusIcon" />
                 </el-icon>
-                <span class="status-text" :class="{ 'error-text': hasError }">
-                  {{ hasError ? errorMessage : statusText }}
+                <span class="status-text" :class="{ 'error-text': status === 'error' }">
+                  {{ displayText || `文件：${fileName}` }}
                 </span>
               </div>
               <div class="action-buttons">
-                <el-button type="primary" link @click="handlePreview" class="action-btn">
-                  <el-icon><view /></el-icon>
+                <el-button type="primary" link @click="$emit('preview')" class="action-btn">
+                  <el-icon><View /></el-icon>
                   预览
                 </el-button>
                 <el-button type="danger" link @click="handleRemove" class="action-btn">
-                  <el-icon><delete /></el-icon>
+                  <el-icon><Delete /></el-icon>
                   移除
                 </el-button>
               </div>
@@ -104,15 +98,17 @@
 <script setup>
 import {
   Check,
-  CircleCheckFilled,
   Clock,
   Delete,
   Loading,
   Upload,
   UploadFilled,
+  View,
+  Warning,
+  CircleCheckFilled
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -122,78 +118,126 @@ const props = defineProps({
   uploadClass: { type: String, required: true },
   accept: { type: String, required: true },
   uploadHint: { type: String, required: true },
-  processingHint: { type: String, required: true },
-  currentFileName: { type: String, default: '' },
-  statusText: { type: String, default: '' },
-  isReady: { type: Boolean, default: false },
-  hasError: { type: Boolean, default: false },
-  errorMessage: { type: String, default: '' },
   disabled: { type: Boolean, default: false },
-  resetTrigger: { type: Number, default: 0 },
+  
+  // 从 Store 直接传入的状态
+  status: { type: String, default: 'idle' }, // 'idle' | 'uploading' | 'processing' | 'ready' | 'error'
+  fileName: { type: String, default: '' },
+  displayText: { type: String, default: '' },
+  error: { type: String, default: '' },
 })
 
-const emit = defineEmits(['file-uploaded', 'file-removed', 'preview', 'remove'])
+const emit = defineEmits(['file-selected', 'remove', 'preview'])
 
+// 文件列表和上传组件引用
 const fileList = ref([])
-const isProcessing = ref(false)
+const uploadRef = ref()
 
-// 监听重置触发器
-watch(
-  () => props.resetTrigger,
-  () => {
-    if (props.resetTrigger > 0) {
-      fileList.value = []
+// 监听状态变化，当状态重置为 idle 时，清空文件列表
+watch(() => props.status, (newStatus, oldStatus) => {
+  if (newStatus === 'idle' && oldStatus !== 'idle') {
+    // 状态重置为 idle，清空文件列表
+    fileList.value = []
+    if (uploadRef.value) {
+      uploadRef.value.clearFiles()
     }
-  },
+    console.log('📝 文件列表已清空，可以重新上传')
+  }
+})
+
+// 监听文件名变化，当文件名被清空时，也清空文件列表
+watch(() => props.fileName, (newFileName) => {
+  if (!newFileName && fileList.value.length > 0) {
+    fileList.value = []
+    if (uploadRef.value) {
+      uploadRef.value.clearFiles()
+    }
+    console.log('📝 文件名已清空，清理文件列表')
+  }
+})
+
+// ===== 计算属性：基于状态的 UI =====
+const isProcessing = computed(() => 
+  props.status === 'uploading' || props.status === 'processing'
 )
 
-const handleFileUpload = (uploadFile) => {
-  emit('file-uploaded', uploadFile, isProcessing)
-}
-
-const handleFileRemove = () => {
-  emit('file-removed')
-}
-
-const confirmFileRemove = async (file) => {
-  try {
-    await ElMessageBox.confirm(`确定要移除文件 ${file.name} 吗？`, '确认删除', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
-    return true
-  } catch {
-    return false
+const statusTagType = computed(() => {
+  switch (props.status) {
+    case 'ready': return 'success'
+    case 'error': return 'danger'
+    case 'uploading':
+    case 'processing': return 'warning'
+    default: return 'info'
   }
-}
+})
 
-const handleFileExceed = () => {
-  ElMessage.warning('只能上传1个文件')
-}
+const statusIcon = computed(() => {
+  switch (props.status) {
+    case 'ready': return Check
+    case 'error': return Warning
+    case 'uploading':
+    case 'processing': return Loading
+    default: return Clock
+  }
+})
 
-const handlePreview = () => {
-  emit('preview')
+const statusText = computed(() => {
+  switch (props.status) {
+    case 'ready': return 'Ready'
+    case 'error': return 'Error'
+    case 'uploading': return 'Uploading'
+    case 'processing': return 'Processing'
+    default: return props.disabled ? 'Waiting' : 'Ready to Upload'
+  }
+})
+
+const currentStatusIcon = computed(() => {
+  switch (props.status) {
+    case 'ready': return CircleCheckFilled
+    case 'error': return Warning
+    default: return CircleCheckFilled
+  }
+})
+
+const uploadMainText = computed(() => 
+  isProcessing.value ? 'Processing...' : 'Click or drag file here'
+)
+
+const uploadHintText = computed(() => 
+  isProcessing.value ? 'Please wait...' : props.uploadHint
+)
+
+// ===== 事件处理：只负责通知父组件 =====
+const handleFileChange = (uploadFile) => {
+  const file = uploadFile.raw || uploadFile
+  if (file && file instanceof File) {
+    console.log('📁 文件已选择:', file.name)
+    emit('file-selected', file)
+  } else {
+    ElMessage.error('无效的文件')
+  }
 }
 
 const handleRemove = async () => {
   try {
-    await ElMessageBox.confirm('确定要移除文件吗？', '移除确认', {
+    await ElMessageBox.confirm('确定要移除文件吗？', '确认移除', {
       confirmButtonText: '移除',
       cancelButtonText: '取消',
       type: 'warning',
     })
+    
+    // 清空文件列表
     fileList.value = []
+    if (uploadRef.value) {
+      uploadRef.value.clearFiles()
+    }
+    
     emit('remove')
     ElMessage.success('文件已移除')
   } catch {
-    // 用户取消了操作
+    // 用户取消操作
   }
 }
-
-defineExpose({
-  isProcessing,
-})
 </script>
 
 <style scoped>
@@ -244,10 +288,8 @@ defineExpose({
   gap: 6px;
 }
 
-.waiting-tag {
-  background: rgba(255, 255, 255, 0.9);
-  color: #909399;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.status-icon-tag {
+  font-size: 14px;
 }
 
 .upload-content {
@@ -347,7 +389,6 @@ defineExpose({
   transition: all 0.3s ease;
 }
 
-/* 错误状态卡片 - 简化为红色版本 */
 .status-card.error-card {
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
   border: 1px solid #fca5a5;
@@ -411,6 +452,24 @@ defineExpose({
 .disabled {
   opacity: 0.7;
   pointer-events: none;
+}
+
+/* 上传区域样式 */
+:deep(.el-upload-dragger) {
+  border: 2px dashed #c7d2fe;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+  padding: 4px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:deep(.el-upload-dragger:hover) {
+  border-color: #4f46e5;
+  background: #f3f4f6;
 }
 
 /* 响应式设计 */
