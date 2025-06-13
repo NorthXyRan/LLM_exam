@@ -24,7 +24,7 @@
       <!-- 禁用警告 -->
       <el-alert
         v-if="disabled"
-        title="请先上传试卷"
+        title="Please upload the paper first"
         type="warning"
         :closable="false"
         show-icon
@@ -74,17 +74,17 @@
                   <component :is="currentStatusIcon" />
                 </el-icon>
                 <span class="status-text" :class="{ 'error-text': status === 'error' }">
-                  {{ displayText || `文件：${fileName}` }}
+                  {{ displayText || `File: ${fileName}` }}
                 </span>
               </div>
               <div class="action-buttons">
                 <el-button type="primary" link @click="$emit('preview')" class="action-btn">
                   <el-icon><View /></el-icon>
-                  预览
+                  PREVIEW
                 </el-button>
                 <el-button type="danger" link @click="handleRemove" class="action-btn">
                   <el-icon><Delete /></el-icon>
-                  移除
+                  REMOVE
                 </el-button>
               </div>
             </div>
@@ -214,15 +214,15 @@ const handleFileChange = (uploadFile) => {
     console.log('📁 文件已选择:', file.name)
     emit('file-selected', file)
   } else {
-    ElMessage.error('无效的文件')
+    ElMessage.error('Invalid file')
   }
 }
 
 const handleRemove = async () => {
   try {
-    await ElMessageBox.confirm('确定要移除文件吗？', '确认移除', {
-      confirmButtonText: '移除',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm('Are you sure you want to remove the file?', 'Confirm removal', {
+      confirmButtonText: 'Remove',
+      cancelButtonText: 'Cancel',
       type: 'warning',
     })
     
@@ -233,7 +233,7 @@ const handleRemove = async () => {
     }
     
     emit('remove')
-    ElMessage.success('文件已移除')
+    ElMessage.success('File has been removed')
   } catch {
     // 用户取消操作
   }
