@@ -35,6 +35,14 @@ src/components/upload/
 ├── StudentUpload.vue          # 学生答案上传组件
 └── preview.vue                # 试卷预览弹窗组件
 
+
+
+services/llm/
+├── index.ts                    # 统一导出
+├── upload/
+│   ├── uploadLLMService.ts     # AI解析服务
+│   └── uploadPrompts.ts        # Prompt模板
+
 ```
 
 ### Uploading 组件数据流
@@ -42,17 +50,17 @@ src/components/upload/
 #### 1. 数据流架构
 
 ```
-文件上传 → 文件读取 → AI解析/直接解析 → 数据验证 → Store存储 → 本地持久化
-   ↓           ↓           ↓              ↓          ↓           ↓
-子组件    fileReaders   OpenAI API    validate   Pinia      localStorage
-   ↓           ↓           ↓              ↓          ↓           ↓
-事件触发   统一读取函数   智能解析      JSON验证   状态管理    持久化存储
+文件上传 →  文件读取 →  AI解析/直接解析 → 数据验证 → Store存储 → 本地持久化
+   ↓          ↓            ↓            ↓         ↓          ↓
+ 子组件   fileReaders  OpenAI API     validate   Pinia   localStorage
+   ↓          ↓            ↓            ↓         ↓          ↓
+事件触发   统一读取函数     智能解析      JSON验证   状态管理   持久化存储
 ```
 
 #### 2. 文件处理策略
 
 - **JSON 文件**: 直接解析，跳过 AI 处理，不重复保存
-- **其他格式** (TXT/DOCX/PDF): AI 解析 → 保存解析结果到本地 （PDF 效果较差）
+- **其他格式** (TXT/DOCX): AI 解析 → 保存解析结果到本地
 
 #### 3. 数据存储位置
 
