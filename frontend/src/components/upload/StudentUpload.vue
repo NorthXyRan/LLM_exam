@@ -53,13 +53,9 @@ defineEmits(['file-selected', 'remove', 'preview'])
 
 /* 卡片头部背景色 */
 .student-upload-card :deep(.card-header) {
-  background: #ffd48e;
+  background: #ABD7FB;
 }
 
-/* 图标颜色 */
-.student-upload-card :deep(.section-icon) {
-  color: #7c3aed;
-}
 
 /* 上传区域样式 */
 .student-upload-card :deep(.student-upload .el-upload-dragger) {

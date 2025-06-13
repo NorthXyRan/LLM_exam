@@ -53,12 +53,7 @@ defineEmits(['file-selected', 'remove', 'preview'])
 
 /* 卡片头部背景色 */
 .answer-upload-card :deep(.card-header) {
-  background: #c8e6f4;
-}
-
-/* 图标颜色 */
-.answer-upload-card :deep(.section-icon) {
-  color: #0891b2;
+  background: #D2E0AA;
 }
 
 /* 上传区域样式 */
