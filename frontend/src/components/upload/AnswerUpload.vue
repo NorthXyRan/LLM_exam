@@ -25,8 +25,8 @@
 <script setup>
 import { DocumentChecked } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { computed, ref } from 'vue'
-import { isJsonFile, readFileContent, saveJsonResult, validateJsonData } from '@/services/file/fileReaders'
+import { computed, ref, watch, nextTick } from 'vue'
+import { askToSaveJsonResult, isJsonFile, readFileContent, validateJsonData } from '@/services/file/fileReaders'
 import { uploadLLMService } from '@/services/llm'
 import BaseUpload from './BaseUpload.vue'
 
@@ -47,12 +47,38 @@ const uploadState = ref({
   rawContent: '', // 保存原始文件内容，用于预览
 })
 
+// 重置上传状态的函数
+const resetUploadState = () => {
+  uploadState.value = {
+    fileName: '',
+    hasError: false,
+    errorMessage: '',
+    isSuccess: false,
+    rawContent: '',
+  }
+  console.log('📝 AnswerUpload: 上传状态已重置')
+}
+
 // 计算属性：显示当前状态
 const statusDisplay = computed(() => {
   if (!props.referenceAnswer.name && !uploadState.value.fileName) return ''
   if (uploadState.value.hasError) return ''
   return `当前参考答案：${props.referenceAnswer.name}（共${props.referenceAnswer.answerCount}道答案）`
 })
+
+// 监听重置触发
+watch(
+  () => props.resetTrigger,
+  (newVal, oldVal) => {
+    console.log(`📝 AnswerUpload: resetTrigger 变化 ${oldVal} -> ${newVal}`)
+    if (newVal > 0 && newVal !== oldVal) {
+      nextTick(() => {
+        resetUploadState()
+      })
+    }
+  },
+  { immediate: false }
+)
 
 /**
  * 处理文件上传
@@ -104,9 +130,11 @@ const handleFileUpload = async (uploadFile, isProcessingRef) => {
       
       // 调用AI解析
       const parseResult = await uploadLLMService.Parse(content, 'answer')
+
+      validateJsonData(parseResult, 'answer')
       
       // 保存AI解析结果
-      await saveJsonResult(parseResult, file.name, 'answer')
+      await askToSaveJsonResult(parseResult, file.name, 'answer')
       
       answerData = {
         name: file.name,
@@ -114,7 +142,7 @@ const handleFileUpload = async (uploadFile, isProcessingRef) => {
       }
     }
 
-    // 解析成功，清除错误状态
+    // 解析成功，清除错误状态但保留成功标记
     uploadState.value = {
       fileName: '',
       hasError: false,
@@ -147,6 +175,7 @@ const handleFileUpload = async (uploadFile, isProcessingRef) => {
  * 处理文件移除
  */
 const handleFileRemove = () => {
+  resetUploadState()
   emit('answer-removed')
   ElMessage.info('已移除答案文件')
 }
@@ -172,14 +201,7 @@ const handlePreview = () => {
  * 处理移除操作
  */
 const handleRemove = () => {
-  // 清除所有状态
-  uploadState.value = {
-    fileName: '',
-    hasError: false,
-    errorMessage: '',
-    isSuccess: false,
-    rawContent: '',
-  }
+  resetUploadState()
   emit('answer-removed')
 }
 </script>

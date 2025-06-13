@@ -1,8 +1,5 @@
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import mammoth from 'mammoth'
-
-// 全局保存目录引用
-let globalSaveDirectory: any = null
 
 /**
  * 文件读取器集合
@@ -37,7 +34,6 @@ export const fileReaders = {
       reader.readAsArrayBuffer(file)
     })
   },
-
 }
 
 /**
@@ -107,39 +103,34 @@ export function validateJsonData(jsonData: any, type: 'paper' | 'answer' | 'stud
 }
 
 /**
- * 获取或创建保存目录（全局单例）
+ * 获取保存目录
+ * 每次都重新选择目录
  * @returns {Promise<any>} 保存目录句柄
  */
 export async function getSaveDirectory(): Promise<any> {
-  if (globalSaveDirectory) return globalSaveDirectory
-
   if (!('showDirectoryPicker' in window)) {
-    console.warn('当前浏览器不支持文件系统API，无法保存解析结果')
-    return null
+    throw new Error('当前浏览器不支持文件系统API')
   }
 
   try {
     const directoryHandle = await (window as any).showDirectoryPicker({ mode: 'readwrite' })
-    const examDirectory = await directoryHandle.getDirectoryHandle('LLM_Exam_Papers', {
-      create: true,
-    })
-    globalSaveDirectory = examDirectory
-    console.log('✅ 创建保存目录成功: LLM_Exam_Papers')
-    return examDirectory
+    console.log('✅ 选择保存目录成功')
+    return directoryHandle
   } catch (error) {
-    console.warn('创建保存目录失败:', error)
-    return null
+    if ((error as Error).name === 'AbortError') {
+      throw new Error('用户取消了目录选择')
+    }
+    throw new Error('选择保存目录失败: ' + (error as Error).message)
   }
 }
 
 /**
- * 保存AI解析结果到本地文件
- * 仅在文件不是JSON格式时才保存（避免重复保存）
+ * 询问用户是否要保存AI解析结果
  * @param {any} result - AI解析的结果对象
  * @param {string} originalFileName - 原始文件名
  * @param {string} type - 文件类型 ('paper' | 'answer')
  */
-export async function saveJsonResult(
+export async function askToSaveJsonResult(
   result: any,
   originalFileName: string,
   type: 'paper' | 'answer',
@@ -150,13 +141,52 @@ export async function saveJsonResult(
     return
   }
 
-  const saveDirectory = await getSaveDirectory()
-  if (!saveDirectory) return
+  // 检查浏览器支持
+  if (!('showDirectoryPicker' in window)) {
+    console.log('🌐 当前浏览器不支持文件保存功能')
+    return
+  }
 
   try {
-    // 根据类型生成文件名
-    const jsonFileName =
-      type === 'paper' ? `paper_parsed_${Date.now()}.json` : `answer_parsed_${Date.now()}.json`
+    // 询问用户是否要保存
+    await ElMessageBox.confirm(
+      `AI已成功解析${type === 'paper' ? '试卷' : '参考答案'}，是否保存解析结果到本地？`,
+      '保存解析结果',
+      {
+        confirmButtonText: '保存',
+        cancelButtonText: '跳过',
+        type: 'info',
+      }
+    )
+
+    // 用户确认保存，执行保存操作
+    await saveJsonResultDirectly(result, originalFileName, type)
+  } catch (error) {
+    if (error === 'cancel') {
+      console.log('👤 用户选择跳过保存')
+    } else {
+      console.warn('保存过程出错:', error)
+    }
+  }
+}
+
+/**
+ * 直接保存AI解析结果到本地文件（内部使用）
+ * @param {any} result - AI解析的结果对象
+ * @param {string} originalFileName - 原始文件名
+ * @param {string} type - 文件类型 ('paper' | 'answer')
+ */
+async function saveJsonResultDirectly(
+  result: any,
+  originalFileName: string,
+  type: 'paper' | 'answer',
+): Promise<void> {
+  try {
+    const saveDirectory = await getSaveDirectory()
+    
+    // 生成JSON文件名：原文件名.json
+    const baseName = originalFileName.replace(/\.[^/.]+$/, '') // 移除原扩展名
+    const jsonFileName = `${baseName}.json`
 
     const fileHandle = await saveDirectory.getFileHandle(jsonFileName, { create: true })
     const writable = await fileHandle.createWritable()
@@ -167,7 +197,8 @@ export async function saveJsonResult(
     console.log(`✅ AI解析结果已保存: ${jsonFileName}`)
   } catch (error) {
     console.warn('保存解析结果失败:', error)
-    ElMessage.warning('保存解析结果失败，但不影响使用')
+    ElMessage.warning('保存解析结果失败: ' + (error as Error).message)
+    throw error
   }
 }
 

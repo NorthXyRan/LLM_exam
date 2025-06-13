@@ -25,8 +25,8 @@
 <script setup>
 import { Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { computed, ref, watch } from 'vue'
-import { isJsonFile, readFileContent, saveJsonResult } from '@/services/file/fileReaders'
+import { computed, ref, watch, nextTick } from 'vue'
+import { isJsonFile, readFileContent, askToSaveJsonResult, validateJsonData } from '@/services/file/fileReaders'
 import { uploadLLMService } from '@/services/llm'
 import BaseUpload from './BaseUpload.vue'
 
@@ -46,6 +46,18 @@ const uploadState = ref({
   rawContent: '', // 保存原始文件内容，用于预览
 })
 
+// 重置上传状态的函数
+const resetUploadState = () => {
+  uploadState.value = {
+    fileName: '',
+    hasError: false,
+    errorMessage: '',
+    isSuccess: false,
+    rawContent: '',
+  }
+  console.log('📝 PaperUpload: 上传状态已重置')
+}
+
 // 计算属性：显示当前状态
 const statusDisplay = computed(() => {
   if (!props.examPaper.name && !uploadState.value.fileName) return ''
@@ -53,21 +65,18 @@ const statusDisplay = computed(() => {
   return `当前试卷：${props.examPaper.name}（共${props.examPaper.questionCount}道题目）`
 })
 
-// 监听重置触发
+// 监听重置触发 - 添加immediate选项确保初始化时也能重置
 watch(
   () => props.resetTrigger,
-  () => {
-    if (props.resetTrigger > 0) {
-      // 清空上传状态
-      uploadState.value = {
-        fileName: '',
-        hasError: false,
-        errorMessage: '',
-        isSuccess: false,
-        rawContent: '',
-      }
+  (newVal, oldVal) => {
+    console.log(`📝 PaperUpload: resetTrigger 变化 ${oldVal} -> ${newVal}`)
+    if (newVal > 0 && newVal !== oldVal) {
+      nextTick(() => {
+        resetUploadState()
+      })
     }
   },
+  { immediate: false } // 不需要immediate，因为初始状态就是空的
 )
 
 /**
@@ -104,6 +113,7 @@ async function handleFileUpload(uploadFile, isProcessingRef) {
       // JSON文件直接解析
       console.log('✅ 检测到JSON文件，直接解析')
       const jsonData = JSON.parse(content)
+      validateJsonData(jsonData, 'paper')
       paperData = {
         name: file.name,
         content: content,
@@ -120,8 +130,10 @@ async function handleFileUpload(uploadFile, isProcessingRef) {
       // 调用AI解析
       const parseResult = await uploadLLMService.Parse(content, 'paper')
       
+      validateJsonData(parseResult, 'paper')
+      
       // 保存AI解析结果
-      await saveJsonResult(parseResult, file.name, 'paper')
+      await askToSaveJsonResult(parseResult, file.name, 'paper')
       
       paperData = {
         name: file.name,
@@ -129,7 +141,7 @@ async function handleFileUpload(uploadFile, isProcessingRef) {
       }
     }
 
-    // 解析成功，清除错误状态
+    // 解析成功，清除错误状态但保留成功标记
     uploadState.value = {
       fileName: '',
       hasError: false,
@@ -162,6 +174,7 @@ async function handleFileUpload(uploadFile, isProcessingRef) {
  * 处理文件移除
  */
 function handleFileRemove() {
+  resetUploadState()
   emit('paper-removed')
   ElMessage.info('已移除试卷文件')
 }
@@ -187,14 +200,7 @@ function handlePreview() {
  * 处理移除操作
  */
 function handleRemove() {
-  // 清除所有状态
-  uploadState.value = {
-    fileName: '',
-    hasError: false,
-    errorMessage: '',
-    isSuccess: false,
-    rawContent: '',
-  }
+  resetUploadState()
   emit('paper-removed')
 }
 </script>
