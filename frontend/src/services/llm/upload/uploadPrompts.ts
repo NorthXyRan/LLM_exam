@@ -8,6 +8,7 @@ export const UPLOAD_PROMPTS = {
    * 试卷解析 Prompt
    */
   PARSE_PAPER: (content: string) => `
+请首先检查上传的文件是否是试卷，如果你发现上传的不是试卷，请你返回原始文本。如果是试卷，
 请分析以下试卷内容，并返回一个JSON格式的结果，包含题目数量和题目内容：
 
 试卷内容：
@@ -31,6 +32,7 @@ ${content}
    * 参考答案解析 Prompt
    */
   PARSE_ANSWER: (content: string) => `
+请首先检查上传的文件是否是答案，如果你发现上传的不是答案，请你返回原始文本。如果是答案，
 请分析以下参考答案内容，并返回一个JSON格式的结果：
 
 参考答案内容：
