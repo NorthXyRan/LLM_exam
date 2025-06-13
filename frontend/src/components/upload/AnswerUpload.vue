@@ -26,7 +26,7 @@
 import { DocumentChecked } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
-import { API_CONFIG, isAPIConfigValid } from '../../config/api.js'
+import { API_CONFIG, isAPIConfigValid } from '../../config/api.ts'
 import BaseUpload from './BaseUpload.vue'
 import { isJsonFile, readFileContent, saveJsonResult, validateJsonData } from './fileReaders.ts'
 
