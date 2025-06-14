@@ -223,25 +223,25 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
   }
 }
 
-// ===== 事件处理：超级简单 =====
+// ===== 事件处理 =====
 const handlePaperSelected = (file: File) => {
-  console.log('📝 选择试卷文件:', file.name)
+  console.log('选择试卷文件:', file.name)
   processFile(file, 'paper')
 }
 
 const handleAnswerSelected = (file: File) => {
-  console.log('📝 选择参考答案文件:', file.name)
+  console.log('选择参考答案文件:', file.name)
   processFile(file, 'answer')
 }
 
 const handleStudentSelected = (file: File) => {
-  console.log('📝 选择学生答案文件:', file.name)
+  console.log('选择学生答案文件:', file.name)
   processFile(file, 'student')
 }
 
 // ===== 移除操作 =====
 const handlePaperRemove = () => {
-  console.log('🗑️ 移除试卷')
+  console.log('移除试卷')
   uploadStore.resetPaper()
   examStore.resetQuestions()
 
@@ -253,9 +253,9 @@ const handlePaperRemove = () => {
 }
 
 const handleAnswerRemove = () => {
-  console.log('🗑️ 移除参考答案')
+  console.log('移除参考答案')
   uploadStore.resetAnswer()
-  examStore.clearReferenceAnswers()
+  examStore.resetReferenceAnswers()
 
   // 保存状态
   examStore.saveToLocal()
@@ -265,7 +265,7 @@ const handleAnswerRemove = () => {
 }
 
 const handleStudentRemove = () => {
-  console.log('🗑️ 移除学生答案')
+  console.log('移除学生答案')
   uploadStore.resetStudent()
   examStore.resetStudentData()
 
@@ -339,9 +339,9 @@ onMounted(() => {
   // 从本地存储恢复数据
   examStore.loadFromLocal()
   uploadStore.loadFromLocal()
+  console.log('数据加载完成')
 
-  console.log('📂 数据加载完成')
-  console.log('📊 当前状态:', uploadStore.getUploadSummary())
+  console.log('当前状态:', uploadStore.getUploadSummary())
 })
 </script>
 
