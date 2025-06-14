@@ -151,7 +151,7 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
         throw new Error('AI parsing service is not available, please upload a JSON file or check the API configuration')
       }
 
-      // 学生答案文件通常应该是JSON格式，不支持AI解析
+      // 学生答案文件应该是JSON格式，不支持AI解析
       if (type === 'student') {
         throw new Error('Student answer must be in JSON format')
       }
@@ -173,7 +173,6 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
       })
       ElMessage.success(`Paper uploaded successfully! Parsed ${parsedData.questions.length} questions`)
     } else if (type === 'answer') {
-      // 修复：使用正确的方法更新参考答案
       examStore.setReferenceAnswers(parsedData.answers)
       uploadStore.setAnswerReady(parsedData, {
         answerCount: parsedData.answers.length,
@@ -187,9 +186,7 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
         studentCount: uniqueStudentIds.length,
         answerCount: parsedData.length,
       })
-      ElMessage.success(
-        `Student answer uploaded successfully! Parsed ${uniqueStudentIds.length} students, ${parsedData.length} answers`,
-      )
+      ElMessage.success(`Student answer uploaded successfully! Parsed ${uniqueStudentIds.length} students, ${parsedData.length} answers`)
     }
 
     // 5. 保存到本地存储
