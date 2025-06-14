@@ -76,7 +76,7 @@
 
           <!-- 当前题目查看 -->
           <el-col :span="4">
-            <div class="stat-item clickable" @click="emits('showCurrentQuestion')">
+            <div class="stat-item clickable" @click="showCurrentQuestion">
               <span class="label">Current Question</span>
               <span class="value icon-value">
                 <el-icon><Document /></el-icon>
@@ -86,19 +86,39 @@
         </el-row>
       </div>
     </div>
+
+    <!-- 题目浮动窗口 -->
+    <teleport to="body">
+      <div 
+        v-if="questionDialogVisible" 
+        class="question-float"
+        :style="{ left: position.x + 'px', top: position.y + 'px' }"
+      >
+        <div class="float-header" @mousedown="startDrag">
+          <span class="float-title">
+            <el-icon class="title-icon"><Document /></el-icon>
+            Current Question
+          </span>
+          <el-button type="text" size="small" class="close-btn"
+            @click="questionDialogVisible = false"
+          >
+            <el-icon><Close /></el-icon>
+          </el-button>
+        </div>
+        <div class="float-body">{{ currentQuestionText }}</div>
+      </div>
+    </teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Document } from '@element-plus/icons-vue'
+import { Document, Close } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 /**
  * ===== TypeScript 接口定义 =====
  */
-
-// 高亮数据接口（新增）
 interface HighlightData {
   student_id: number
   question_id: number
@@ -111,82 +131,100 @@ interface HighlightData {
   total_score: number
 }
 
-// 组件Props接口
 interface Props {
-  currentQuestion: number // 当前选中的题目序号（1, 2, 3...）
-  currentStudentId: number // 当前选中的学生ID
+  currentQuestion: number
+  currentStudentId: number
   questions: Array<{
-    question_id: number // 题目ID（如 "1", "2"）
-    question: string // 题目内容
-    score: number // 题目分值
+    question_id: number
+    question: string
+    score: number
   }>
-  studentList: Array<{
-    // 学生列表
-    id: number
-  }>
-  highlightDataList: HighlightData[] // 高亮数据列表
+  studentList: Array<{ id: number }>
+  highlightDataList: HighlightData[]
 }
 
 const props = defineProps<Props>()
 
 /**
- * ===== 内部计算属性 =====
+ * ===== 浮动窗口状态 =====
  */
+const questionDialogVisible = ref(false)
+const isDragging = ref(false)
+const dragOffset = ref({ x: 0, y: 0 })
+const position = ref({ x: 200, y: 150 })
 
-// 学生总数
-const totalStudents = computed(() => {
-  return props.studentList.length
-})
+/**
+ * ===== 拖拽功能 =====
+ */
+const startDrag = (e: MouseEvent) => {
+  isDragging.value = true
+  dragOffset.value = { x: e.offsetX, y: e.offsetY }
+  document.addEventListener('mousemove', onDrag)
+  document.addEventListener('mouseup', stopDrag)
+}
 
-// 已批改的学生ID列表
+const onDrag = (e: MouseEvent) => {
+  if (!isDragging.value) return
+  position.value = {
+    x: Math.max(0, Math.min(e.clientX - dragOffset.value.x, window.innerWidth - 400)),
+    y: Math.max(0, Math.min(e.clientY - dragOffset.value.y, window.innerHeight - 200))
+  }
+}
+
+const stopDrag = () => {
+  isDragging.value = false
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', stopDrag)
+}
+
+/**
+ * ===== 计算属性 =====
+ */
+const totalStudents = computed(() => props.studentList.length)
+
 const gradedPapers = computed(() => {
   return props.highlightDataList
     .filter((data) => data.question_id === props.currentQuestion)
     .map((data) => data.student_id)
 })
 
-// 已批改数量
-const gradedCount = computed(() => {
-  return gradedPapers.value.length
+const gradedCount = computed(() => gradedPapers.value.length)
+
+const currentQuestionData = computed(() => {
+  return props.questions.find(q => q.question_id === props.currentQuestion)
 })
 
-// 统计信息计算
+const currentQuestionText = computed(() => {
+  const question = currentQuestionData.value
+  if (!question) return '请先上传试卷文件'
+  return question.question || '暂无题目内容'
+})
+
 const statistics = computed(() => {
-  // 获取当前题目的所有学生分数
   const currentQuestionScores = props.highlightDataList
     .filter((data) => data.question_id === props.currentQuestion)
-    .map((data) => ({
-      studentId: data.student_id,
-      score: data.total_score,
-    }))
+    .map((data) => ({ studentId: data.student_id, score: data.total_score }))
 
   if (currentQuestionScores.length === 0) {
     return {
-      highest: 0,
-      lowest: 0,
-      average: 0,
+      highest: 0, lowest: 0, average: 0,
       highestStudent: { id: undefined },
-      lowestStudent: { id: undefined },
+      lowestStudent: { id: undefined }
     }
   }
 
-  // 计算最高分、最低分、平均分
   const scores = currentQuestionScores.map((item) => item.score)
   const highest = Math.max(...scores)
   const lowest = Math.min(...scores)
-  const average =
-    Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
+  const average = Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
 
-  // 找到最高分和最低分对应的学生
   const highestStudent = currentQuestionScores.find((item) => item.score === highest)
   const lowestStudent = currentQuestionScores.find((item) => item.score === lowest)
 
   return {
-    highest,
-    lowest,
-    average,
+    highest, lowest, average,
     highestStudent: { id: highestStudent?.studentId },
-    lowestStudent: { id: lowestStudent?.studentId },
+    lowestStudent: { id: lowestStudent?.studentId }
   }
 })
 
@@ -194,21 +232,12 @@ const statistics = computed(() => {
  * ===== 事件定义 =====
  */
 const emits = defineEmits<{
-  // 题目切换事件
   (e: 'questionChange', question: { id: number; name: string; score: number }): void
-  // 学生切换事件
   (e: 'studentChange', studentId: number): void
-  // 显示当前题目事件
-  (e: 'showCurrentQuestion'): void
 }>()
 
 /**
- * ===== 事件处理函数 =====
- */
-
-/**
- * 处理学生切换
- * @param studentId 学生ID
+ * ===== 事件处理 =====
  */
 const handleStudentChange = (studentId: number) => {
   if (!studentId) {
@@ -218,24 +247,22 @@ const handleStudentChange = (studentId: number) => {
   emits('studentChange', studentId)
 }
 
-/**
- * 处理题目切换
- * @param questionIndex 题目序号（从1开始）
- * @param question 题目数据对象
- */
 const handleQuestionChange = (questionIndex: number, question: any) => {
   emits('questionChange', {
-    id: questionIndex, // 题目序号
-    name: `第${questionIndex}题`, // 题目名称
-    score: question.score, // 题目分值
+    id: questionIndex,
+    name: `第${questionIndex}题`,
+    score: question.score
   })
 }
 
-/**
- * 跳转到指定学生
- * 用于点击统计信息时快速跳转到最高分/最低分学生
- * @param student 学生信息对象
- */
+const showCurrentQuestion = () => {
+  if (!props.currentQuestion) {
+    ElMessage.warning('请先选择题目')
+    return
+  }
+  questionDialogVisible.value = true
+}
+
 const jumpToStudent = (student: { id?: number } | undefined) => {
   if (!student?.id) {
     ElMessage.warning('未找到学生信息')
@@ -250,7 +277,6 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
  * ===== 主容器样式 =====
  */
 .page-header {
-  /* 闲得玩玩毛玻璃 */
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -266,7 +292,6 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
 
 /**
  * ===== 选择区域样式 =====
- * 题目选择和学生选择的通用样式
  */
 .select-section {
   display: flex;
@@ -283,21 +308,16 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   min-width: 120px;
 }
 
-/**
- * ===== 选择列表样式 =====
- * 题目和学生的横向滚动列表
- */
 .select-list {
   display: flex;
   gap: 8px;
   padding: 4px;
-  overflow-x: auto; /* 水平滚动 */
+  overflow-x: auto;
   flex: 1;
-  scrollbar-width: thin; /* Firefox滚动条样式 */
+  scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.03);
 }
 
-/* WebKit浏览器（Chrome, Safari）滚动条样式 */
 .select-list::-webkit-scrollbar {
   height: 4px;
 }
@@ -313,13 +333,8 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   transition: background 0.2s ease;
 }
 
-.select-list::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
 /**
  * ===== 选择项样式 =====
- * 题目和学生选择按钮的通用样式
  */
 .select-item {
   padding: 8px 12px;
@@ -330,14 +345,14 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   font-size: 14px;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.6);
-  flex-shrink: 0; /* 防止被压缩 */
+  flex-shrink: 0;
   border: 1px solid transparent;
-  user-select: none; /* 防止文本被选中 */
+  user-select: none;
 }
 
 .select-item:hover {
   background-color: #e5e5e5;
-  transform: translateY(-1px); /* 悬浮效果 */
+  transform: translateY(-1px);
 }
 
 .select-item.active {
@@ -346,10 +361,6 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   border-color: #007aff;
 }
 
-/**
- * ===== 圆形选择项样式 =====
- * 专门用于学生ID显示的圆形按钮
- */
 .select-item.circle {
   width: 32px;
   height: 32px;
@@ -359,14 +370,11 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   justify-content: center;
   font-size: 13px;
   font-weight: 600;
-  padding: 0; /* 重置padding以保持圆形 */
+  padding: 0;
 }
 
-/**
- * ===== 已批改状态样式 =====
- */
 .select-item.graded {
-  background-color: #4cd964; /* 绿色表示已完成 */
+  background-color: #4cd964;
   color: #ffffff;
   border-color: #4cd964;
 }
@@ -376,7 +384,7 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
 }
 
 /**
- * ===== 统计信息区域样式 =====
+ * ===== 统计信息样式 =====
  */
 .statistics-overview {
   padding-top: 12px;
@@ -384,9 +392,6 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   border-top: 1px solid #e5e5e5;
 }
 
-/**
- * ===== 统计卡片样式 =====
- */
 .stat-item {
   text-align: center;
   padding: 12px 8px;
@@ -407,9 +412,6 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   border-color: #007aff;
 }
 
-/**
- * ===== 统计项内容样式 =====
- */
 .stat-item .label {
   display: block;
   color: rgba(0, 0, 0, 0.6);
@@ -425,16 +427,12 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
   font-weight: 600;
 }
 
-/**
- * ===== 特殊值样式 =====
- * 为不同类型的分数添加色彩区分
- */
 .value.highlight-good {
-  color: #4cd964; /* 绿色：好成绩 */
+  color: #4cd964;
 }
 
 .value.highlight-poor {
-  color: #ff3b30; /* 红色：差成绩 */
+  color: #ff3b30;
 }
 
 .value.icon-value {
@@ -442,8 +440,65 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
 }
 
 /**
+ * ===== 浮动窗口样式 =====
+ */
+.question-float {
+  position: fixed;
+  width: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 3000;
+  border: 1px solid #e5e5e5;
+}
+
+.float-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #f3f2f2;
+  border-bottom: 1px solid #e5e5e5;
+  border-radius: 12px 12px 0 0;
+  cursor: move;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.float-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.title-icon {
+  font-size: 16px;
+  color: #007aff;
+}
+
+.close-btn {
+  padding: 4px !important;
+  min-height: auto !important;
+  margin: 0 !important;
+}
+
+.close-btn :deep(.el-icon) {
+  font-size: 16px;
+}
+
+.float-body {
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-line;
+  line-height: 1.6;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/**
  * ===== 响应式设计 =====
- * 适配移动设备和小屏幕
  */
 @media (max-width: 768px) {
   .page-header {
@@ -476,9 +531,13 @@ const jumpToStudent = (student: { id?: number } | undefined) => {
     font-size: 14px;
   }
 
-  /* 移动端下统计卡片堆叠显示 */
   .statistics-overview :deep(.el-col) {
     margin-bottom: 8px;
+  }
+
+  .question-float {
+    width: 90%;
+    max-width: 350px;
   }
 }
 
