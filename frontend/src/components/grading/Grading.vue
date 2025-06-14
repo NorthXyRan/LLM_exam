@@ -317,10 +317,10 @@ onMounted(async () => {
 
     console.log('数据状态检查:')
     console.log('- 题目数量:', examDataStore.questionCount)
+    console.log('- 参考答案数量:', examDataStore.referenceAnswerCount)
     console.log('- 学生数量:', examDataStore.studentCount)
     console.log('- 答案数量:', examDataStore.totalAnswerCount)
     console.log('- 数据完整性:', examDataStore.isDataComplete)
-
 
     initializeCurrentIds()
 
