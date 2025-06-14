@@ -57,7 +57,7 @@ defineEmits(['file-selected', 'remove', 'preview'])
 
 /* 上传区域样式 */
 .paper-upload-card :deep(.paper-upload .el-upload-dragger) {
-  border: 2px dashed #c7d2fe;
+  border: 2px dashed #c4b5fd;
   border-radius: 12px;
   background: #f8fafc;
   transition: all 0.3s ease;
@@ -70,7 +70,7 @@ defineEmits(['file-selected', 'remove', 'preview'])
 
 .paper-upload-card :deep(.paper-upload .el-upload-dragger:hover) {
   border-color: #4f46e5;
-  background: #f3f4f6;
+  background: #faebe3;
 }
 
 .paper-upload-card :deep(.upload-icon) {

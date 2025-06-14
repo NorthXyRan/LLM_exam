@@ -58,9 +58,9 @@ defineEmits(['file-selected', 'remove', 'preview'])
 
 /* 上传区域样式 */
 .answer-upload-card :deep(.answer-upload .el-upload-dragger) {
-  border: 2px dashed #a5f3fc;
+  border: 2px dashed #c4b5fd;
   border-radius: 12px;
-  background: #f0fdfa;
+  background: #f8fafc;
   transition: all 0.3s ease;
   padding: 4px;
   min-height: 100px;
@@ -70,11 +70,11 @@ defineEmits(['file-selected', 'remove', 'preview'])
 }
 
 .answer-upload-card :deep(.answer-upload .el-upload-dragger:hover) {
-  border-color: #0891b2;
-  background: #ecfdf5;
+  border-color: #4f46e5;
+  background: #e4fbf0;
 }
 
 .answer-upload-card :deep(.upload-icon) {
-  color: #0891b2;
+  color: #4f46e5;
 }
 </style>

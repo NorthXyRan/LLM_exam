@@ -61,7 +61,7 @@ defineEmits(['file-selected', 'remove', 'preview'])
 .student-upload-card :deep(.student-upload .el-upload-dragger) {
   border: 2px dashed #c4b5fd;
   border-radius: 12px;
-  background: #faf5ff;
+  background: #f8fafc;
   transition: all 0.3s ease;
   padding: 4px;
   min-height: 100px;
@@ -72,7 +72,7 @@ defineEmits(['file-selected', 'remove', 'preview'])
 
 .student-upload-card :deep(.student-upload .el-upload-dragger:hover) {
   border-color: #7c3aed;
-  background: #f3f4f6;
+  background: #e0e8f8;
 }
 
 .student-upload-card :deep(.upload-icon) {
