@@ -18,10 +18,6 @@ onMounted(() => {
     examDataStore.loadFromLocal()
     uploadStatusStore.loadFromLocal()
 
-    // 如果没有数据，加载示例数据
-    if (examDataStore.questionCount === 0 && examDataStore.studentCount === 0) {
-      examDataStore.loadExampleData()
-    }
   } catch (error) {
     console.error('应用初始化失败:', error)
   }
