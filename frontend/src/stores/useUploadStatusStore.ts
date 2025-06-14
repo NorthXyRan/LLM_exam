@@ -1,47 +1,34 @@
+// 上传状态管理
+// 职责: 管理文件上传的状态、进度、错误信息
+
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 
 // ===== 统一的上传项状态结构 =====
 export interface UploadItem {
-  name: string
+  name: string        // 文件名
   status: 'idle' | 'uploading' | 'processing' | 'ready' | 'error'
-  rawContent: string  // 总是保存原始文件内容，用于预览
+  rawContent: string  // 原始文件内容，用于预览
   parsedData?: any    // 解析后的JSON数据
   error?: string      // 错误信息
   meta?: any          // 元数据（如题目数量、学生数量等）
 }
 
-// ===== 简化的上传状态管理 =====
+// ===== 上传状态管理 =====
 export const useUploadStatusStore = defineStore('uploadStatus', () => {
   // ===== 状态 =====
-  const examPaper: Ref<UploadItem> = ref({
-    name: '',
-    status: 'idle',
-    rawContent: '',
-  })
+  const examPaper: Ref<UploadItem> = ref({name: '', status: 'idle', rawContent: ''})
+  const referenceAnswer: Ref<UploadItem> = ref({name: '', status: 'idle', rawContent: ''})
+  const studentAnswers: Ref<UploadItem> = ref({name: '', status: 'idle', rawContent: ''})
 
-  const referenceAnswer: Ref<UploadItem> = ref({
-    name: '',
-    status: 'idle',
-    rawContent: '',
-  })
-
-  const studentAnswers: Ref<UploadItem> = ref({
-    name: '',
-    status: 'idle',
-    rawContent: '',
-  })
-
-  // ===== 计算属性 =====
+  // ===== 计算属性 =====     是否可以上传...
   const canUploadAnswer = computed(() => examPaper.value.status === 'ready')
   const canUploadStudent = computed(() => examPaper.value.status === 'ready')
-  const canProceedToGrading = computed(() => 
-    examPaper.value.status === 'ready' && studentAnswers.value.status === 'ready'
-  )
+  const canProceedToGrading = computed(() => examPaper.value.status === 'ready' && studentAnswers.value.status === 'ready',)
 
   // ===== 核心方法：统一的状态更新函数 =====
   const updateItemStatus = (
-    item: Ref<UploadItem>, 
+    item: Ref<UploadItem>,
     updates: Partial<UploadItem>
   ) => {
     item.value = { ...item.value, ...updates }
@@ -49,7 +36,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   }
 
   // ===== 试卷相关方法 =====
-  const setPaperUploading = (name: string, rawContent: string) => {
+  const setPaperUploading = (name: string, rawContent: string) => {// 设置试卷上传中状态
+
     updateItemStatus(examPaper, {
       name,
       rawContent,
@@ -60,7 +48,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     })
   }
 
-  const setPaperReady = (parsedData: any, meta: any) => {
+  const setPaperReady = (parsedData: any, meta: any) => {// 设置试卷上传成功状态
+
     updateItemStatus(examPaper, {
       status: 'ready',
       parsedData,
@@ -69,14 +58,16 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     })
   }
 
-  const setPaperError = (error: string) => {
+  const setPaperError = (error: string) => {// 设置试卷上传失败状态
+
     updateItemStatus(examPaper, {
       status: 'error',
       error
     })
   }
 
-  const resetPaper = () => {
+  const resetPaper = () => {// 重置试卷上传状态
+
     updateItemStatus(examPaper, {
       name: '',
       status: 'idle',
@@ -88,7 +79,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   }
 
   // ===== 参考答案相关方法 =====
-  const setAnswerUploading = (name: string, rawContent: string) => {
+  const setAnswerUploading = (name: string, rawContent: string) => {// 设置参考答案上传中状态
+
     updateItemStatus(referenceAnswer, {
       name,
       rawContent,
@@ -99,7 +91,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     })
   }
 
-  const setAnswerReady = (parsedData: any, meta: any) => {
+  const setAnswerReady = (parsedData: any, meta: any) => {// 设置参考答案上传成功状态
+
     updateItemStatus(referenceAnswer, {
       status: 'ready',
       parsedData,
@@ -108,14 +101,16 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     })
   }
 
-  const setAnswerError = (error: string) => {
+  const setAnswerError = (error: string) => {// 设置参考答案上传失败状态
+
     updateItemStatus(referenceAnswer, {
       status: 'error',
       error
     })
   }
 
-  const resetAnswer = () => {
+  const resetAnswer = () => {// 重置参考答案上传状态
+
     updateItemStatus(referenceAnswer, {
       name: '',
       status: 'idle',
@@ -127,7 +122,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   }
 
   // ===== 学生答案相关方法 =====
-  const setStudentUploading = (name: string, rawContent: string) => {
+  const setStudentUploading = (name: string, rawContent: string) => {// 设置学生答案上传中状态
+
     updateItemStatus(studentAnswers, {
       name,
       rawContent,
@@ -138,7 +134,8 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     })
   }
 
-  const setStudentReady = (parsedData: any, meta: any) => {
+  const setStudentReady = (parsedData: any, meta: any) => {// 设置学生答案上传成功状态
+
     updateItemStatus(studentAnswers, {
       status: 'ready',
       parsedData,
@@ -147,14 +144,16 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
     })
   }
 
-  const setStudentError = (error: string) => {
+  const setStudentError = (error: string) => {// 设置学生答案上传失败状态
+
     updateItemStatus(studentAnswers, {
       status: 'error',
       error
     })
   }
 
-  const resetStudent = () => {
+  const resetStudent = () => {// 重置学生答案上传状态
+
     updateItemStatus(studentAnswers, {
       name: '',
       status: 'idle',
@@ -166,11 +165,12 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
   }
 
   // ===== 批量操作 =====
-  const resetAll = () => {
+  const resetAll = () => {// 重置所有上传状态
+
     resetPaper()
     resetAnswer()
     resetStudent()
-    console.log('📝 所有上传状态已重置')
+    console.log('所有上传状态已重置')
   }
 
   // ===== 状态总览 =====
@@ -202,7 +202,7 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
       localStorage.setItem('upload_exam_paper', JSON.stringify(examPaper.value))
       localStorage.setItem('upload_reference_answer', JSON.stringify(referenceAnswer.value))
       localStorage.setItem('upload_student_answers', JSON.stringify(studentAnswers.value))
-      console.log('💾 上传状态已保存到本地')
+      console.log('上传状态已保存到本地')
     } catch (error) {
       console.error('保存上传状态失败:', error)
     }
@@ -214,17 +214,11 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
       const savedReference = localStorage.getItem('upload_reference_answer')
       const savedStudentAnswers = localStorage.getItem('upload_student_answers')
 
-      if (savedPaper) {
-        examPaper.value = JSON.parse(savedPaper)
-      }
-      if (savedReference) {
-        referenceAnswer.value = JSON.parse(savedReference)
-      }
-      if (savedStudentAnswers) {
-        studentAnswers.value = JSON.parse(savedStudentAnswers)
-      }
+      if (savedPaper) examPaper.value = JSON.parse(savedPaper)
+      if (savedReference) referenceAnswer.value = JSON.parse(savedReference)
+      if (savedStudentAnswers) studentAnswers.value = JSON.parse(savedStudentAnswers)
 
-      console.log('📂 上传状态已从本地恢复')
+      console.log('上传状态已从本地恢复')
     } catch (error) {
       console.error('加载上传状态失败:', error)
     }
@@ -235,7 +229,7 @@ export const useUploadStatusStore = defineStore('uploadStatus', () => {
       localStorage.removeItem('upload_exam_paper')
       localStorage.removeItem('upload_reference_answer')
       localStorage.removeItem('upload_student_answers')
-      console.log('🗑️ 上传状态本地存储已清空')
+      console.log('上传状态本地存储已清空')
     } catch (error) {
       console.error('清空上传状态存储失败:', error)
     }
