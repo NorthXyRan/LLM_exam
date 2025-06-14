@@ -10,7 +10,6 @@
       :highlight-data-list="examDataStore.highlightDataList"
       @question-change="handleQuestionChange"
       @student-change="handleStudentChange"
-      @show-current-question="showCurrentQuestion"
     />
 
     <!-- 第一行：评分 + 操作 (7:3) -->
@@ -70,14 +69,6 @@
         />
       </div>
     </div>
-
-    <!-- 当前题目弹窗 -->
-    <el-dialog v-model="currentQuestionVisible" title="当前题目" width="50%">
-      <div class="question-content">{{ currentQuestionText }}</div>
-      <template #footer>
-        <el-button @click="currentQuestionVisible = false">关闭</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -105,7 +96,6 @@ const uploadStatusStore = useUploadStatusStore()
  */
 const currentStudentId = ref<number>(1)
 const currentQuestionId = ref<number>(1)
-const currentQuestionVisible = ref(false)
 
 /**
  * ===== 计算属性 =====
@@ -113,13 +103,6 @@ const currentQuestionVisible = ref(false)
 // 当前题目信息
 const currentQuestion = computed(() => {
   return examDataStore.getQuestionById(currentQuestionId.value)
-})
-
-// 当前题目文本
-const currentQuestionText = computed(() => {
-  const question = currentQuestion.value
-  if (!question) return '请先上传试卷文件'
-  return question.question || '暂无题目内容'
 })
 
 // 当前参考答案
@@ -209,14 +192,6 @@ const handleQuestionChange = (question: { id: number; name: string; score: numbe
   currentQuestionId.value = question.id
   ElMessage.success(`切换到第${question.id}题，满分${questionExists.score}分`)
   console.log('📝 切换题目:', question.id)
-}
-
-const showCurrentQuestion = () => {
-  if (!currentQuestionId.value) {
-    ElMessage.warning('请先选择题目')
-    return
-  }
-  currentQuestionVisible.value = true
 }
 
 // 事件转发
@@ -358,8 +333,7 @@ onMounted(async () => {
     // 检查是否有任何数据
     const hasAnyData =
       examDataStore.questionCount > 0 ||
-      examDataStore.studentCount > 0 ||
-      uploadStatusStore.isPaperUploaded
+      examDataStore.studentCount > 0
 
     if (hasAnyData) {
       console.log('✅ 检测到已有数据，直接使用')
@@ -529,28 +503,6 @@ onMounted(async () => {
 
 .grading-page :deep(*)::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.3);
-}
-
-/* ===== 弹窗 ===== */
-.question-content {
-  white-space: pre-line;
-  line-height: 1.6;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.6);
-  padding: 15px;
-  border-radius: 8px;
-  background: #ffffff;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.grading-page :deep(.el-dialog) {
-  border-radius: 12px;
-}
-
-.grading-page :deep(.el-dialog__header) {
-  background: #f5f5f5;
-  border-bottom: 1px solid #e5e5e5;
 }
 
 /* ===== 响应式 ===== */
