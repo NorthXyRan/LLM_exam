@@ -1,3 +1,5 @@
+// 管理解析后的核心业务数据
+
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -44,11 +46,11 @@ export interface HighlightData {
 // ===== 核心数据存储 =====
 export const useExamDataStore = defineStore('examData', () => {
   // ===== 状态 =====
-  const questions = ref<Question[]>([])
-  const referenceAnswers = ref<ReferenceAnswer[]>([])
-  const studentAnswers = ref<StudentAnswer[]>([])
-  const studentList = ref<StudentInfo[]>([])
-  const highlightDataList = ref<HighlightData[]>([])
+  const questions = ref<Question[]>([])                  // 题目列表
+  const referenceAnswers = ref<ReferenceAnswer[]>([])    // 参考答案列表
+  const studentAnswers = ref<StudentAnswer[]>([])        // 学生答案列表
+  const studentList = ref<StudentInfo[]>([])             // 学生列表
+  const highlightDataList = ref<HighlightData[]>([])     // 评分结果
 
   // ===== 计算属性 =====
   const questionCount = computed(() => questions.value.length)
@@ -92,6 +94,11 @@ export const useExamDataStore = defineStore('examData', () => {
     questions.value = questionsData
   }
 
+  // 设置参考答案数据
+  const setReferenceAnswers = (answersData: ReferenceAnswer[]) => {
+    referenceAnswers.value = answersData
+  }
+
   // 设置学生答案数据
   const setStudentAnswers = (answersData: StudentAnswer[]) => {
     studentAnswers.value = answersData
@@ -103,67 +110,6 @@ export const useExamDataStore = defineStore('examData', () => {
   // 设置高亮数据
   const setHighlightData = (highlightData: HighlightData[]) => {
     highlightDataList.value = highlightData
-    // TODO: 后续改进JSON文件存储
-    // 1. 验证数据格式和完整性
-    // 2. 保存到grading_results.json文件
-    // 3. 实现文件版本控制和备份
-    // 4. 添加数据变更的事件通知
-  }
-
-  // 添加单个题目
-  const addQuestion = (question: Question) => {
-    const existingIndex = questions.value.findIndex((q) => q.question_id === question.question_id)
-    if (existingIndex >= 0) {
-      questions.value[existingIndex] = question
-    } else {
-      questions.value.push(question)
-    }
-  }
-
-  // 设置参考答案数据
-  const setReferenceAnswers = (answersData: ReferenceAnswer[]) => {
-    referenceAnswers.value = answersData
-  }
-
-  // 更新单个参考答案
-  const updateReferenceAnswer = (questionId: number, answer: string) => {
-    const existingIndex = referenceAnswers.value.findIndex((ans) => ans.question_id === questionId)
-    if (existingIndex >= 0) {
-      referenceAnswers.value[existingIndex] = { question_id: questionId, answer }
-    } else {
-      referenceAnswers.value.push({ question_id: questionId, answer })
-    }
-  }
-
-  // 批量更新参考答案
-  const updateReferenceAnswers = (newAnswers: { question_id: number; answer: string }[]) => {
-    referenceAnswers.value = newAnswers.map((ans) => ({
-      question_id: ans.question_id,
-      answer: ans.answer,
-    }))
-  }
-
-  // 清除所有参考答案
-  const clearReferenceAnswers = () => {
-    referenceAnswers.value = []
-  }
-
-  // 添加学生答案
-  const addStudentAnswer = (answer: StudentAnswer) => {
-    const existingIndex = studentAnswers.value.findIndex(
-      (ans) => ans.student_id === answer.student_id && ans.question_id === answer.question_id,
-    )
-    if (existingIndex >= 0) {
-      studentAnswers.value[existingIndex] = answer
-    } else {
-      studentAnswers.value.push(answer)
-    }
-
-    // 更新学生列表
-    const studentExists = studentList.value.some((student) => student.id === answer.student_id)
-    if (!studentExists) {
-      studentList.value.push({ id: answer.student_id })
-    }
   }
 
   // 添加高亮数据
@@ -200,32 +146,9 @@ export const useExamDataStore = defineStore('examData', () => {
     resetStudentData()
   }
 
-  // ===== 示例数据 =====
-  const loadExampleData = () => {
-    if (questions.value.length === 0) {
-      questions.value = [{ question_id: 1, question: '示例问题1', score: 10 }]
-    }
 
-    if (referenceAnswers.value.length === 0) {
-      referenceAnswers.value = [{ question_id: 1, answer: '示例参考答案1' }]
-    }
-
-    if (studentAnswers.value.length === 0) {
-      studentAnswers.value = [{ student_id: 1, question_id: 1, answer: '学生1的答案1' }]
-      studentList.value = [{ id: 1 }]
-    }
-
-    console.log('📝 示例数据加载完成')
-  }
 
   // ===== 本地存储 =====
-  // TODO: 升级为JSON文件持久化方案
-  // 当前使用localStorage作为临时存储
-  // 后续改进：
-  // 1. 实现JSON文件的读写操作
-  // 2. 添加数据导入导出功能
-  // 3. 实现自动备份和版本控制
-  // 4. 支持离线数据管理
   const saveToLocal = () => {
     try {
       localStorage.setItem('exam_questions', JSON.stringify(questions.value))
@@ -280,17 +203,11 @@ export const useExamDataStore = defineStore('examData', () => {
     setReferenceAnswers,
     setStudentAnswers,
     setHighlightData,
-    addQuestion,
-    updateReferenceAnswer,
-    updateReferenceAnswers,
-    clearReferenceAnswers,
-    addStudentAnswer,
     addHighlightData,
     resetQuestions,
     resetReferenceAnswers,
     resetStudentData,
     resetAllData,
-    loadExampleData,
     saveToLocal,
     loadFromLocal,
   }
