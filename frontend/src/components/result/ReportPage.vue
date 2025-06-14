@@ -430,11 +430,6 @@ onMounted(() => {
   // 从本地恢复数据
   examDataStore.loadFromLocal()
 
-  // 如果没有数据，加载示例数据
-  if (examDataStore.questionCount === 0) {
-    examDataStore.loadExampleData()
-  }
-
   // 默认选择第一个题目（如果有的话）
   if (examDataStore.questions.length > 0) {
     currentQuestionId.value = examDataStore.questions[0].question_id
@@ -579,7 +574,7 @@ onMounted(() => {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
+  gap: 10px;
 }
 
 .stat-card {
