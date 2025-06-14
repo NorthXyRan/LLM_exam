@@ -84,31 +84,31 @@ const previewDialog = ref({
 // ===== 计算属性：显示文本 =====
 const paperDisplayText = computed(() => {
   const paper = uploadStore.examPaper
-  if (paper.status === 'error') return paper.error || '解析失败'
+  if (paper.status === 'error') return paper.error || 'Parsing failed'
   if (paper.status === 'ready') {
     const questionCount = paper.meta?.questionCount || 0
-    return `当前试卷：${paper.name}（共${questionCount}道题目）`
+    return `Current paper: ${paper.name} (Total ${questionCount} questions)`
   }
   return ''
 })
 
 const answerDisplayText = computed(() => {
   const answer = uploadStore.referenceAnswer
-  if (answer.status === 'error') return answer.error || '解析失败'
+  if (answer.status === 'error') return answer.error || 'Parsing failed'
   if (answer.status === 'ready') {
     const answerCount = answer.meta?.answerCount || 0
-    return `当前答案：${answer.name}（共${answerCount}道答案）`
+    return `Current answer: ${answer.name} (Total ${answerCount} answers)`
   }
   return ''
 })
 
 const studentDisplayText = computed(() => {
   const student = uploadStore.studentAnswers
-  if (student.status === 'error') return student.error || '解析失败'
+  if (student.status === 'error') return student.error || 'Parsing failed'
   if (student.status === 'ready') {
     const studentCount = student.meta?.studentCount || 0
     const answerCount = student.meta?.answerCount || 0
-    return `学生答案：${student.name}（${studentCount}名学生，${answerCount}个答案）`
+    return `Student answer: ${student.name} (${studentCount} students, ${answerCount} answers)`
   }
   return ''
 })
@@ -116,15 +116,15 @@ const studentDisplayText = computed(() => {
 // ===== 核心处理函数：统一的文件处理流程 =====
 const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => {
   try {
-    console.log(`📁 开始处理${type}文件:`, file.name)
+    console.log(`开始处理${type}文件:`, file.name)
 
     // 1. 读取文件内容
     const content = await readFileContent(file)
     if (!content?.trim()) {
-      throw new Error('文件内容为空或解析失败')
+      throw new Error('File content is empty or parsing failed')
     }
 
-    console.log(`📄 文件内容读取成功，长度: ${content.length}`)
+    console.log(`文件内容读取成功，长度: ${content.length}`)
 
     // 2. 根据类型设置上传状态
     if (type === 'paper') {
@@ -140,20 +140,20 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
     // 3. 解析数据
     if (isJsonFile(file.name)) {
       // JSON 文件直接解析
-      console.log(`🔍 检测到JSON文件，直接解析`)
+      console.log(`检测到JSON文件，直接解析`)
       parsedData = JSON.parse(content)
       validateJsonData(parsedData, type as 'paper' | 'answer' | 'student')
     } else {
       // 非JSON文件使用AI解析
-      console.log(`🤖 检测到非JSON文件，使用AI解析`)
+      console.log(`检测到非JSON文件，使用AI解析`)
 
       if (!uploadLLMService.isAvailable()) {
-        throw new Error('AI解析服务不可用，请上传JSON格式文件或检查API配置')
+        throw new Error('AI parsing service is not available, please upload a JSON file or check the API configuration')
       }
 
       // 学生答案文件通常应该是JSON格式，不支持AI解析
       if (type === 'student') {
-        throw new Error('学生答案文件必须为JSON格式')
+        throw new Error('Student answer must be in JSON format')
       }
 
       parsedData = await uploadLLMService.Parse(content, type)
@@ -163,7 +163,7 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
       await askToSaveJsonResult(parsedData, file.name, type)
     }
 
-    console.log(`✅ 数据解析成功:`, parsedData)
+    console.log(`数据解析成功:`, parsedData)
 
     // 4. 更新数据和状态
     if (type === 'paper') {
@@ -171,15 +171,15 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
       uploadStore.setPaperReady(parsedData, {
         questionCount: parsedData.questions.length,
       })
-      ElMessage.success(`试卷上传成功！共解析出 ${parsedData.questions.length} 道题目`)
+      ElMessage.success(`Paper uploaded successfully! Parsed ${parsedData.questions.length} questions`)
     } else if (type === 'answer') {
       // 修复：使用正确的方法更新参考答案
       examStore.setReferenceAnswers(parsedData.answers)
       uploadStore.setAnswerReady(parsedData, {
         answerCount: parsedData.answers.length,
       })
-      ElMessage.success(`参考答案上传成功！共 ${parsedData.answers.length} 道答案`)
-      console.log('🔍 参考答案数据已设置:', parsedData.answers)
+      ElMessage.success(`Reference answer uploaded successfully! Parsed ${parsedData.answers.length} answers`)
+      console.log('参考答案数据已设置:', parsedData.answers)
     } else if (type === 'student') {
       examStore.setStudentAnswers(parsedData)
       const uniqueStudentIds = [...new Set(parsedData.map((item: any) => item.student_id))]
@@ -188,7 +188,7 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
         answerCount: parsedData.length,
       })
       ElMessage.success(
-        `学生答案上传成功！共 ${uniqueStudentIds.length} 名学生，${parsedData.length} 个答案`,
+        `Student answer uploaded successfully! Parsed ${uniqueStudentIds.length} students, ${parsedData.length} answers`,
       )
     }
 
@@ -196,9 +196,9 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
     examStore.saveToLocal()
     uploadStore.saveToLocal()
 
-    console.log(`💾 ${type} 数据已保存`)
+    console.log(`${type} 数据已保存`)
   } catch (error: any) {
-    console.error(`❌ ${type} 处理失败:`, error)
+    console.error(`${type} 处理失败:`, error)
 
     // 设置错误状态
     const errorMessage = error.message || '未知错误'
@@ -211,12 +211,12 @@ const processFile = async (file: File, type: 'paper' | 'answer' | 'student') => 
     }
 
     const typeMap = {
-      paper: '试卷',
-      answer: '参考答案',
-      student: '学生答案',
+      paper: 'Paper',
+      answer: 'Reference answer',
+      student: 'Student answer',
     }
 
-    ElMessage.error(`${typeMap[type]}处理失败: ${errorMessage}`)
+    ElMessage.error(`${typeMap[type]} processing failed: ${errorMessage}`)
 
     // 保存错误状态到本地
     uploadStore.saveToLocal()
@@ -249,7 +249,7 @@ const handlePaperRemove = () => {
   examStore.saveToLocal()
   uploadStore.saveToLocal()
 
-  ElMessage.success('试卷已移除')
+  ElMessage.success('Paper removed successfully')
 }
 
 const handleAnswerRemove = () => {
@@ -261,7 +261,7 @@ const handleAnswerRemove = () => {
   examStore.saveToLocal()
   uploadStore.saveToLocal()
 
-  ElMessage.success('参考答案已移除')
+  ElMessage.success('Reference answer removed successfully')
 }
 
 const handleStudentRemove = () => {
@@ -273,48 +273,48 @@ const handleStudentRemove = () => {
   examStore.saveToLocal()
   uploadStore.saveToLocal()
 
-  ElMessage.success('学生答案已移除')
+  ElMessage.success('Student answer removed successfully')
 }
 
-// ===== 预览操作：极简版本 =====
+// ===== 预览操作 =====
 const handlePaperPreview = () => {
   previewDialog.value = {
     visible: true,
-    title: `试卷预览 - ${uploadStore.examPaper.name}`,
-    content: uploadStore.examPaper.rawContent || '暂无内容',
+    title: `Paper preview - ${uploadStore.examPaper.name}`,
+    content: uploadStore.examPaper.rawContent || 'No content',
   }
 }
 
 const handleAnswerPreview = () => {
   previewDialog.value = {
     visible: true,
-    title: `参考答案预览 - ${uploadStore.referenceAnswer.name}`,
-    content: uploadStore.referenceAnswer.rawContent || '暂无内容',
+    title: `Reference answer preview - ${uploadStore.referenceAnswer.name}`,
+    content: uploadStore.referenceAnswer.rawContent || 'No content',
   }
 }
 
 const handleStudentPreview = () => {
   previewDialog.value = {
     visible: true,
-    title: `学生答案预览 - ${uploadStore.studentAnswers.name}`,
-    content: uploadStore.studentAnswers.rawContent || '暂无内容',
+    title: `Student answer preview - ${uploadStore.studentAnswers.name}`,
+    content: uploadStore.studentAnswers.rawContent || 'No content',
   }
 }
 
-// ===== 重置操作：一键搞定 =====
+// ===== 重置操作 =====
 const resetAll = async () => {
   try {
     await ElMessageBox.confirm(
-      '确定要重置所有数据吗？这将清除所有已上传的文件和数据。',
-      '确认重置',
+      'Are you sure you want to reset all data? This will clear all uploaded files and data.',
+      'Confirm reset',
       {
-        confirmButtonText: '重置',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Reset',
+        cancelButtonText: 'Cancel',
         type: 'warning',
       },
     )
 
-    console.log('🔄 开始重置所有数据')
+    console.log('开始重置所有数据')
 
     // 重置所有Store数据
     uploadStore.resetAll()
@@ -324,17 +324,17 @@ const resetAll = async () => {
     examStore.saveToLocal()
     uploadStore.saveToLocal()
 
-    ElMessage.success('所有数据已重置')
-    console.log('✅ 所有数据重置完成')
+    ElMessage.success('All data reset successfully')
+    console.log('所有数据重置完成')
   } catch {
     // 用户取消操作
-    console.log('❌ 用户取消重置操作')
+    console.log('用户取消重置操作')
   }
 }
 
 // ===== 初始化 =====
 onMounted(() => {
-  console.log('🚀 Uploading 组件初始化')
+  console.log('Uploading 组件初始化')
 
   // 从本地存储恢复数据
   examStore.loadFromLocal()
