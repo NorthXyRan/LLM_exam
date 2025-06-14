@@ -107,10 +107,8 @@ const currentQuestion = computed(() => {
 
 // 参考答案
 const currentReferenceAnswer = computed(() => {
-  if (!currentQuestionId.value) return '请先选择题目'
-  
   const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
-  
+
   if (!referenceAnswer) {
     return 'There is no answer available. You can choose to upload, or maybe we\'ll support LLMs to automatically generate an answer for you later.'  
   }
@@ -120,9 +118,6 @@ const currentReferenceAnswer = computed(() => {
 
 // 学生答案
 const currentStudentAnswer = computed(() => {
-  if (!currentStudentId.value || !currentQuestionId.value) {
-    return '请先选择学生和题目'
-  }
 
   const answer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
 
@@ -130,7 +125,7 @@ const currentStudentAnswer = computed(() => {
     return 'There is no student answer available. Please check if you have uploaded or answered this question.'
   }
 
-  return answer.answer || '该学生未回答此题目'
+  return answer.answer
 })
 
 // 当前高亮数据
