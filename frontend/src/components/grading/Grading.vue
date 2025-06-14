@@ -27,7 +27,6 @@
         @start-grading="startGrading"
       />
     </div>
-
     <!-- 第二行：预览 + 参考答案 + 反馈 (4:3:3) -->
     <div class="grading-row grading-row-main">
       <!-- 预览区域 -->
@@ -69,6 +68,7 @@
         />
       </div>
     </div>
+
   </div>
 </template>
 
@@ -105,20 +105,20 @@ const currentQuestion = computed(() => {
   return examDataStore.getQuestionById(currentQuestionId.value)
 })
 
-// 当前参考答案
+// 参考答案
 const currentReferenceAnswer = computed(() => {
   if (!currentQuestionId.value) return '请先选择题目'
-
+  
   const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
-
+  
   if (!referenceAnswer) {
-    return '参考答案为可选项，可以直接批改学生答案'
+    return 'There is no answer available. You can choose to upload, or maybe we\'ll support LLMs to automatically generate an answer for you later.'  
   }
-
+  
   return referenceAnswer.answer
 })
 
-// 当前学生答案
+// 学生答案
 const currentStudentAnswer = computed(() => {
   if (!currentStudentId.value || !currentQuestionId.value) {
     return '请先选择学生和题目'
@@ -127,11 +127,7 @@ const currentStudentAnswer = computed(() => {
   const answer = examDataStore.getStudentAnswer(currentStudentId.value, currentQuestionId.value)
 
   if (!answer) {
-    // 检查是否有任何学生数据
-    if (examDataStore.studentCount === 0) {
-      return '请先上传学生答案文件'
-    }
-    return '该学生未回答此题目'
+    return 'There is no student answer available. Please check if you have uploaded or answered this question.'
   }
 
   return answer.answer || '该学生未回答此题目'
@@ -318,39 +314,24 @@ const initializeCurrentIds = () => {
  */
 onMounted(async () => {
   try {
-    console.log('🚀 Grading页面初始化开始')
+    console.log('Grading页面初始化开始')
 
     // 从本地恢复所有状态
     examDataStore.loadFromLocal()
     uploadStatusStore.loadFromLocal()
 
-    console.log('📊 数据状态检查:')
+    console.log('数据状态检查:')
     console.log('- 题目数量:', examDataStore.questionCount)
     console.log('- 学生数量:', examDataStore.studentCount)
     console.log('- 答案数量:', examDataStore.totalAnswerCount)
     console.log('- 数据完整性:', examDataStore.isDataComplete)
 
-    // 检查是否有任何数据
-    const hasAnyData =
-      examDataStore.questionCount > 0 ||
-      examDataStore.studentCount > 0
 
-    if (hasAnyData) {
-      console.log('✅ 检测到已有数据，直接使用')
+    initializeCurrentIds()
 
-      // 初始化UI状态
-      if (examDataStore.questionCount > 0 || examDataStore.studentCount > 0) {
-        initializeCurrentIds()
-      }
-    } else {
-      console.log('📝 没有检测到数据，加载示例数据...')
-      examDataStore.loadExampleData()
-      initializeCurrentIds()
-    }
-
-    console.log('🎉 Grading页面初始化完成')
+    console.log('Grading页面初始化完成')
   } catch (error) {
-    console.error('💥 初始化失败:', error)
+    console.error('初始化失败:', error)
     ElMessage.error('初始化失败: ' + (error instanceof Error ? error.message : '未知错误'))
   }
 })
