@@ -110,7 +110,7 @@ const currentReferenceAnswer = computed(() => {
   const referenceAnswer = examDataStore.getReferenceAnswer(currentQuestionId.value)
 
   if (!referenceAnswer) {
-    return 'There is no answer available. You can choose to upload, or maybe we\'ll support LLMs to automatically generate an answer for you later.'  
+    return 'There is no answer available. Please check if you have uploaded the reference answer.'  
   }
   
   return referenceAnswer.answer
