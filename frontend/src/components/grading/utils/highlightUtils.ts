@@ -73,7 +73,7 @@ export function escapeHtml(text: string): string {
 // ============== 主函数 ==============
 
 /**
- * 生成高亮后的HTML内容 - 直接插入样式
+ * 生成高亮后的HTML内容 - 直接插入样式  把数据转换成带高亮的HTML
  */
 export function generateHighlightedHTML(
   content: string,
@@ -126,7 +126,6 @@ export function generateHighlightedHTML(
 
   // 为每个高亮创建开始和结束标记
   highlights.forEach((highlight, index) => {
-    const config = HIGHLIGHT_CONFIG[highlight.type]
     const uniqueId = `HL_${index}_`
 
     // 将原文替换为带标记的版本
@@ -162,7 +161,7 @@ export function generateHighlightedHTML(
             cursor: pointer; 
             margin: 0 1px; 
             position: relative; 
-            z-index: ${100 - index};
+            z-index: ${index + 1};
             transition: all 0.2s ease;
           "
           onmouseover="this.style.backgroundColor='${config.hoverBackgroundColor}'; this.style.borderLeftColor='${config.hoverBorderColor}'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.15)'"
@@ -180,7 +179,7 @@ export function generateHighlightedHTML(
 }
 
 /**
- * 解析高亮元素
+ * 解析高亮元素  把HTML还原成数据
  */
 export function parseHighlightElement(element: HTMLElement): {
   type: HighlightType
