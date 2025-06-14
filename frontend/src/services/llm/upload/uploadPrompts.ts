@@ -19,7 +19,7 @@ ${content}
   "questionCount": 题目总数,
   "questions": [
     {
-      "question_id": 题号,
+      "question_id": 题号,number类型
       "question": "题目内容",
       "score": 分值
     }
@@ -43,7 +43,7 @@ ${content}
   "answerCount": 答案总数,
   "answers": [
     {
-      "question_id": 题号,
+      "question_id": 题号,number类型
       "answer": "参考答案内容"
     }
   ]
