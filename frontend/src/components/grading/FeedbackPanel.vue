@@ -61,8 +61,7 @@ interface HighlightClickData {
 interface SelectedHighlight {
   text: string
   type: 'correct' | 'wrong' | 'unclear' | 'redundant'
-  reason?: string
-  aiReason?: string
+  reason?: string       // 给分理由
   scoringPoint?: number
 }
 
@@ -89,18 +88,18 @@ const isEditing = ref(false)
 // 显示的理由内容
 const displayReason = computed(() => {
   if (!selectedHighlight.value) {
-    return '选择左侧文本查看 AI 给分理由，或点击修改按钮手动输入...'
+    return 'Select the text on the left to view the AI scoring reason, or click the Modify button to manually input...'
   }
   
   if (isEditing.value) {
     return editableReason.value
   }
   
-  // 优先显示AI理由，如果没有则显示自定义理由
-  const reason = selectedHighlight.value.aiReason || selectedHighlight.value.reason || ''
+  // 显示理由
+  const reason =  selectedHighlight.value.reason || ''
   
   if (!reason) {
-    return '暂无理由信息，点击修改按钮添加理由...'
+    return 'No reason information, click the Modify button to add a reason...'
   }
   
   return reason
@@ -120,7 +119,7 @@ const handleHighlightClicked = (data: HighlightClickData) => {
   selectedHighlight.value = {
     text: data.text,
     type: typeMapping[data.type as keyof typeof typeMapping],
-    aiReason: data.reason
+    reason: data.reason
   }
   
   ElMessage.info(`查看高亮内容：${data.text.substring(0, 30)}...`)
@@ -138,17 +137,10 @@ const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unc
     markData = data
   }
 
-  const aiReasons = {
-    correct: `该答案准确回答了问题的核心要点，逻辑清晰，表达规范。`,
-    wrong: '该答案存在明显的概念错误或逻辑漏洞，与标准答案不符。',
-    unclear: '该答案的表述不够清晰明确，可能存在歧义或不完整的地方。',
-    redundant: '该部分内容与题目要求不符或存在不必要的重复。'
-  }
 
   selectedHighlight.value = {
     text: markData.text,
-    type: markData.type,
-    aiReason: aiReasons[markData.type]
+    type: markData.type
   }
 
   ElMessage.success(`已标记为"${markData.type}"：${markData.text.substring(0, 20)}...`)
@@ -157,14 +149,13 @@ const handleMarkAnswer = (data: { text: string, type: 'correct' | 'wrong' | 'unc
 // 监听选中的高亮变化
 watch(() => selectedHighlight.value, (newHighlight) => {
   if (newHighlight) {
-    // 优先使用AI理由，如果没有则使用自定义理由
-    editableReason.value = newHighlight.aiReason || newHighlight.reason || ''
+    editableReason.value = newHighlight.reason || ''
     isEditing.value = false
     
     console.log('选中高亮变化:', {
       text: newHighlight.text,
       type: newHighlight.type,
-      reason: newHighlight.aiReason || newHighlight.reason,
+      reason: newHighlight.reason,
       scoringPoint: newHighlight.scoringPoint
     })
   } else {
