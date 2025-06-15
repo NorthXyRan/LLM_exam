@@ -28,17 +28,17 @@
         <div class="section">
           <h4><el-icon><List /></el-icon>Scoring Rules</h4>
           <div class="rules-grid">
-            <div class="rule-item">
+            <div class="rule-item rule-correct">
               <div class="rule-title">Correct Answer</div>
               <div class="display-box">{{ promptData.grading_rules['Correct Answers'] }}</div>
             </div>
             
-            <div class="rule-item">
+            <div class="rule-item rule-wrong">
               <div class="rule-title">Wrong Answer</div>
               <div class="display-box">{{ promptData.grading_rules['Wrong Answers'] }}</div>
             </div>
             
-            <div class="rule-item">
+            <div class="rule-item rule-unclear">
               <div class="rule-title">Unclear Answer</div>
               <div class="unclear-rules">
                 <div v-for="(desc, type) in promptData.grading_rules['Unclear Answers']" :key="type" class="unclear-item">
@@ -48,7 +48,7 @@
               </div>
             </div>
             
-            <div class="rule-item">
+            <div class="rule-item rule-redundant">
               <div class="rule-title">Redundant Answer</div>
               <div class="display-box">{{ promptData.grading_rules['Redundant Answers'] }}</div>
             </div>
@@ -195,6 +195,23 @@ const formatJsonStructure = (structure: any) => {
   padding-left: 16px;
 }
 
+/* 不同类型的边框颜色 */
+.rule-correct {
+  border-left-color: #10b981; /* 绿色 - 正确 */
+}
+
+.rule-wrong {
+  border-left-color: #ef4444; /* 红色 - 错误 */
+}
+
+.rule-unclear {
+  border-left-color: #f59e0b; /* 黄色 - 模糊 */
+}
+
+.rule-redundant {
+  border-left-color: #3b82f6; /* 蓝色 - 冗余 */
+}
+
 .rule-title {
   font-weight: 600;
   color: #374151;
@@ -216,7 +233,7 @@ const formatJsonStructure = (structure: any) => {
 
 .unclear-type {
   font-weight: 600;
-  color: #667eea;
+  color: #f59e0b; /* 与模糊答案边框颜色保持一致 */
   font-size: 13px;
 }
 
