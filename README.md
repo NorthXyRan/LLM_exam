@@ -20,10 +20,9 @@ layout/
 └── menuConfig.ts           # 菜单配置文件
 ```
 
-## 上传组件
+## 上传组件src/components/upload/
 
 ```
-src/components/upload/
 ├── Uploading.vue              # 主容器组件 (核心业务逻辑)
 ├── BaseUpload.vue             # 基础上传组件 (通用UI)
 ├── PaperUpload.vue            # 试卷上传组件 (事件转发)
@@ -36,8 +35,8 @@ src/components/upload/
 services/llm/
 ├── index.ts                    # 统一导出
 ├── upload/
-│   ├── uploadLLMService.ts     # AI解析服务
-│   └── uploadPrompts.ts        # Prompt模板
+    ├── uploadLLMService.ts     # AI解析服务
+    └── uploadPrompts.ts        # Prompt模板
 
 ```
 
@@ -45,14 +44,16 @@ services/llm/
 
 ```
 grading/
-├── Grading.vue          # 主组件
-├── GradingHeader.vue    # 头部组件
-├── ScoringSection.vue   # 评分组件
-├── ActionSection.vue    # 操作组件
-├── HighlightToolbar.vue # 工具栏组件
-├── PaperPreview.vue     # 预览组件
-├── ReferenceAnswer.vue  # 参考答案组件
-└── FeedbackPanel.vue    # 反馈组件
+├── utils
+|    └── highlightUtils.ts   	# 高亮实现算法 
+├── Grading.vue          	# 主组件
+├── GradingHeader.vue    	# 头部组件
+├── ScoringSection.vue  	# 评分组件
+├── ActionSection.vue    	# 操作组件
+├── HighlightToolbar.vue 	# 工具栏组件
+├── PaperPreview.vue     	# 预览组件
+├── ReferenceAnswer.vue  	# 参考答案组件
+└── FeedbackPanel.vue    	# 反馈组件
 ```
 
 ## 结果组件
